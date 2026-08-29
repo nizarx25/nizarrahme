@@ -66,8 +66,6 @@ import {
   Crosshair,
   CircleDot,
   Rocket,
-  MessageCircle,
-  Phone,
   ShoppingCart,
   Zap,
   Crown,
@@ -79,6 +77,15 @@ import {
   Shield,
   TrendingUp,
 } from 'lucide-react'
+
+// WhatsApp SVG Icon
+function WhatsAppIcon({ className = 'size-5' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+    </svg>
+  )
+}
 
 // ========================
 // TYPES
@@ -284,28 +291,48 @@ const NAV_ITEMS: {
 // ========================
 
 function WhatsAppFloat() {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 2000)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
-    <a
-      href="https://wa.me/963932264918"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-50 group"
-      aria-label="Contact on WhatsApp"
-    >
-      <motion.div
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-        className="relative w-14 h-14 rounded-full bg-[#25D366] flex items-center justify-center shadow-lg shadow-[#25D366]/30 transition-shadow group-hover:shadow-[#25D366]/50"
-      >
-        <MessageCircle className="size-6 text-white" fill="white" />
-        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-coral text-[10px] font-bold text-white flex items-center justify-center">
-          1
-        </span>
-        <span className="absolute -top-10 right-0 bg-elevated border border-surface-border text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-          Chat on WhatsApp
-        </span>
-      </motion.div>
-    </a>
+    <AnimatePresence>
+      {isVisible && (
+        <motion.a
+          href="https://wa.me/963932264918"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-6 right-6 z-50 group"
+          aria-label="Contact on WhatsApp"
+          initial={{ scale: 0, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0, opacity: 0, y: 20 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.1 }}
+        >
+          <motion.div
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.95 }}
+            className="relative"
+          >
+            <span className="absolute inset-0 rounded-full bg-[#25D366]/20 animate-ping-slow" />
+            <span className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-[#25D366]/20 via-[#128C7E]/10 to-[#25D366]/20 blur-sm" />
+            <span className="relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] shadow-[0_4px_24px_rgba(37,211,102,0.35)] group-hover:shadow-[0_4px_32px_rgba(37,211,102,0.5)] transition-shadow duration-300">
+              <WhatsAppIcon className="size-7 text-white" />
+            </span>
+            <span className="absolute bottom-full right-0 mb-3 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
+              <span className="relative flex items-center gap-2 bg-elevated/95 backdrop-blur-md border border-[#25D366]/20 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] whitespace-nowrap">
+                <WhatsAppIcon className="size-4 text-[#25D366]" />
+                Chat with us
+                <span className="absolute -bottom-1.5 right-6 w-3 h-3 bg-elevated/95 border-r border-b border-[#25D366]/20 rotate-45" />
+              </span>
+            </span>
+          </motion.div>
+        </motion.a>
+      )}
+    </AnimatePresence>
   )
 }
 
@@ -370,7 +397,7 @@ function SocialLinks() {
         className="p-2 rounded-[10px] hover:bg-elevated transition-all text-muted-foreground hover:text-[#25D366] hover:shadow-[0_0_12px_rgba(37,211,102,0.15)]"
         aria-label="WhatsApp"
       >
-        <Phone className="size-4" />
+        <WhatsAppIcon className="size-4" />
       </a>
     </div>
   )
@@ -395,19 +422,19 @@ const PARTNERS = [
 function PartnerLogos() {
   return (
     <section className="py-12 surface-border-t relative">
-      <div className="absolute inset-0 bg-surface/30" />
+      <div className="absolute inset-0 bg-gradient-to-b from-surface/30 to-background/50" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-center text-xs font-mono-accent text-[#718581] uppercase tracking-[0.2em] mb-8">
           Listed On Trusted Marketplaces
         </p>
         <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-12">
-          {PARTNERS.map((partner) => (
+          {PARTNERS.map((partner, idx) => (
             <motion.div
               key={partner.slug}
-              whileHover={{ scale: 1.05, opacity: 1 }}
-              className="opacity-40 hover:opacity-100 transition-all cursor-default"
+              whileHover={{ scale: 1.08, y: -2 }}
+              className="opacity-40 hover:opacity-100 transition-all duration-300 cursor-default group"
             >
-              <span className="font-display text-sm sm:text-base font-bold text-[#B8C8C4] tracking-wide whitespace-nowrap">
+              <span className="font-display text-sm sm:text-base font-bold text-[#B8C8C4] tracking-wide whitespace-nowrap group-hover:bg-gradient-to-r group-hover:from-teal group-hover:to-teal-soft group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
                 {partner.name}
               </span>
             </motion.div>
@@ -501,17 +528,17 @@ function Header() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleNav(item.section)}
-                className={`relative px-3 py-2 text-sm rounded-[10px] transition-colors font-medium ${
+                className={`relative px-3 py-2 text-sm rounded-[10px] transition-all duration-200 font-medium ${
                   nav.section === item.section
-                    ? 'text-white bg-elevated'
-                    : 'text-[#718581] hover:text-white hover:bg-elevated/50'
+                    ? 'text-white bg-gradient-to-r from-elevated to-elevated/80 shadow-[0_0_12px_rgba(0,229,176,0.08)]'
+                    : 'text-[#718581] hover:text-white hover:bg-elevated/50 hover:shadow-[0_0_8px_rgba(0,229,176,0.05)]'
                 }`}
               >
                 {item.label}
                 {nav.section === item.section && (
                   <motion.div
                     layoutId="navIndicator"
-                    className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-teal rounded-full"
+                    className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-6 bg-gradient-to-r from-teal to-teal-soft rounded-full shadow-[0_0_8px_rgba(0,229,176,0.5)]"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -524,7 +551,7 @@ function Header() {
               <Button
                 onClick={() => handleNav('domains')}
                 size="sm"
-                className="hidden sm:inline-flex bg-coral text-white hover:bg-coral-hover rounded-[10px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)] gap-2"
+                className="hidden sm:inline-flex bg-gradient-to-r from-coral to-coral-hover text-white rounded-[10px] font-medium transition-all hover:shadow-[0_0_24px_rgba(255,77,46,0.4)] hover:brightness-110 gap-2"
               >
                 <ShoppingCart className="size-4" />
                 Buy a Domain
@@ -638,13 +665,16 @@ function FeaturedCarousel({ domains }: { domains: PublicDomain[] }) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -40 }}
           transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="relative surface-border rounded-2xl bg-surface/80 backdrop-blur-sm p-8 sm:p-10 cursor-pointer group domain-card-hover"
+          className="relative surface-border rounded-2xl bg-surface/80 backdrop-blur-sm p-8 sm:p-10 cursor-pointer group domain-card-hover overflow-hidden"
           onClick={() => nav.setSelectedDomain(domain.slug)}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => { if (e.key === 'Enter') nav.setSelectedDomain(domain.slug) }}
           aria-label={`View details for ${domain.name}`}
         >
+          <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-teal/0 via-transparent to-coral/0 group-hover:from-teal/15 group-hover:via-transparent group-hover:to-coral/15 transition-all duration-500 -z-10 opacity-0 group-hover:opacity-100" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal/0 to-transparent group-hover:via-teal/40 transition-all duration-500" />
+
           <div className="absolute top-5 right-5 flex gap-2">
             <Badge className="bg-teal/10 text-teal border-teal/20 text-xs font-mono-accent rounded-full px-3">
               {domain.extension}
@@ -658,7 +688,7 @@ function FeaturedCarousel({ domains }: { domains: PublicDomain[] }) {
             Featured Domain
           </p>
 
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white group-hover:text-teal transition-colors leading-tight">
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-teal group-hover:via-teal-soft group-hover:to-coral transition-all duration-300 leading-tight">
             {domain.name}
           </h2>
 
@@ -770,7 +800,7 @@ function HomeSection() {
               className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.08] tracking-tight text-white"
             >
               Own the Name Behind{' '}
-              <span className="bg-gradient-to-r from-teal via-teal-soft to-teal bg-clip-text text-transparent teal-text-glow">What&rsquo;s Next.</span>
+              <span className="bg-gradient-to-r from-teal via-teal-soft via-coral/80 to-teal bg-clip-text text-transparent teal-text-glow animate-gradient-text">What&rsquo;s Next.</span>
             </motion.h1>
 
             <motion.p
@@ -843,32 +873,32 @@ function HomeSection() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {stats ? (
             <div className="flex flex-wrap justify-center gap-10 sm:gap-16">
-              <div className="text-center">
-                <p className="font-display text-3xl sm:text-4xl font-bold text-white">
+              <motion.div className="text-center group cursor-default" whileHover={{ y: -2 }}>
+                <p className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-br from-white to-white/80 bg-clip-text text-transparent group-hover:from-teal group-hover:to-teal-soft transition-all duration-300">
                   {stats.totalDomains}+
                 </p>
-                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2">Domains</p>
-              </div>
-              <div className="text-center">
-                <p className="font-display text-3xl sm:text-4xl font-bold text-white">
+                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2 group-hover:text-teal/60 transition-colors">Domains</p>
+              </motion.div>
+              <motion.div className="text-center group cursor-default" whileHover={{ y: -2 }}>
+                <p className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-br from-white to-white/80 bg-clip-text text-transparent group-hover:from-coral group-hover:to-coral-hover transition-all duration-300">
                   {stats.atomListed}
                 </p>
-                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2">
+                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2 group-hover:text-coral/60 transition-colors">
                   Listed on Atom
                 </p>
-              </div>
-              <div className="text-center">
-                <p className="font-display text-3xl sm:text-4xl font-bold text-white">2023</p>
-                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2">
+              </motion.div>
+              <motion.div className="text-center group cursor-default" whileHover={{ y: -2 }}>
+                <p className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-br from-white to-white/80 bg-clip-text text-transparent group-hover:from-teal-soft group-hover:to-teal transition-all duration-300">2023</p>
+                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2 group-hover:text-teal-soft/60 transition-colors">
                   Investing Since
                 </p>
-              </div>
-              <div className="text-center">
-                <p className="font-display text-3xl sm:text-4xl font-bold text-teal">2</p>
+              </motion.div>
+              <motion.div className="text-center group cursor-default" whileHover={{ y: -2 }}>
+                <p className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent">2</p>
                 <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2">
                   Completed Sales
                 </p>
-              </div>
+              </motion.div>
             </div>
           ) : (
             <div className="flex flex-wrap justify-center gap-10 sm:gap-16">
@@ -893,7 +923,7 @@ function HomeSection() {
                 Curated Selection
               </p>
               <h2 className="font-display text-3xl sm:text-4xl font-bold">
-                <span className="bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent animate-gradient-text">
                   Premium Domains
                 </span>
               </h2>
@@ -963,25 +993,26 @@ function HomeSection() {
             <div className="hidden md:block absolute top-8 left-[calc(16.67%+1rem)] right-[calc(16.67%+1rem)] h-px bg-gradient-to-r from-teal/30 via-teal/10 to-teal/30" />
 
             {[
-              { num: '01', title: 'Discover', desc: 'Find the domain that fits your vision. Browse by category, extension, or keyword.', icon: Search },
-              { num: '02', title: 'Claim', desc: 'Secure your preferred digital identity. Submit an offer or start a conversation.', icon: Send },
-              { num: '03', title: 'Launch', desc: 'Build the brand around your new domain. Complete the transfer and go live.', icon: Rocket },
+              { num: '01', title: 'Discover', desc: 'Find the domain that fits your vision. Browse by category, extension, or keyword.', icon: Search, gradient: 'from-teal/20 to-teal/5' },
+              { num: '02', title: 'Claim', desc: 'Secure your preferred digital identity. Submit an offer or start a conversation.', icon: Send, gradient: 'from-coral/20 to-coral/5' },
+              { num: '03', title: 'Launch', desc: 'Build the brand around your new domain. Complete the transfer and go live.', icon: Rocket, gradient: 'from-teal-soft/20 to-teal/5' },
             ].map((step) => (
               <motion.div
                 key={step.num}
-                whileHover={{ y: -4 }}
+                whileHover={{ y: -6 }}
                 className="relative text-center px-6 py-4 group"
               >
                 <motion.div
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  className="relative z-10 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-elevated border border-surface-border text-teal mb-6 group-hover:border-teal/30 group-hover:shadow-[0_0_20px_rgba(0,229,176,0.1)] transition-all"
+                  whileHover={{ scale: 1.12, rotate: 5 }}
+                  className="relative z-10 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-elevated border border-surface-border text-teal mb-6 group-hover:border-teal/40 group-hover:shadow-[0_0_24px_rgba(0,229,176,0.15)] transition-all duration-300"
                 >
-                  <step.icon className="size-6" />
+                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${step.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                  <step.icon className="size-6 relative z-10" />
                 </motion.div>
-                <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-2">
+                <p className="text-xs font-mono-accent text-teal/70 uppercase tracking-[0.2em] mb-2 group-hover:text-teal transition-colors">
                   Step {step.num}
                 </p>
-                <h3 className="font-display text-xl font-bold text-white mb-3 group-hover:text-teal transition-colors">{step.title}</h3>
+                <h3 className="font-display text-xl font-bold text-white mb-3 group-hover:bg-gradient-to-r group-hover:from-teal group-hover:to-teal-soft group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">{step.title}</h3>
                 <p className="text-sm text-[#718581] leading-relaxed max-w-xs mx-auto group-hover:text-[#B8C8C4] transition-colors">{step.desc}</p>
               </motion.div>
             ))}
@@ -1051,26 +1082,28 @@ function HomeSection() {
       <section className="py-20 sm:py-28 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-coral/5 rounded-full blur-[100px] pointer-events-none" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
-            Your next brand deserves the right domain.
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold">
+            <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">Your next brand deserves the right domain.</span>
           </h2>
           <p className="mt-4 text-[#B8C8C4] max-w-2xl mx-auto leading-relaxed">
             If you are building an AI, SaaS, fintech, technology, or online business, browse the
             catalog or start a conversation.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Button
                 onClick={() => nav.setSection('domains')}
-                className="bg-coral hover:bg-coral-hover text-white rounded-[12px] h-12 px-8 font-medium transition-all hover:shadow-[0_0_30px_rgba(255,77,46,0.3)]"
+                className="bg-gradient-to-r from-coral to-coral-hover text-white rounded-[12px] h-12 px-8 font-medium transition-all hover:shadow-[0_0_36px_rgba(255,77,46,0.4)] hover:brightness-110"
               >
                 <ShoppingCart className="size-4 mr-2" />
                 Explore Premium Domains <ArrowRight className="size-4" />
               </Button>
             </motion.div>
-            <Button onClick={() => nav.setSection('contact')} variant="outline" className="border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white rounded-[12px] h-12 px-8 transition-all">
-              Contact Nizar
-            </Button>
+            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+              <Button onClick={() => nav.setSection('contact')} variant="outline" className="border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white hover:border-teal/20 hover:shadow-[0_0_16px_rgba(0,229,176,0.08)] rounded-[12px] h-12 px-8 transition-all">
+                Contact Nizar
+              </Button>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -1109,7 +1142,7 @@ function WholesaleSection() {
             viewport={{ once: true }}
             className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold"
           >
-            <span className="bg-gradient-to-r from-coral via-[#FF8C42] to-coral bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-coral via-[#FF8C42] to-coral bg-clip-text text-transparent animate-gradient-text">
               Wholesale Prices
             </span>
           </motion.h2>
@@ -1133,15 +1166,15 @@ function WholesaleSection() {
           className="flex flex-wrap justify-center gap-8 sm:gap-16 mb-12"
         >
           {[
-            { icon: Zap, label: 'Below Market', color: 'text-coral' },
-            { icon: Crown, label: 'Premium Quality', color: 'text-teal' },
-            { icon: Shield, label: 'Secure Transfer', color: 'text-[#B8C8C4]' },
-            { icon: TrendingUp, label: 'High ROI', color: 'text-coral' },
+            { icon: Zap, label: 'Below Market', color: 'text-coral', glow: 'group-hover:shadow-[0_0_16px_rgba(255,77,46,0.2)]' },
+            { icon: Crown, label: 'Premium Quality', color: 'text-teal', glow: 'group-hover:shadow-[0_0_16px_rgba(0,229,176,0.2)]' },
+            { icon: Shield, label: 'Secure Transfer', color: 'text-[#B8C8C4]', glow: 'group-hover:shadow-[0_0_16px_rgba(184,200,196,0.15)]' },
+            { icon: TrendingUp, label: 'High ROI', color: 'text-coral', glow: 'group-hover:shadow-[0_0_16px_rgba(255,77,46,0.2)]' },
           ].map((item) => (
-            <div key={item.label} className="text-center">
-              <item.icon className={`size-6 ${item.color} mx-auto mb-2`} />
-              <p className="text-sm font-mono-accent text-[#718581]">{item.label}</p>
-            </div>
+            <motion.div key={item.label} whileHover={{ y: -3 }} className={`text-center group cursor-default transition-all duration-300 ${item.glow}`}>
+              <item.icon className={`size-6 ${item.color} mx-auto mb-2 transition-all duration-300 group-hover:scale-110`} />
+              <p className="text-sm font-mono-accent text-[#718581] group-hover:text-[#B8C8C4] transition-colors">{item.label}</p>
+            </motion.div>
           ))}
         </motion.div>
 
@@ -1199,8 +1232,14 @@ function DomainCard({ domain }: { domain: PublicDomain }) {
         tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'Enter') nav.setSelectedDomain(domain.slug) }}
       >
+        {/* Animated gradient border glow on hover */}
+        <div className="absolute -inset-[1px] rounded-[16px] bg-gradient-to-br from-teal/0 via-transparent to-coral/0 group-hover:from-teal/20 group-hover:via-transparent group-hover:to-coral/20 transition-all duration-500 -z-10 opacity-0 group-hover:opacity-100" />
+        
         {/* Hover glow overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-teal/5 via-transparent to-coral/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-teal/8 via-transparent to-coral/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+        {/* Shimmer line on top */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal/0 to-transparent group-hover:via-teal/60 transition-all duration-700" />
 
         <div className="relative">
           <div className="flex items-start justify-between gap-3">
@@ -1218,7 +1257,7 @@ function DomainCard({ domain }: { domain: PublicDomain }) {
                   {domain.category}
                 </Badge>
               </div>
-              <h3 className="font-display text-lg sm:text-xl font-bold leading-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-teal group-hover:to-teal-soft transition-all">
+              <h3 className="font-display text-lg sm:text-xl font-bold leading-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-teal group-hover:via-teal-soft group-hover:to-coral transition-all duration-300">
                 {domain.name}
               </h3>
             </div>
@@ -1577,27 +1616,33 @@ function AboutSection() {
               key={item.title}
               onMouseEnter={() => setHoveredIndex(idx)}
               onMouseLeave={() => setHoveredIndex(null)}
-              className={`flex gap-4 py-4 surface-border-b last:border-b-0 transition-all duration-200 cursor-default ${
-                hoveredIndex === idx ? 'bg-elevated/50 pl-6' : ''
+              className={`flex gap-4 py-4 px-3 -mx-3 rounded-xl surface-border-b last:border-b-0 transition-all duration-300 cursor-default relative overflow-hidden ${
+                hoveredIndex === idx ? 'bg-gradient-to-r from-teal/8 via-elevated/50 to-transparent' : ''
               }`}
             >
+              {hoveredIndex === idx && (
+                <motion.div
+                  layoutId="evalHighlight"
+                  className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-teal to-teal-soft"
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+              )}
               <motion.div
                 animate={{
-                  scale: hoveredIndex === idx ? 1.15 : 1,
-                  backgroundColor: hoveredIndex === idx ? 'rgba(0,229,176,0.15)' : 'rgba(0,0,0,0)',
+                  scale: hoveredIndex === idx ? 1.2 : 1,
                 }}
                 transition={{ duration: 0.2 }}
                 className="shrink-0"
               >
-                <div className={`w-8 h-8 rounded-full bg-elevated border border-surface-border flex items-center justify-center text-xs font-mono-accent transition-colors ${
-                  hoveredIndex === idx ? 'text-teal border-teal/30 shadow-[0_0_12px_rgba(0,229,176,0.15)]' : 'text-teal'
+                <div className={`w-8 h-8 rounded-lg bg-elevated border flex items-center justify-center text-xs font-mono-accent transition-all duration-300 ${
+                  hoveredIndex === idx ? 'text-[#061312] border-teal/40 bg-gradient-to-br from-teal to-teal-soft shadow-[0_0_16px_rgba(0,229,176,0.25)]' : 'text-teal/70 border-surface-border'
                 }`}>
                   {idx + 1}
                 </div>
               </motion.div>
               <div className="min-w-0">
-                <h3 className={`font-medium text-sm transition-colors ${hoveredIndex === idx ? 'text-teal' : 'text-white'}`}>{item.title}</h3>
-                <p className={`text-sm leading-relaxed transition-colors ${hoveredIndex === idx ? 'text-[#B8C8C4]' : 'text-[#718581]'}`}>{item.desc}</p>
+                <h3 className={`font-medium text-sm transition-all duration-300 ${hoveredIndex === idx ? 'bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent' : 'text-white'}`}>{item.title}</h3>
+                <p className={`text-sm leading-relaxed transition-colors duration-300 ${hoveredIndex === idx ? 'text-[#B8C8C4]' : 'text-[#718581]'}`}>{item.desc}</p>
               </div>
               {hoveredIndex === idx && (
                 <motion.div
@@ -1605,7 +1650,7 @@ function AboutSection() {
                   animate={{ opacity: 1, x: 0 }}
                   className="shrink-0 self-center"
                 >
-                  <MousePointerClick className="size-4 text-teal" />
+                  <Sparkles className="size-4 text-teal" />
                 </motion.div>
               )}
             </motion.div>
@@ -1645,17 +1690,21 @@ function ServicesSection() {
         <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">What I Offer</p>
         <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Selected Digital Services</h1>
         <p className="text-[#718581] max-w-2xl mb-12 leading-relaxed">Alongside domain investing, I offer select digital services for businesses and projects that need a hands-on, thoughtful approach to their online presence.</p>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{services.map((service) => (
-          <motion.div key={service.title} whileHover={{ y: -4 }} className="surface-border rounded-[16px] bg-surface p-6 domain-card-hover">
-            <service.icon className="size-6 text-teal mb-4" />
-            <h3 className="font-display text-lg font-bold text-white mb-2">{service.title}</h3>
-            <p className="text-sm text-[#718581] leading-relaxed">{service.desc}</p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{services.map((service, idx) => (
+          <motion.div key={service.title} whileHover={{ y: -6 }} className="surface-border rounded-[16px] bg-surface p-6 domain-card-hover relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-teal/5 via-transparent to-coral/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal/0 to-transparent group-hover:via-teal/50 transition-all duration-500" />
+            <service.icon className="size-6 text-teal mb-4 group-hover:drop-shadow-[0_0_8px_rgba(0,229,176,0.4)] transition-all" />
+            <h3 className="font-display text-lg font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-teal group-hover:to-teal-soft transition-all duration-300">{service.title}</h3>
+            <p className="text-sm text-[#718581] leading-relaxed group-hover:text-[#B8C8C4] transition-colors">{service.desc}</p>
           </motion.div>
         ))}</div>
         <div className="mt-12 text-center">
-          <Button onClick={() => nav.setSection('contact')} className="bg-coral hover:bg-coral-hover text-white rounded-[12px] h-12 px-8 font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]">
-            Discuss a Project <ArrowRight className="size-4" />
-          </Button>
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <Button onClick={() => nav.setSection('contact')} className="bg-gradient-to-r from-coral to-coral-hover text-white rounded-[12px] h-12 px-8 font-medium transition-all hover:shadow-[0_0_24px_rgba(255,77,46,0.4)] hover:brightness-110">
+              Discuss a Project <ArrowRight className="size-4" />
+            </Button>
+          </motion.div>
         </div>
       </div>
     </div>
@@ -1735,9 +1784,25 @@ function ContactSection() {
             <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Get in Touch</p>
             <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Contact</h1>
             <p className="text-[#B8C8C4] leading-relaxed mb-8">Whether you&rsquo;re interested in acquiring a domain, discussing a partnership, or working together on a digital project, I&rsquo;d like to hear from you.</p>
-            <div className="space-y-4 mb-8">
-              <div className="flex items-center gap-3"><Mail className="size-4 text-teal" /><a href={`mailto:${settings?.contactEmail || ''}`} className="text-sm text-[#B8C8C4] hover:text-teal transition-colors">{settings?.contactEmail || 'info@nizarrahme.com'}</a></div>
-              <div className="flex items-center gap-3"><Phone className="size-4 text-[#25D366]" /><a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="text-sm text-[#B8C8C4] hover:text-[#25D366] transition-colors font-mono-accent">+963 932 264 918</a></div>
+            <div className="space-y-3 mb-8">
+              <a href={`mailto:${settings?.contactEmail || ''}`} className="flex items-center gap-3 group">
+                <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-teal-muted border border-teal/10 group-hover:border-teal/30 group-hover:shadow-[0_0_16px_rgba(0,229,176,0.1)] transition-all">
+                  <Mail className="size-4 text-teal" />
+                </span>
+                <div>
+                  <p className="text-xs text-[#718581] font-mono-accent">Email</p>
+                  <p className="text-sm text-[#B8C8C4] group-hover:text-teal transition-colors">{settings?.contactEmail || 'info@nizarrahme.com'}</p>
+                </div>
+              </a>
+              <a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group">
+                <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#25D366]/10 border border-[#25D366]/10 group-hover:border-[#25D366]/30 group-hover:shadow-[0_0_16px_rgba(37,211,102,0.1)] transition-all">
+                  <WhatsAppIcon className="size-4 text-[#25D366]" />
+                </span>
+                <div>
+                  <p className="text-xs text-[#718581] font-mono-accent">WhatsApp</p>
+                  <p className="text-sm text-[#B8C8C4] group-hover:text-[#25D366] transition-colors">Chat with Nizar</p>
+                </div>
+              </a>
             </div>
             <div className="mb-8"><p className="text-sm font-medium text-white mb-3">Follow</p><SocialLinks /></div>
           </div>
@@ -1783,8 +1848,20 @@ function Footer() {
           <div>
             <p className="text-sm font-medium text-white mb-4">Connect</p>
             <SocialLinks />
-            {settings && <a href={`mailto:${settings.contactEmail}`} className="inline-flex items-center gap-2 text-sm text-[#718581] hover:text-teal transition-colors mt-3"><Mail className="size-4" />{settings.contactEmail}</a>}
-            <a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-[#718581] hover:text-[#25D366] transition-colors mt-2"><Phone className="size-4" /><span className="font-mono-accent">+963 932 264 918</span></a>
+            {settings && (
+              <a href={`mailto:${settings.contactEmail}`} className="flex items-center gap-2.5 text-sm text-[#718581] hover:text-teal transition-colors mt-4 group">
+                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-muted border border-teal/10 group-hover:border-teal/25 transition-all">
+                  <Mail className="size-3.5 text-teal" />
+                </span>
+                {settings.contactEmail}
+              </a>
+            )}
+            <a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-sm text-[#718581] hover:text-[#25D366] transition-colors mt-2 group">
+              <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#25D366]/10 border border-[#25D366]/10 group-hover:border-[#25D366]/25 transition-all">
+                <WhatsAppIcon className="size-3.5 text-[#25D366]" />
+              </span>
+              WhatsApp
+            </a>
           </div>
         </div>
         <Separator className="my-8 bg-surface-border" />

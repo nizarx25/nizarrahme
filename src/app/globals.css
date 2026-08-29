@@ -146,13 +146,13 @@
   }
 
   .domain-card-hover {
-    transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+    transition: transform 250ms ease, border-color 250ms ease, box-shadow 250ms ease;
   }
 
   .domain-card-hover:hover {
-    transform: translateY(-2px);
-    border-color: rgba(0, 229, 176, 0.3);
-    box-shadow: 0 0 20px rgba(0, 229, 176, 0.08);
+    transform: translateY(-3px);
+    border-color: rgba(0, 229, 176, 0.35);
+    box-shadow: 0 0 24px rgba(0, 229, 176, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
   .surface-border {
@@ -292,8 +292,93 @@ html {
   animation: pulse-glow 4s ease-in-out infinite;
 }
 
+/* Slow ping for WhatsApp button */
+@keyframes ping-slow {
+  0% { transform: scale(1); opacity: 0.4; }
+  75%, 100% { transform: scale(1.8); opacity: 0; }
+}
+
+.animate-ping-slow {
+  animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Shimmer effect for cards */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 229, 176, 0.04) 25%,
+    rgba(0, 229, 176, 0.08) 50%,
+    rgba(0, 229, 176, 0.04) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 6s ease-in-out infinite;
+}
+
+/* Gradient border animation */
+@keyframes gradient-rotate {
+  0% { --gradient-angle: 0deg; }
+  100% { --gradient-angle: 360deg; }
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Glow pulse for interactive elements */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(0, 229, 176, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(0, 229, 176, 0.2), 0 0 40px rgba(0, 229, 176, 0.05); }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* Interactive click ripple effect */
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+/* Gradient text animation */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-text {
+  background-size: 200% auto;
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+
+/* Sparkle on hover effect */
+@keyframes sparkle-in {
+  0% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+  100% { opacity: 0; transform: scale(0) rotate(360deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-pulse-glow {
+  .animate-pulse-glow,
+  .animate-ping-slow,
+  .animate-shimmer,
+  .animate-float,
+  .animate-glow-pulse,
+  .animate-gradient-text {
     animation: none;
   }
 }

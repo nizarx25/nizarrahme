@@ -1,0 +1,443 @@
+  1401→            <Button variant="outline" onClick={resetFilters} className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]">Clear Filters</Button>
+  1402→          </div>
+  1403→        )}
+  1404→      </div>
+  1405→    </div>
+  1406→  )
+  1407→}
+  1408→
+  1409→// ========================
+  1410→// DOMAIN DETAIL MODAL
+  1411→// ========================
+  1412→
+  1413→function DomainDetailModal() {
+  1414→  const nav = useNavigation()
+  1415→  const { data, isLoading } = useDomainDetail(nav.selectedDomain)
+  1416→  const open = !!nav.selectedDomain
+  1417→  const handleClose = useCallback(() => { nav.setSelectedDomain(null) }, [nav])
+  1418→  const handleOffer = () => { if (data?.domain) { nav.setOfferDomainName(data.domain.name); nav.setSelectedDomain(null); nav.setShowOfferForm(true) } }
+  1419→
+  1420→  return (
+  1421→    <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
+  1422→      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+  1423→        {isLoading ? (
+  1424→          <div className="py-8 space-y-4"><Skeleton className="h-10 w-64 bg-surface-border/50" /><Skeleton className="h-4 w-40 bg-surface-border/30" /><Skeleton className="h-20 w-full bg-surface-border/30" /><Skeleton className="h-32 w-full bg-surface-border/30" /></div>
+  1425→        ) : data?.domain ? (
+  1426→          <>
+  1427→            <DialogHeader>
+  1428→              <div className="flex items-center gap-2 mb-3">
+  1429→                <Badge className="bg-elevated text-[#718581] border-surface-border text-xs font-mono-accent rounded-full px-3">{data.domain.extension}</Badge>
+  1430→                <Badge className="bg-coral/10 text-coral border-coral/20 text-xs font-mono-accent rounded-full px-3">{data.domain.category}</Badge>
+  1431→                {data.domain.featured && <Badge className="bg-teal/10 text-teal border-teal/20 text-xs font-mono-accent rounded-full px-3">Featured</Badge>}
+  1432→              </div>
+  1433→              <DialogTitle className="font-display text-3xl sm:text-4xl font-bold text-white">{data.domain.name}</DialogTitle>
+  1434→              <DialogDescription className="sr-only">Details for {data.domain.name}</DialogDescription>
+  1435→            </DialogHeader>
+  1436→            <div className="mt-6 space-y-6">
+  1437→              <div className="flex items-center gap-4">
+  1438→                {data.domain.showPrice && data.domain.price && <p className="font-display text-3xl font-bold text-teal">${data.domain.price.toLocaleString()}</p>}
+  1439→                <Badge variant="outline" className="border-surface-border text-[#718581] text-sm font-mono-accent rounded-full">{data.domain.saleType}</Badge>
+  1440→              </div>
+  1441→              {data.domain.shortDescription && <p className="text-[#B8C8C4] leading-relaxed">{data.domain.shortDescription}</p>}
+  1442→              {data.domain.tags.length > 0 && <div className="flex flex-wrap gap-2">{data.domain.tags.map((tag) => <Badge key={tag} variant="secondary" className="text-xs font-mono-accent bg-elevated text-[#B8C8C4] rounded-full px-3">{tag}</Badge>)}</div>}
+  1443→              {data.domain.useCases.length > 0 && (
+  1444→                <div>
+  1445→                  <h4 className="text-sm font-medium text-white mb-3">Potential use cases</h4>
+  1446→                  <ul className="space-y-2">{data.domain.useCases.map((uc) => <li key={uc} className="flex items-start gap-2 text-sm text-[#B8C8C4]"><CheckCircle2 className="size-4 text-teal mt-0.5 shrink-0" />{uc}</li>)}</ul>
+  1447→                </div>
+  1448→              )}
+  1449→              {data.domain.publicNotes && <div className="p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-sm text-[#B8C8C4]">{data.domain.publicNotes}</p></div>}
+  1450→              <Button onClick={handleOffer} className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]">
+  1451→                <ShoppingCart className="size-4 mr-2" /> Make an Offer <ArrowRight className="size-4" />
+  1452→              </Button>
+  1453→              {data.relatedDomains.length > 0 && (
+  1454→                <div>
+  1455→                  <Separator className="bg-surface-border mb-6" />
+  1456→                  <h4 className="text-sm font-medium text-white mb-4">Related domains</h4>
+  1457→                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+  1458→                    {data.relatedDomains.map((rd) => (
+  1459→                      <button key={rd.id} onClick={() => nav.setSelectedDomain(rd.slug)} className="shrink-0 surface-border rounded-xl p-4 hover:border-teal/30 transition-colors text-left min-w-[180px] bg-surface">
+  1460→                        <p className="font-display text-sm font-bold text-white truncate">{rd.name}</p>
+  1461→                        <p className="text-xs font-mono-accent text-[#718581] mt-1">{rd.category}</p>
+  1462→                      </button>
+  1463→                    ))}
+  1464→                  </div>
+  1465→                </div>
+  1466→              )}
+  1467→            </div>
+  1468→          </>
+  1469→        ) : null}
+  1470→      </DialogContent>
+  1471→    </Dialog>
+  1472→  )
+  1473→}
+  1474→
+  1475→// ========================
+  1476→// OFFER FORM DIALOG
+  1477→// ========================
+  1478→
+  1479→const offerSchema = z.object({
+  1480→  name: z.string().min(2, 'Name must be at least 2 characters'),
+  1481→  email: z.email('Please enter a valid email address'),
+  1482→  company: z.string().optional(),
+  1483→  offerAmount: z.number().positive().optional(),
+  1484→  intendedUse: z.string().optional(),
+  1485→  message: z.string().min(10, 'Message must be at least 10 characters'),
+  1486→  consent: z.literal(true, { errorMap: () => ({ message: 'You must consent to proceed' }) }),
+  1487→})
+  1488→
+  1489→type FormErrors = Record<string, string>
+  1490→
+  1491→function OfferFormDialog() {
+  1492→  const nav = useNavigation()
+  1493→  const submitInquiry = useSubmitInquiry()
+  1494→  const [form, setForm] = useState({ name: '', email: '', company: '', offerAmount: '', intendedUse: '', message: '', consent: false, honeypot: '' })
+  1495→  const [errors, setErrors] = useState<FormErrors>({})
+  1496→  const [submitted, setSubmitted] = useState(false)
+  1497→  const resetForm = () => { setForm({ name: '', email: '', company: '', offerAmount: '', intendedUse: '', message: '', consent: false, honeypot: '' }); setErrors({}); setSubmitted(false) }
+  1498→  const handleClose = (open: boolean) => { if (!open) { nav.setShowOfferForm(false); resetForm() } }
+  1499→
+  1500→  const handleSubmit = (e: FormEvent) => {
+  1501→    e.preventDefault(); setErrors({})
+  1502→    const result = offerSchema.safeParse({ name: form.name, email: form.email, company: form.company || undefined, offerAmount: form.offerAmount ? Number(form.offerAmount) : undefined, intendedUse: form.intendedUse || undefined, message: form.message, consent: form.consent })
+  1503→    if (!result.success) { const fieldErrors: FormErrors = {}; for (const issue of result.error.issues) { const field = issue.path[0]; if (field) fieldErrors[String(field)] = issue.message } setErrors(fieldErrors); return }
+  1504→    submitInquiry.mutate({ domainSlug: nav.offerDomainName ? nav.offerDomainName.toLowerCase().replace(/[^a-z0-9-]/g, '-') : undefined, ...result.data, honeypot: form.honeypot }, { onSuccess: () => setSubmitted(true) })
+  1505→  }
+  1506→
+  1507→  if (submitted) return (
+  1508→    <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
+  1509→      <DialogContent className="max-w-lg bg-[#0B211E] border-surface-border rounded-2xl">
+  1510→        <div className="text-center py-8"><CheckCircle2 className="size-12 text-teal mx-auto mb-4" /><h3 className="font-display text-2xl font-bold text-white mb-2">Thank you.</h3><p className="text-[#B8C8C4] leading-relaxed">Your inquiry has been received. Nizar will review it and get back to you.</p><Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => handleClose(false)}>Close</Button></div>
+  1511→      </DialogContent>
+  1512→    </Dialog>
+  1513→  )
+  1514→
+  1515→  return (
+  1516→    <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
+  1517→      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+  1518→        <DialogHeader>
+  1519→          <DialogTitle className="font-display text-2xl font-bold text-white">Make an Offer</DialogTitle>
+  1520→          <DialogDescription className="text-[#718581]">{nav.offerDomainName ? `Submit your offer for ${nav.offerDomainName}` : 'Submit an inquiry about a domain'}</DialogDescription>
+  1521→        </DialogHeader>
+  1522→        <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+  1523→          {nav.offerDomainName && <div className="p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-xs font-mono-accent text-[#718581]">Domain</p><p className="font-display text-lg font-bold text-white mt-1">{nav.offerDomainName}</p></div>}
+  1524→          <div className="absolute -left-[9999px]" aria-hidden="true"><label htmlFor="website">Website</label><input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" value={form.honeypot} onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))} /></div>
+  1525→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  1526→            <div className="space-y-2"><Label htmlFor="offer-name" className="text-[#B8C8C4]">Name *</Label><Input id="offer-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p className="text-xs text-error">{errors.name}</p>}</div>
+  1527→            <div className="space-y-2"><Label htmlFor="offer-email" className="text-[#B8C8C4]">Email *</Label><Input id="offer-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p className="text-xs text-error">{errors.email}</p>}</div>
+  1528→          </div>
+  1529→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  1530→            <div className="space-y-2"><Label htmlFor="offer-company" className="text-[#B8C8C4]">Company / Project</Label><Input id="offer-company" value={form.company} onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" /></div>
+  1531→            <div className="space-y-2"><Label htmlFor="offer-amount" className="text-[#B8C8C4]">Offer Amount (USD)</Label><Input id="offer-amount" type="number" min="1" value={form.offerAmount} onChange={(e) => setForm((f) => ({ ...f, offerAmount: e.target.value }))} placeholder="e.g. 500" className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
+  1532→          </div>
+  1533→          <div className="space-y-2"><Label htmlFor="offer-use" className="text-[#B8C8C4]">Intended Use</Label><Input id="offer-use" value={form.intendedUse} onChange={(e) => setForm((f) => ({ ...f, intendedUse: e.target.value }))} placeholder="e.g. AI startup, SaaS platform" className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
+  1534→          <div className="space-y-2"><Label htmlFor="offer-message" className="text-[#B8C8C4]">Message *</Label><Textarea id="offer-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={4} aria-invalid={!!errors.message} className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p className="text-xs text-error">{errors.message}</p>}</div>
+  1535→          <div className="flex items-start gap-2"><Checkbox id="offer-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} className="data-[state=checked]:bg-teal data-[state=checked]:border-teal" /><Label htmlFor="offer-consent" className="text-sm text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
+  1536→          {errors.consent && <p className="text-xs text-error">{errors.consent}</p>}
+  1537→          <Button type="submit" className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]" disabled={submitInquiry.isPending}>{submitInquiry.isPending ? <><Loader2 className="size-4 animate-spin" /> Submitting...</> : <>Send Inquiry <Send className="size-4" /></>}</Button>
+  1538→        </form>
+  1539→      </DialogContent>
+  1540→    </Dialog>
+  1541→  )
+  1542→}
+  1543→
+  1544→// ========================
+  1545→// ABOUT SECTION
+  1546→// ========================
+  1547→
+  1548→function AboutSection() {
+  1549→  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  1550→
+  1551→  return (
+  1552→    <div className="py-12 sm:py-20">
+  1553→      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+  1554→        <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">About</p>
+  1555→        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-8">About</h1>
+  1556→        <div className="space-y-6 text-[#B8C8C4] leading-relaxed">
+  1557→          <p>I&rsquo;m Nizar Rahme. I invest in and curate domain names for businesses operating in AI, SaaS, fintech, technology, and the broader digital economy.</p>
+  1558→          <p>My approach to domain investing is straightforward: I look for names that are short, memorable, and genuinely brandable—names that could serve as the foundation for a real business. I don&rsquo;t register names at scale or flip domains for quick returns. Each name in the catalog has been selected with specific industries and use cases in mind.</p>
+  1559→          <p>Beyond domain investing, I have hands-on experience building WordPress websites, creating digital content, and working with AI-assisted workflows. This practical background informs how I evaluate names—I think about how a domain will work in context, not just how it sounds.</p>
+  1560→        </div>
+  1561→
+  1562→        <Separator className="my-12 bg-surface-border" />
+  1563→
+  1564→        <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-8">How I Evaluate a Domain</h2>
+  1565→        <div className="space-y-0">
+  1566→          {[
+  1567→            { title: 'Brandability', desc: 'Does the name sound like a real company, not a keyword string?' },
+  1568→            { title: 'Length', desc: 'Shorter is generally better. I prefer names under 12 characters when possible.' },
+  1569→            { title: 'Memorability', desc: 'Can someone recall the name after hearing it once?' },
+  1570→            { title: 'Pronounceability', desc: 'Can it be said out loud without confusion?' },
+  1571→            { title: 'Industry fit', desc: 'Does it align with a growing sector like AI, SaaS, fintech, or digital services?' },
+  1572→            { title: 'Extension quality', desc: '.com is preferred. Other extensions are selected only when the name is strong.' },
+  1573→            { title: 'Search and confusion risk', desc: 'Does it avoid trademark conflicts and confusion with existing brands?' },
+  1574→            { title: 'Practical value', desc: 'Would a real business benefit from owning this name?' },
+  1575→          ].map((item, idx) => (
+  1576→            <motion.div
+  1577→              key={item.title}
+  1578→              onMouseEnter={() => setHoveredIndex(idx)}
+  1579→              onMouseLeave={() => setHoveredIndex(null)}
+  1580→              className={`flex gap-4 py-4 surface-border-b last:border-b-0 transition-all duration-200 cursor-default ${
+  1581→                hoveredIndex === idx ? 'bg-elevated/50 pl-6' : ''
+  1582→              }`}
+  1583→            >
+  1584→              <motion.div
+  1585→                animate={{
+  1586→                  scale: hoveredIndex === idx ? 1.15 : 1,
+  1587→                  backgroundColor: hoveredIndex === idx ? 'rgba(0,229,176,0.15)' : 'rgba(0,0,0,0)',
+  1588→                }}
+  1589→                transition={{ duration: 0.2 }}
+  1590→                className="shrink-0"
+  1591→              >
+  1592→                <div className={`w-8 h-8 rounded-full bg-elevated border border-surface-border flex items-center justify-center text-xs font-mono-accent transition-colors ${
+  1593→                  hoveredIndex === idx ? 'text-teal border-teal/30 shadow-[0_0_12px_rgba(0,229,176,0.15)]' : 'text-teal'
+  1594→                }`}>
+  1595→                  {idx + 1}
+  1596→                </div>
+  1597→              </motion.div>
+  1598→              <div className="min-w-0">
+  1599→                <h3 className={`font-medium text-sm transition-colors ${hoveredIndex === idx ? 'text-teal' : 'text-white'}`}>{item.title}</h3>
+  1600→                <p className={`text-sm leading-relaxed transition-colors ${hoveredIndex === idx ? 'text-[#B8C8C4]' : 'text-[#718581]'}`}>{item.desc}</p>
+  1601→              </div>
+  1602→              {hoveredIndex === idx && (
+  1603→                <motion.div
+  1604→                  initial={{ opacity: 0, x: -10 }}
+  1605→                  animate={{ opacity: 1, x: 0 }}
+  1606→                  className="shrink-0 self-center"
+  1607→                >
+  1608→                  <MousePointerClick className="size-4 text-teal" />
+  1609→                </motion.div>
+  1610→              )}
+  1611→            </motion.div>
+  1612→          ))}
+  1613→        </div>
+  1614→
+  1615→        <Separator className="my-12 bg-surface-border" />
+  1616→        <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-6">Supporting capabilities</h2>
+  1617→        <ul className="space-y-3">{['WordPress website design and development', 'Content creation and copywriting', 'Social media strategy and management', 'SEO foundations and technical optimization', 'AI-assisted workflows and automation'].map((item) => (<li key={item} className="flex items-center gap-3 text-sm text-[#B8C8C4]"><CheckCircle2 className="size-4 text-teal shrink-0" />{item}</li>))}</ul>
+  1618→        <Separator className="my-12 bg-surface-border" />
+  1619→        <div className="flex items-center gap-4">
+  1620→          <span className="text-sm text-[#718581] font-mono-accent">Connect:</span>
+  1621→          <SocialLinks />
+  1622→        </div>
+  1623→      </div>
+  1624→    </div>
+  1625→  )
+  1626→}
+  1627→
+  1628→// ========================
+  1629→// SERVICES SECTION
+  1630→// ========================
+  1631→
+  1632→function ServicesSection() {
+  1633→  const nav = useNavigation()
+  1634→  const services = [
+  1635→    { icon: Globe, title: 'WordPress Websites', desc: 'Custom WordPress website design and development, from business sites to content platforms. Focused on clean design, fast performance, and ease of management.' },
+  1636→    { icon: FileText, title: 'Digital Content', desc: 'Writing, editing, and content strategy for websites, blogs, and marketing materials. Content that communicates clearly and serves a purpose.' },
+  1637→    { icon: BarChart3, title: 'SEO Foundations', desc: 'Technical SEO setup, keyword research, on-page optimization, and site structure to help websites become findable in search results.' },
+  1638→    { icon: Sparkles, title: 'AI-Assisted Workflows', desc: 'Building and implementing AI-assisted processes for content generation, data analysis, and operational efficiency using modern tools.' },
+  1639→    { icon: Layers, title: 'Digital Brand Foundations', desc: 'Naming, domain selection, visual identity basics, and online presence setup for new businesses and projects.' },
+  1640→  ]
+  1641→
+  1642→  return (
+  1643→    <div className="py-12 sm:py-20">
+  1644→      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+  1645→        <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">What I Offer</p>
+  1646→        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Selected Digital Services</h1>
+  1647→        <p className="text-[#718581] max-w-2xl mb-12 leading-relaxed">Alongside domain investing, I offer select digital services for businesses and projects that need a hands-on, thoughtful approach to their online presence.</p>
+  1648→        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{services.map((service) => (
+  1649→          <motion.div key={service.title} whileHover={{ y: -4 }} className="surface-border rounded-[16px] bg-surface p-6 domain-card-hover">
+  1650→            <service.icon className="size-6 text-teal mb-4" />
+  1651→            <h3 className="font-display text-lg font-bold text-white mb-2">{service.title}</h3>
+  1652→            <p className="text-sm text-[#718581] leading-relaxed">{service.desc}</p>
+  1653→          </motion.div>
+  1654→        ))}</div>
+  1655→        <div className="mt-12 text-center">
+  1656→          <Button onClick={() => nav.setSection('contact')} className="bg-coral hover:bg-coral-hover text-white rounded-[12px] h-12 px-8 font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]">
+  1657→            Discuss a Project <ArrowRight className="size-4" />
+  1658→          </Button>
+  1659→        </div>
+  1660→      </div>
+  1661→    </div>
+  1662→  )
+  1663→}
+  1664→
+  1665→// ========================
+  1666→// TRANSACTIONS SECTION
+  1667→// ========================
+  1668→
+  1669→function TransactionsSection() {
+  1670→  const { data, isLoading } = useTransactions()
+  1671→  return (
+  1672→    <div className="py-12 sm:py-20">
+  1673→      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+  1674→        <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Track Record</p>
+  1675→        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Transactions</h1>
+  1676→        <p className="text-[#718581] mb-10 leading-relaxed">A record of completed domain sales. These represent actual transactions, not appraisals or asking prices.</p>
+  1677→        {isLoading ? <div className="space-y-4"><Skeleton className="h-32 bg-surface rounded-[16px]" /><Skeleton className="h-32 bg-surface rounded-[16px]" /></div> : data ? (
+  1678→          <div className="space-y-4">{data.transactions.map((tx) => (
+  1679→            <motion.div key={tx.domain} whileHover={{ y: -2 }} className="surface-border rounded-[16px] bg-surface p-6 sm:p-8 domain-card-hover">
+  1680→              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  1681→                <div><h3 className="font-display text-xl sm:text-2xl font-bold text-white">{tx.domain}</h3><Badge className="mt-2 bg-teal-muted text-teal border-teal/20 text-xs font-mono-accent rounded-full">{tx.status}</Badge></div>
+  1682→                <p className="font-display text-3xl font-bold text-teal">${tx.amount.toLocaleString()}</p>
+  1683→              </div>
+  1684→            </motion.div>
+  1685→          ))}</div>
+  1686→        ) : null}
+  1687→        <div className="mt-8 p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-xs font-mono-accent text-[#718581] leading-relaxed">These are selected completed transactions and do not represent a guarantee of future sale prices or outcomes. Domain values depend on many factors including market demand, buyer need, and negotiation.</p></div>
+  1688→      </div>
+  1689→    </div>
+  1690→  )
+  1691→}
+  1692→
+  1693→// ========================
+  1694→// CONTACT SECTION
+  1695→// ========================
+  1696→
+  1697→const contactCategories = ['Acquire a Domain', 'Discuss a Partnership', 'Work With Nizar', 'Other']
+  1698→const contactSchema = z.object({
+  1699→  name: z.string().min(2, 'Name must be at least 2 characters'),
+  1700→  email: z.email('Please enter a valid email address'),
+  1701→  category: z.string().min(1, 'Please select a category'),
+  1702→  message: z.string().min(10, 'Message must be at least 10 characters'),
+  1703→  consent: z.literal(true, { errorMap: () => ({ message: 'You must consent to proceed' }) }),
+  1704→})
+  1705→
+  1706→function ContactSection() {
+  1707→  const { data: settings } = useSettings()
+  1708→  const submitInquiry = useSubmitInquiry()
+  1709→  const [form, setForm] = useState({ name: '', email: '', category: '', message: '', consent: false, honeypot: '' })
+  1710→  const [errors, setErrors] = useState<FormErrors>({})
+  1711→  const [submitted, setSubmitted] = useState(false)
+  1712→
+  1713→  const handleSubmit = (e: FormEvent) => {
+  1714→    e.preventDefault(); setErrors({})
+  1715→    const result = contactSchema.safeParse({ name: form.name, email: form.email, category: form.category, message: form.message, consent: form.consent })
+  1716→    if (!result.success) { const fieldErrors: FormErrors = {}; for (const issue of result.error.issues) { const field = issue.path[0]; if (field) fieldErrors[String(field)] = issue.message } setErrors(fieldErrors); return }
+  1717→    submitInquiry.mutate({ ...result.data, honeypot: form.honeypot, inquiryType: 'contact' }, { onSuccess: () => setSubmitted(true) })
+  1718→  }
+  1719→
+  1720→  if (submitted) return (
+  1721→    <div className="py-12 sm:py-20">
+  1722→      <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
+  1723→        <CheckCircle2 className="size-12 text-teal mx-auto mb-4" /><h1 className="font-display text-3xl font-bold text-white mb-4">Message sent</h1>
+  1724→        <p className="text-[#B8C8C4] leading-relaxed">Thank you for reaching out. Nizar will review your message and respond as soon as possible.</p>
+  1725→        <Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => { setSubmitted(false); setForm({ name: '', email: '', category: '', message: '', consent: false, honeypot: '' }) }}>Send another message</Button>
+  1726→      </div>
+  1727→    </div>
+  1728→  )
+  1729→
+  1730→  return (
+  1731→    <div className="py-12 sm:py-20">
+  1732→      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+  1733→        <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
+  1734→          <div className="lg:col-span-2">
+  1735→            <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Get in Touch</p>
+  1736→            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Contact</h1>
+  1737→            <p className="text-[#B8C8C4] leading-relaxed mb-8">Whether you&rsquo;re interested in acquiring a domain, discussing a partnership, or working together on a digital project, I&rsquo;d like to hear from you.</p>
+  1738→            <div className="space-y-4 mb-8">
+  1739→              <div className="flex items-center gap-3"><Mail className="size-4 text-teal" /><a href={`mailto:${settings?.contactEmail || ''}`} className="text-sm text-[#B8C8C4] hover:text-teal transition-colors">{settings?.contactEmail || 'info@nizarrahme.com'}</a></div>
+  1740→              <div className="flex items-center gap-3"><Phone className="size-4 text-[#25D366]" /><a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="text-sm text-[#B8C8C4] hover:text-[#25D366] transition-colors font-mono-accent">+963 932 264 918</a></div>
+  1741→            </div>
+  1742→            <div className="mb-8"><p className="text-sm font-medium text-white mb-3">Follow</p><SocialLinks /></div>
+  1743→          </div>
+  1744→          <div className="lg:col-span-3">
+  1745→            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+  1746→              <div className="absolute -left-[9999px]" aria-hidden="true"><label htmlFor="contact-website">Website</label><input type="text" id="contact-website" name="website" tabIndex={-1} autoComplete="off" value={form.honeypot} onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))} /></div>
+  1747→              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  1748→                <div className="space-y-2"><Label htmlFor="contact-name" className="text-[#B8C8C4]">Name *</Label><Input id="contact-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p className="text-xs text-error">{errors.name}</p>}</div>
+  1749→                <div className="space-y-2"><Label htmlFor="contact-email" className="text-[#B8C8C4]">Email *</Label><Input id="contact-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p className="text-xs text-error">{errors.email}</p>}</div>
+  1750→              </div>
+  1751→              <div className="space-y-2"><Label htmlFor="contact-category" className="text-[#B8C8C4]">Category *</Label><Select value={form.category} onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}><SelectTrigger id="contact-category" aria-invalid={!!errors.category} className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]"><SelectValue placeholder="Select a category" /></SelectTrigger><SelectContent>{contactCategories.map((cat) => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}</SelectContent></Select>{errors.category && <p className="text-xs text-error">{errors.category}</p>}</div>
+  1752→              <div className="space-y-2"><Label htmlFor="contact-message" className="text-[#B8C8C4]">Message *</Label><Textarea id="contact-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={5} aria-invalid={!!errors.message} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p className="text-xs text-error">{errors.message}</p>}</div>
+  1753→              <div className="flex items-start gap-2"><Checkbox id="contact-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} className="data-[state=checked]:bg-teal data-[state=checked]:border-teal" /><Label htmlFor="contact-consent" className="text-sm text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
+  1754→              {errors.consent && <p className="text-xs text-error">{errors.consent}</p>}
+  1755→              <Button type="submit" className="w-full sm:w-auto bg-coral hover:bg-coral-hover text-white h-12 px-8 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]" disabled={submitInquiry.isPending}>{submitInquiry.isPending ? <><Loader2 className="size-4 animate-spin" /> Sending...</> : <>Send Message <Send className="size-4" /></>}</Button>
+  1756→            </form>
+  1757→          </div>
+  1758→        </div>
+  1759→      </div>
+  1760→    </div>
+  1761→  )
+  1762→}
+  1763→
+  1764→// ========================
+  1765→// FOOTER
+  1766→// ========================
+  1767→
+  1768→function Footer() {
+  1769→  const nav = useNavigation()
+  1770→  const { data: settings } = useSettings()
+  1771→  return (
+  1772→    <footer className="mt-auto surface-border-t bg-surface/50">
+  1773→      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  1774→        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+  1775→          <div>
+  1776→            <p className="font-display text-xl font-bold text-white">Nizar Rahme</p>
+  1777→            <p className="text-sm text-[#718581] mt-1 font-mono-accent">Domain Investor &amp; Digital Brand Builder</p>
+  1778→          </div>
+  1779→          <div>
+  1780→            <p className="text-sm font-medium text-white mb-4">Navigation</p>
+  1781→            <nav className="grid grid-cols-2 gap-x-8 gap-y-2" aria-label="Footer navigation">{NAV_ITEMS.map((item) => (<button key={item.section} onClick={() => nav.setSection(item.section)} className="text-sm text-[#718581] hover:text-teal transition-colors text-left">{item.label}</button>))}<button onClick={() => nav.setShowPrivacy(true)} className="text-sm text-[#718581] hover:text-teal transition-colors text-left">Privacy</button><button onClick={() => nav.setShowTerms(true)} className="text-sm text-[#718581] hover:text-teal transition-colors text-left">Terms</button></nav>
+  1782→          </div>
+  1783→          <div>
+  1784→            <p className="text-sm font-medium text-white mb-4">Connect</p>
+  1785→            <SocialLinks />
+  1786→            {settings && <a href={`mailto:${settings.contactEmail}`} className="inline-flex items-center gap-2 text-sm text-[#718581] hover:text-teal transition-colors mt-3"><Mail className="size-4" />{settings.contactEmail}</a>}
+  1787→            <a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-[#718581] hover:text-[#25D366] transition-colors mt-2"><Phone className="size-4" /><span className="font-mono-accent">+963 932 264 918</span></a>
+  1788→          </div>
+  1789→        </div>
+  1790→        <Separator className="my-8 bg-surface-border" />
+  1791→        <p className="text-xs text-[#718581] text-center font-mono-accent">&copy; 2026 Nizar Rahme. All rights reserved.</p>
+  1792→      </div>
+  1793→    </footer>
+  1794→  )
+  1795→}
+  1796→
+  1797→// ========================
+  1798→// PRIVACY MODAL
+  1799→// ========================
+  1800→
+  1801→function PrivacyModal() {
+  1802→  const nav = useNavigation()
+  1803→  return (
+  1804→    <Dialog open={nav.showPrivacy} onOpenChange={(v) => nav.setShowPrivacy(v)}>
+  1805→      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+  1806→        <DialogHeader><DialogTitle className="font-display text-2xl font-bold text-white">Privacy Policy</DialogTitle><DialogDescription className="text-[#718581]">Last updated: 2026</DialogDescription></DialogHeader>
+  1807→        <div className="mt-6 space-y-4 text-sm text-[#B8C8C4] leading-relaxed">
+  1808→          <p>This website is operated by Nizar Rahme. This privacy policy explains how personal information is collected, used, and protected when you use this website.</p>
+  1809→          <h3 className="font-medium text-white">Information collected</h3><p>When you submit an inquiry through the contact or offer forms, we collect your name, email address, and any additional information you choose to provide. This information is stored solely for the purpose of responding to your inquiry.</p>
+  1810→          <h3 className="font-medium text-white">How information is used</h3><p>Your information is used only to respond to inquiries about domain acquisitions or services. It is not sold or shared with third parties for marketing purposes.</p>
+  1811→          <h3 className="font-medium text-white">Data retention</h3><p>Inquiry data is retained for as long as necessary. You may request deletion of your data at any time by contacting us.</p>
+  1812→          <h3 className="font-medium text-white">Analytics</h3><p>This website may use basic analytics to understand traffic patterns. No personally identifiable information is collected through analytics tools.</p>
+  1813→          <h3 className="font-medium text-white">Contact</h3><p>For any questions about this privacy policy or to request data deletion, please use the contact form on this website.</p>
+  1814→        </div>
+  1815→      </DialogContent>
+  1816→    </Dialog>
+  1817→  )
+  1818→}
+  1819→
+  1820→// ========================
+  1821→// TERMS MODAL
+  1822→// ========================
+  1823→
+  1824→function TermsModal() {
+  1825→  const nav = useNavigation()
+  1826→  return (
+  1827→    <Dialog open={nav.showTerms} onOpenChange={(v) => nav.setShowTerms(v)}>
+  1828→      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+  1829→        <DialogHeader><DialogTitle className="font-display text-2xl font-bold text-white">Terms of Use</DialogTitle><DialogDescription className="text-[#718581]">Last updated: 2026</DialogDescription></DialogHeader>
+  1830→        <div className="mt-6 space-y-4 text-sm text-[#B8C8C4] leading-relaxed">
+  1831→          <p>By using this website, you agree to the following terms and conditions.</p>
+  1832→          <h3 className="font-medium text-white">Website purpose</h3><p>This website serves as a marketplace for domain names owned by Nizar Rahme. All domain listings, prices (where shown), and descriptions are subject to change without notice.</p>
+  1833→          <h3 className="font-medium text-white">Inquiries and offers</h3><p>Submitting an inquiry or offer through this website does not constitute a binding agreement. All transactions are subject to negotiation and mutual agreement.</p>
+  1834→          <h3 className="font-medium text-white">Domain availability</h3><p>Domain availability is updated regularly but may not be real-time. A domain shown as available may have been sold or reserved.</p>
+  1835→          <h3 className="font-medium text-white">Intellectual property</h3><p>All content on this website, including text, design, and branding, is the property of Nizar Rahme unless otherwise stated.</p>
+  1836→          <h3 className="font-medium text-white">Limitation of liability</h3><p>This website is provided &ldquo;as is&rdquo; without warranties of any kind. Nizar Rahme is not liable for any damages arising from the use of this website.</p>
+  1837→          <h3 className="font-medium text-white">Contact</h3><p>For questions about these terms, please use the contact form.</p>
+  1838→        </div>
+  1839→      </DialogContent>
+  1840→    </Dialog>
+  1841→  )
+  1842→}
+  1843→
