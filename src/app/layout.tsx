@@ -22,7 +22,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 const SITE_URL = "https://nizarrahme.com";
-const ICON_URL = "https://z-cdn.chatglm.cn/z-ai/static/logo.svg";
+const ICON_URL = "/logo.svg";
 
 const SOCIAL_URLS = {
   x: "https://x.com/nizarx25",
