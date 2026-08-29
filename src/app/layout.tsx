@@ -4,6 +4,7 @@ import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryProvider } from "@/components/providers";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -278,6 +279,7 @@ export default function RootLayout({
         />
         <QueryProvider>{children}</QueryProvider>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );
