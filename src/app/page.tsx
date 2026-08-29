@@ -65,6 +65,7 @@ import {
   Layers,
   Crosshair,
   CircleDot,
+  MessageCircle,
   Rocket,
   ShoppingCart,
   Zap,
@@ -278,68 +279,6 @@ const NAV_ITEMS: {
 ]
 
 // ========================
-// WHATSAPP ICON (SVG)
-// ========================
-
-function WhatsAppIcon({ className = 'size-5' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-    </svg>
-  )
-}
-
-// ========================
-// WHATSAPP FLOATING BUTTON
-// ========================
-
-function WhatsAppFloat() {
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 2000)
-    return () => clearTimeout(timer)
-  }, [])
-
-  return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.a
-          href="https://wa.me/963932264918"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 z-50 group"
-          aria-label="Contact on WhatsApp"
-          initial={{ scale: 0, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0, opacity: 0, y: 20 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.1 }}
-        >
-          <motion.div
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative"
-          >
-            <span className="absolute inset-0 rounded-full bg-teal/15 animate-ping-slow" />
-            <span className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-teal/15 via-transparent to-teal/15 blur-sm" />
-            <span className="relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-teal to-[#0AA88A] shadow-[0_4px_24px_rgba(0,229,176,0.3)] group-hover:shadow-[0_4px_32px_rgba(0,229,176,0.5)] transition-shadow duration-300">
-              <WhatsAppIcon className="size-7 text-white" />
-            </span>
-            <span className="absolute bottom-full right-0 mb-3 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
-              <span className="relative flex items-center gap-2 bg-elevated/95 backdrop-blur-md border border-teal/20 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] whitespace-nowrap">
-                <WhatsAppIcon className="size-4 text-teal" />
-                Chat on WhatsApp
-                <span className="absolute -bottom-1.5 right-6 w-3 h-3 bg-elevated/95 border-r border-b border-teal/20 rotate-45" />
-              </span>
-            </span>
-          </motion.div>
-        </motion.a>
-      )}
-    </AnimatePresence>
-  )
-}
-
-// ========================
 // SOCIAL LINKS COMPONENT
 // ========================
 
@@ -400,7 +339,7 @@ function SocialLinks() {
         className="p-2 rounded-[10px] hover:bg-elevated transition-all text-muted-foreground hover:text-teal hover:shadow-[0_0_12px_rgba(0,229,176,0.15)]"
         aria-label="WhatsApp"
       >
-        <WhatsAppIcon className="size-4" />
+        <MessageCircle className="size-4" />
       </a>
     </div>
   )
@@ -487,7 +426,6 @@ export default function HomePage() {
       <OfferFormDialog />
       <PrivacyModal />
       <TermsModal />
-      <WhatsAppFloat />
     </div>
   )
 }
@@ -1559,35 +1497,35 @@ function OfferFormDialog() {
 
   if (submitted) return (
     <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg bg-[#0B211E] border-surface-border rounded-2xl">
-        <div className="text-center py-8"><CheckCircle2 className="size-12 text-teal mx-auto mb-4" /><h3 className="font-display text-2xl font-bold text-white mb-2">Thank you.</h3><p className="text-[#B8C8C4] leading-relaxed">Your inquiry has been received. NIZAR RAHME will review it and get back to you.</p><Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => handleClose(false)}>Close</Button></div>
+      <DialogContent className="bg-[#0B211E] border-surface-border rounded-2xl">
+        <div className="text-center py-6 sm:py-8"><CheckCircle2 className="size-10 sm:size-12 text-teal mx-auto mb-4" /><h3 className="font-display text-xl sm:text-2xl font-bold text-white mb-2">Thank you.</h3><p className="text-sm text-[#B8C8C4] leading-relaxed px-2">Your inquiry has been received. NIZAR RAHME will review it and get back to you.</p><Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => handleClose(false)}>Close</Button></div>
       </DialogContent>
     </Dialog>
   )
 
   return (
     <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
-        <DialogHeader>
-          <DialogTitle className="font-display text-2xl font-bold text-white">Make an Offer</DialogTitle>
-          <DialogDescription className="text-[#718581]">{nav.offerDomainName ? `Submit your offer for ${nav.offerDomainName}` : 'Submit an inquiry about a domain'}</DialogDescription>
+      <DialogContent className="bg-[#0B211E] border-surface-border rounded-2xl max-h-[85dvh] overflow-y-auto">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="font-display text-xl sm:text-2xl font-bold text-white pr-8">Make an Offer</DialogTitle>
+          <DialogDescription className="text-sm text-[#718581]">{nav.offerDomainName ? `Submit your offer for ${nav.offerDomainName}` : 'Submit an inquiry about a domain'}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate aria-label="Domain offer form">
-          {nav.offerDomainName && <div className="p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-xs font-mono-accent text-[#718581]">Domain</p><p className="font-display text-lg font-bold text-white mt-1">{nav.offerDomainName}</p></div>}
+        <form onSubmit={handleSubmit} className="mt-4 sm:mt-6 space-y-4 sm:space-y-5" noValidate aria-label="Domain offer form">
+          {nav.offerDomainName && <div className="p-3 sm:p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-xs font-mono-accent text-[#718581]">Domain</p><p className="font-display text-base sm:text-lg font-bold bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent mt-1">{nav.offerDomainName}</p></div>}
           <div className="absolute -left-[9999px]" aria-hidden="true"><label htmlFor="website">Website</label><input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" value={form.honeypot} onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))} /></div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2"><Label htmlFor="offer-name" className="text-[#B8C8C4]">Name *</Label><Input id="offer-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} aria-errormessage="offer-name-error" className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p id="offer-name-error" role="alert" className="text-xs text-error">{errors.name}</p>}</div>
-            <div className="space-y-2"><Label htmlFor="offer-email" className="text-[#B8C8C4]">Email *</Label><Input id="offer-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} aria-errormessage="offer-email-error" className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p id="offer-email-error" role="alert" className="text-xs text-error">{errors.email}</p>}</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            <div className="space-y-1.5"><Label htmlFor="offer-name" className="text-sm text-[#B8C8C4]">Name *</Label><Input id="offer-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} aria-errormessage="offer-name-error" className="bg-surface border-surface-border rounded-[10px] h-11 text-white text-sm focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p id="offer-name-error" role="alert" className="text-xs text-error mt-1">{errors.name}</p>}</div>
+            <div className="space-y-1.5"><Label htmlFor="offer-email" className="text-sm text-[#B8C8C4]">Email *</Label><Input id="offer-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} aria-errormessage="offer-email-error" className="bg-surface border-surface-border rounded-[10px] h-11 text-white text-sm focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p id="offer-email-error" role="alert" className="text-xs text-error mt-1">{errors.email}</p>}</div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2"><Label htmlFor="offer-company" className="text-[#B8C8C4]">Company / Project</Label><Input id="offer-company" value={form.company} onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" /></div>
-            <div className="space-y-2"><Label htmlFor="offer-amount" className="text-[#B8C8C4]">Offer Amount (USD)</Label><Input id="offer-amount" type="number" min="1" value={form.offerAmount} onChange={(e) => setForm((f) => ({ ...f, offerAmount: e.target.value }))} placeholder="e.g. 500" className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            <div className="space-y-1.5"><Label htmlFor="offer-company" className="text-sm text-[#B8C8C4]">Company / Project</Label><Input id="offer-company" value={form.company} onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))} className="bg-surface border-surface-border rounded-[10px] h-11 text-white text-sm focus:border-teal/40 focus:ring-teal/20" /></div>
+            <div className="space-y-1.5"><Label htmlFor="offer-amount" className="text-sm text-[#B8C8C4]">Offer Amount (USD)</Label><Input id="offer-amount" type="number" min="1" inputMode="numeric" value={form.offerAmount} onChange={(e) => setForm((f) => ({ ...f, offerAmount: e.target.value }))} placeholder="e.g. 500" className="bg-surface border-surface-border rounded-[10px] h-11 text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
           </div>
-          <div className="space-y-2"><Label htmlFor="offer-use" className="text-[#B8C8C4]">Intended Use</Label><Input id="offer-use" value={form.intendedUse} onChange={(e) => setForm((f) => ({ ...f, intendedUse: e.target.value }))} placeholder="e.g. AI startup, SaaS platform" className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
-          <div className="space-y-2"><Label htmlFor="offer-message" className="text-[#B8C8C4]">Message *</Label><Textarea id="offer-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={4} aria-invalid={!!errors.message} aria-errormessage="offer-message-error" className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p id="offer-message-error" role="alert" className="text-xs text-error">{errors.message}</p>}</div>
-          <div className="flex items-start gap-2"><Checkbox id="offer-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} aria-errormessage="offer-consent-error" className="data-[state=checked]:bg-teal data-[state=checked]:border-teal" /><Label htmlFor="offer-consent" className="text-sm text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
+          <div className="space-y-1.5"><Label htmlFor="offer-use" className="text-sm text-[#B8C8C4]">Intended Use</Label><Input id="offer-use" value={form.intendedUse} onChange={(e) => setForm((f) => ({ ...f, intendedUse: e.target.value }))} placeholder="e.g. AI startup, SaaS platform" className="bg-surface border-surface-border rounded-[10px] h-11 text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
+          <div className="space-y-1.5"><Label htmlFor="offer-message" className="text-sm text-[#B8C8C4]">Message *</Label><Textarea id="offer-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={3} aria-invalid={!!errors.message} aria-errormessage="offer-message-error" className="bg-surface border-surface-border rounded-[10px] text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p id="offer-message-error" role="alert" className="text-xs text-error mt-1">{errors.message}</p>}</div>
+          <div className="flex items-start gap-2.5 pt-1"><Checkbox id="offer-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} aria-errormessage="offer-consent-error" className="data-[state=checked]:bg-teal data-[state=checked]:border-teal mt-0.5" /><Label htmlFor="offer-consent" className="text-xs sm:text-sm text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
           {errors.consent && <p id="offer-consent-error" role="alert" className="text-xs text-error">{errors.consent}</p>}
-          <Button type="submit" className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]" disabled={submitInquiry.isPending}>{submitInquiry.isPending ? <><Loader2 className="size-4 animate-spin" /> Submitting...</> : <>Send Inquiry <Send className="size-4" /></>}</Button>
+          <Button type="submit" className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)] text-sm" disabled={submitInquiry.isPending}>{submitInquiry.isPending ? <><Loader2 className="size-4 animate-spin" /> Submitting...</> : <>Send Inquiry <Send className="size-4" /></>}</Button>
         </form>
       </DialogContent>
     </Dialog>
