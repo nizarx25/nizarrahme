@@ -435,9 +435,10 @@ function PartnerLogos() {
             <motion.div
               key={partner.slug}
               whileHover={{ scale: 1.08, y: -2 }}
-              className="opacity-40 hover:opacity-100 transition-all duration-300 cursor-default group"
+              whileTap={{ scale: 0.95 }}
+              className="opacity-70 hover:opacity-100 transition-all duration-300 cursor-default"
             >
-              <span className="font-display text-sm sm:text-base font-bold text-[#B8C8C4] tracking-wide whitespace-nowrap group-hover:bg-gradient-to-r group-hover:from-teal group-hover:to-teal-soft group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
+              <span className="font-display text-sm sm:text-base font-bold bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent tracking-wide whitespace-nowrap">
                 {partner.name}
               </span>
             </motion.div>
@@ -677,6 +678,7 @@ function FeaturedCarousel({ domains }: { domains: PublicDomain[] }) {
           role="button"
           tabIndex={0}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); nav.setSelectedDomain(domain.slug) } }}
+          whileTap={{ scale: 0.98 }}
           aria-label={`View details for ${domain.name}`}
         >
           <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-teal/0 via-transparent to-coral/0 group-hover:from-teal/15 group-hover:via-transparent group-hover:to-coral/15 transition-all duration-500 -z-10 opacity-0 group-hover:opacity-100" />
@@ -695,7 +697,7 @@ function FeaturedCarousel({ domains }: { domains: PublicDomain[] }) {
             Featured Domain
           </p>
 
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-teal group-hover:via-teal-soft group-hover:to-coral transition-all duration-300 leading-tight">
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent teal-text-glow hover:shadow-[0_0_30px_rgba(0,229,176,0.3)] transition-all duration-300 leading-tight">
             {domain.name}
           </h2>
 
@@ -881,23 +883,23 @@ function HomeSection() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {stats ? (
             <div className="flex flex-wrap justify-center gap-10 sm:gap-16">
-              <motion.div className="text-center group cursor-default" whileHover={{ y: -2 }}>
-                <p className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-br from-white to-white/80 bg-clip-text text-transparent group-hover:from-teal group-hover:to-teal-soft transition-all duration-300">
+              <motion.div className="text-center cursor-default" whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}>
+                <p className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-br from-teal to-teal-soft bg-clip-text text-transparent transition-all duration-300">
                   {stats.totalDomains}+
                 </p>
-                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2 group-hover:text-teal/60 transition-colors">Domains</p>
+                <p className="text-xs font-mono-accent text-teal/70 uppercase tracking-[0.15em] mt-2 transition-colors">Domains</p>
               </motion.div>
-              <motion.div className="text-center group cursor-default" whileHover={{ y: -2 }}>
-                <p className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-br from-white to-white/80 bg-clip-text text-transparent group-hover:from-coral group-hover:to-coral-hover transition-all duration-300">
+              <motion.div className="text-center cursor-default" whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}>
+                <p className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-br from-coral to-coral-hover bg-clip-text text-transparent transition-all duration-300">
                   {stats.atomListed}
                 </p>
-                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2 group-hover:text-coral/60 transition-colors">
+                <p className="text-xs font-mono-accent text-coral/60 uppercase tracking-[0.15em] mt-2 transition-colors">
                   Listed on Atom
                 </p>
               </motion.div>
-              <motion.div className="text-center group cursor-default" whileHover={{ y: -2 }}>
-                <p className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-br from-white to-white/80 bg-clip-text text-transparent group-hover:from-teal-soft group-hover:to-teal transition-all duration-300">2023</p>
-                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2 group-hover:text-teal-soft/60 transition-colors">
+              <motion.div className="text-center cursor-default" whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}>
+                <p className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-br from-teal-soft to-teal bg-clip-text text-transparent transition-all duration-300">2023</p>
+                <p className="text-xs font-mono-accent text-teal-soft/60 uppercase tracking-[0.15em] mt-2 transition-colors">
                   Investing Since
                 </p>
               </motion.div>
@@ -1008,20 +1010,22 @@ function HomeSection() {
               <motion.div
                 key={step.num}
                 whileHover={{ y: -6 }}
+                whileTap={{ scale: 0.97 }}
                 className="relative text-center px-6 py-4 group"
               >
                 <motion.div
                   whileHover={{ scale: 1.12, rotate: 5 }}
-                  className="relative z-10 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-elevated border border-surface-border text-teal mb-6 group-hover:border-teal/40 group-hover:shadow-[0_0_24px_rgba(0,229,176,0.15)] transition-all duration-300"
+                  whileTap={{ scale: 1.05 }}
+                  className="relative z-10 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-elevated border border-teal/30 shadow-[0_0_16px_rgba(0,229,176,0.1)] text-teal mb-6 transition-all duration-300"
                 >
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${step.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${step.gradient} opacity-100 transition-opacity duration-300`} />
                   <step.icon className="size-6 relative z-10" />
                 </motion.div>
-                <p className="text-xs font-mono-accent text-teal/70 uppercase tracking-[0.2em] mb-2 group-hover:text-teal transition-colors">
+                <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-2 transition-colors">
                   Step {step.num}
                 </p>
-                <h3 className="font-display text-xl font-bold text-white mb-3 group-hover:bg-gradient-to-r group-hover:from-teal group-hover:to-teal-soft group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">{step.title}</h3>
-                <p className="text-sm text-[#718581] leading-relaxed max-w-xs mx-auto group-hover:text-[#B8C8C4] transition-colors">{step.desc}</p>
+                <h3 className="font-display text-xl font-bold mb-3 bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent transition-all duration-300">{step.title}</h3>
+                <p className="text-sm text-[#B8C8C4] leading-relaxed max-w-xs mx-auto transition-colors">{step.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -1232,7 +1236,7 @@ function DomainCard({ domain }: { domain: PublicDomain }) {
   const nav = useNavigation()
 
   return (
-    <motion.div variants={fadeUp}>
+    <motion.div variants={fadeUp} whileTap={{ scale: 0.98 }}>
       <div
         className="group cursor-pointer surface-border rounded-[16px] bg-surface p-5 sm:p-6 domain-card-hover relative overflow-hidden"
         onClick={() => nav.setSelectedDomain(domain.slug)}
@@ -1266,7 +1270,7 @@ function DomainCard({ domain }: { domain: PublicDomain }) {
                   {domain.category}
                 </Badge>
               </div>
-              <h3 className="font-display text-lg sm:text-xl font-bold leading-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-teal group-hover:via-teal-soft group-hover:to-coral transition-all duration-300">
+              <h3 className="font-display text-lg sm:text-xl font-bold leading-tight bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent transition-all duration-300">
                 {domain.name}
               </h3>
             </div>
@@ -1287,7 +1291,8 @@ function DomainCard({ domain }: { domain: PublicDomain }) {
             <span className="text-xs font-mono-accent text-[#718581]">{domain.saleType}</span>
             <motion.span
               whileHover={{ x: 2 }}
-              className="text-xs text-coral font-medium flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              whileTap={{ scale: 0.95 }}
+              className="text-xs text-coral font-medium flex items-center gap-1 transition-opacity"
             >
               Make an Offer <ArrowRight className="size-3" />
             </motion.span>
@@ -1625,7 +1630,8 @@ function AboutSection() {
               key={item.title}
               onMouseEnter={() => setHoveredIndex(idx)}
               onMouseLeave={() => setHoveredIndex(null)}
-              className={`flex gap-4 py-4 px-3 -mx-3 rounded-xl surface-border-b last:border-b-0 transition-all duration-300 cursor-default relative overflow-hidden ${
+              onTouchStart={() => setHoveredIndex(hoveredIndex === idx ? null : idx)}
+              className={`flex gap-4 py-4 px-3 -mx-3 rounded-xl surface-border-b last:border-b-0 transition-all duration-300 cursor-pointer relative overflow-hidden ${
                 hoveredIndex === idx ? 'bg-gradient-to-r from-teal/8 via-elevated/50 to-transparent' : ''
               }`}
             >
@@ -1718,8 +1724,8 @@ function ServicesSection() {
                 <service.icon className="size-6 text-teal group-hover:drop-shadow-[0_0_12px_rgba(0,229,176,0.5)] transition-all" />
                 <ArrowRight className="size-4 text-[#718581] group-hover:text-teal group-hover:translate-x-1 transition-all" />
               </div>
-              <h3 className="font-display text-lg font-bold mb-2 bg-gradient-to-r from-white via-white to-teal-soft bg-clip-text text-transparent group-hover:from-teal group-hover:via-teal-soft group-hover:to-coral transition-all duration-300">{service.title}</h3>
-              <p className="text-sm text-[#718581] leading-relaxed group-hover:text-[#B8C8C4] transition-colors">{service.desc}</p>
+              <h3 className="font-display text-lg font-bold mb-2 bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent transition-all duration-300">{service.title}</h3>
+              <p className="text-sm text-[#B8C8C4] leading-relaxed transition-colors">{service.desc}</p>
             </div>
           </motion.a>
         ))}</div>

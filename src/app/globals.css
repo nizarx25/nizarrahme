@@ -387,3 +387,162 @@ html {
     animation: none;
   }
 }
+
+/* ========================================
+   TOUCH DEVICE SUPPORT
+   On mobile/tablet: show all hover-dependent
+   gradients, effects, and overlays by default.
+   ======================================== */
+
+/* WebKit prefix for background-clip on iOS Safari */
+.bg-clip-text,
+[class*="bg-clip-text"] {
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Ensure text-transparent works everywhere */
+.text-transparent,
+[class*="text-transparent"] {
+  -webkit-text-fill-color: transparent;
+}
+
+/* Touch devices: force all group-hover effects visible */
+@media (hover: none) {
+  /* Gradient overlays: show by default on touch */
+  .group > .opacity-0 {
+    opacity: 1 !important;
+  }
+
+  /* Gradient border glows on cards */
+  .domain-card-hover {
+    transform: translateY(-3px);
+    border-color: rgba(0, 229, 176, 0.3);
+    box-shadow: 0 0 20px rgba(0, 229, 176, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Teal glow on interactive elements */
+  .teal-glow,
+  .teal-glow-sm {
+    box-shadow: 0 0 20px rgba(0, 229, 176, 0.2), 0 0 60px rgba(0, 229, 176, 0.08);
+  }
+
+  /* Domain card gradient text always visible on touch */
+  .group h3,
+  .group .font-display {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* How It Works step gradient backgrounds always visible */
+  .group > .absolute.opacity-0 {
+    opacity: 1 !important;
+  }
+
+  /* Trust stats gradient text always visible on touch */
+  .group .font-display {
+    background-size: 200% auto;
+  }
+
+  /* Arrow icons always visible on touch (not hidden) */
+  .group > .relative > * > .opacity-0 {
+    opacity: 1 !important;
+  }
+
+  /* Service cards and domain cards: gradient overlay visible */
+  .group .pointer-events-none {
+    pointer-events: none;
+  }
+
+  /* Featured carousel card: gradient effects always on */
+  [class*="group-hover:from-teal"][class*="opacity-0"],
+  [class*="group-hover:opacity"] {
+    opacity: 1 !important;
+  }
+
+  /* Evaluation section: gradient left border always visible */
+  .group > .absolute.left-0,
+  .group > .absolute.start-0 {
+    opacity: 1 !important;
+  }
+
+  /* Force all transition elements to show final state */
+  .group > [class*="via-teal/0"] {
+    opacity: 1 !important;
+  }
+
+  /* Nav link gradient text always on for active feel */
+  nav .group .text-muted-foreground {
+    color: rgba(0, 229, 176, 0.8);
+  }
+
+  /* Social icons: show hover color by default */
+  .hover\:text-teal {
+    color: var(--teal) !important;
+  }
+
+  /* Buttons: always show their hover glow on touch */
+  .hover\:shadow-\[0_0_24px_rgba\(255\,77\,46\,0\.4\)\] {
+    box-shadow: 0 0 24px rgba(255, 77, 46, 0.4) !important;
+  }
+
+  .hover\:shadow-\[0_0_36px_rgba\(255\,77\,46\,0\.4\)\] {
+    box-shadow: 0 0 36px rgba(255, 77, 46, 0.4) !important;
+  }
+
+  .hover\:brightness-110 {
+    filter: brightness(1.1) !important;
+  }
+}
+
+/* Additional touch-device class based rules (for hybrid devices) */
+.touch-device .group > .opacity-0 {
+  opacity: 1 !important;
+}
+
+.touch-device .domain-card-hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 229, 176, 0.3);
+  box-shadow: 0 0 20px rgba(0, 229, 176, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.touch-device .teal-glow,
+.touch-device .teal-glow-sm {
+  box-shadow: 0 0 20px rgba(0, 229, 176, 0.2), 0 0 60px rgba(0, 229, 176, 0.08);
+}
+
+/* Touch active feedback - brief visual response on tap */
+@media (hover: none) {
+  a:active,
+  button:active,
+  [role="button"]:active,
+  [tabindex]:active {
+    opacity: 0.85;
+    transform: scale(0.98);
+    transition: transform 100ms ease, opacity 100ms ease;
+  }
+
+  .domain-card-hover:active {
+    transform: translateY(-1px) scale(0.99);
+    transition: transform 100ms ease;
+  }
+}
+
+.touch-device a:active,
+.touch-device button:active,
+.touch-device [role="button"]:active {
+  opacity: 0.85;
+  transform: scale(0.98);
+  transition: transform 100ms ease, opacity 100ms ease;
+}
+
+/* Ensure proper rendering on all mobile browsers */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}

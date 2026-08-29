@@ -142,6 +142,11 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var d=document.documentElement;var t='ontouchstart' in window||navigator.maxTouchPoints>0;if(t){d.classList.add('touch-device')}else{d.classList.add('hover-device')}}catch(e){}})();`,
+          }}
+        />
         <QueryProvider>{children}</QueryProvider>
         <Toaster />
       </body>
