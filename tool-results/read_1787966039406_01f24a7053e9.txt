@@ -1,0 +1,2002 @@
+     1→'use client'
+     2→
+     3→import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+     4→import { motion, AnimatePresence } from 'framer-motion'
+     5→import { useNavigation } from '@/store/navigation'
+     6→import { useToast } from '@/hooks/use-toast'
+     7→import { useState, useCallback, useEffect, useRef, type FormEvent } from 'react'
+     8→import { z } from 'zod/v4'
+     9→
+    10→// shadcn/ui components
+    11→import { Button } from '@/components/ui/button'
+    12→import { Card, CardContent } from '@/components/ui/card'
+    13→import {
+    14→  Dialog,
+    15→  DialogContent,
+    16→  DialogHeader,
+    17→  DialogTitle,
+    18→  DialogDescription,
+    19→} from '@/components/ui/dialog'
+    20→import {
+    21→  Sheet,
+    22→  SheetContent,
+    23→  SheetHeader,
+    24→  SheetTitle,
+    25→  SheetTrigger,
+    26→} from '@/components/ui/sheet'
+    27→import {
+    28→  Select,
+    29→  SelectContent,
+    30→  SelectItem,
+    31→  SelectTrigger,
+    32→  SelectValue,
+    33→} from '@/components/ui/select'
+    34→import { Input } from '@/components/ui/input'
+    35→import { Label } from '@/components/ui/label'
+    36→import { Badge } from '@/components/ui/badge'
+    37→import { Separator } from '@/components/ui/separator'
+    38→import { Checkbox } from '@/components/ui/checkbox'
+    39→import { Textarea } from '@/components/ui/textarea'
+    40→import { Skeleton } from '@/components/ui/skeleton'
+    41→import { Switch } from '@/components/ui/switch'
+    42→
+    43→// Lucide icons
+    44→import {
+    45→  Search,
+    46→  Globe,
+    47→  Mail,
+    48→  ArrowRight,
+    49→  Menu,
+    50→  X,
+    51→  CheckCircle2,
+    52→  Send,
+    53→  Linkedin,
+    54→  Instagram,
+    55→  Facebook,
+    56→  Twitter,
+    57→  Loader2,
+    58→  ChevronLeft,
+    59→  ChevronRight,
+    60→  SlidersHorizontal,
+    61→  Handshake,
+    62→  FileText,
+    63→  BarChart3,
+    64→  Sparkles,
+    65→  Layers,
+    66→  Crosshair,
+    67→  CircleDot,
+    68→  Rocket,
+    69→} from 'lucide-react'
+    70→
+    71→// ========================
+    72→// TYPES
+    73→// ========================
+    74→
+    75→type PublicDomain = {
+    76→  id: string
+    77→  name: string
+    78→  slug: string
+    79→  extension: string
+    80→  category: string
+    81→  tags: string[]
+    82→  shortDescription: string
+    83→  useCases: string[]
+    84→  status: string
+    85→  featured: boolean
+    86→  price: number | null
+    87→  showPrice: boolean
+    88→  saleType: string
+    89→  publicNotes: string
+    90→  createdAt: string
+    91→  updatedAt: string
+    92→}
+    93→
+    94→type Stats = {
+    95→  totalDomains: number
+    96→  featuredCount: number
+    97→  atomListed: number
+    98→  categories: string[]
+    99→  extensions: string[]
+   100→}
+   101→
+   102→type SiteSettings = {
+   103→  contactEmail: string
+   104→  socialLinks: Record<string, string>
+   105→}
+   106→
+   107→type Transaction = {
+   108→  domain: string
+   109→  status: string
+   110→  amount: number
+   111→}
+   112→
+   113→// ========================
+   114→// DATA HOOKS (PRESERVED)
+   115→// ========================
+   116→
+   117→function useFeaturedDomains() {
+   118→  return useQuery<PublicDomain[]>({
+   119→    queryKey: ['featured'],
+   120→    queryFn: async () => {
+   121→      const res = await fetch('/api/domains/featured')
+   122→      if (!res.ok) throw new Error('Failed to fetch featured domains')
+   123→      const data = await res.json()
+   124→      return data.domains as PublicDomain[]
+   125→    },
+   126→  })
+   127→}
+   128→
+   129→function useDomains(
+   130→  search: string,
+   131→  category: string,
+   132→  extension: string,
+   133→  status: string,
+   134→  featured: boolean,
+   135→  hasPrice: boolean,
+   136→  sort: string,
+   137→  page: number
+   138→) {
+   139→  const params = new URLSearchParams()
+   140→  if (search) params.set('search', search)
+   141→  if (category) params.set('category', category)
+   142→  if (extension) params.set('extension', extension)
+   143→  if (status) params.set('status', status)
+   144→  if (featured) params.set('featured', 'true')
+   145→  if (hasPrice) params.set('hasPrice', 'true')
+   146→  if (sort) params.set('sort', sort)
+   147→  params.set('page', String(page))
+   148→  params.set('limit', '12')
+   149→
+   150→  return useQuery<{
+   151→    domains: PublicDomain[]
+   152→    total: number
+   153→    page: number
+   154→    limit: number
+   155→    categories: string[]
+   156→    extensions: string[]
+   157→  }>({
+   158→    queryKey: ['domains', search, category, extension, status, featured, hasPrice, sort, page],
+   159→    queryFn: async () => {
+   160→      const res = await fetch(`/api/domains?${params.toString()}`)
+   161→      if (!res.ok) throw new Error('Failed to fetch domains')
+   162→      return res.json()
+   163→    },
+   164→  })
+   165→}
+   166→
+   167→function useDomainDetail(slug: string | null) {
+   168→  return useQuery<{ domain: PublicDomain; relatedDomains: PublicDomain[] } | null>({
+   169→    queryKey: ['domain', slug],
+   170→    queryFn: async () => {
+   171→      if (!slug) return null
+   172→      const res = await fetch(`/api/domains/${slug}`)
+   173→      if (!res.ok) throw new Error('Failed to fetch domain')
+   174→      return res.json()
+   175→    },
+   176→    enabled: !!slug,
+   177→  })
+   178→}
+   179→
+   180→function useStats() {
+   181→  return useQuery<Stats>({
+   182→    queryKey: ['stats'],
+   183→    queryFn: async () => {
+   184→      const res = await fetch('/api/domains/stats')
+   185→      if (!res.ok) throw new Error('Failed to fetch stats')
+   186→      return res.json()
+   187→    },
+   188→  })
+   189→}
+   190→
+   191→function useTransactions() {
+   192→  return useQuery<{ transactions: Transaction[] }>({
+   193→    queryKey: ['transactions'],
+   194→    queryFn: async () => {
+   195→      const res = await fetch('/api/transactions')
+   196→      if (!res.ok) throw new Error('Failed to fetch transactions')
+   197→      return res.json()
+   198→    },
+   199→  })
+   200→}
+   201→
+   202→function useSettings() {
+   203→  return useQuery<SiteSettings>({
+   204→    queryKey: ['settings'],
+   205→    queryFn: async () => {
+   206→      const res = await fetch('/api/settings')
+   207→      if (!res.ok) throw new Error('Failed to fetch settings')
+   208→      return res.json()
+   209→    },
+   210→  })
+   211→}
+   212→
+   213→function useSubmitInquiry() {
+   214→  const queryClient = useQueryClient()
+   215→  const { toast } = useToast()
+   216→
+   217→  return useMutation({
+   218→    mutationFn: async (data: Record<string, unknown>) => {
+   219→      const res = await fetch('/api/inquiries', {
+   220→        method: 'POST',
+   221→        headers: { 'Content-Type': 'application/json' },
+   222→        body: JSON.stringify(data),
+   223→      })
+   224→      const json = await res.json()
+   225→      if (!res.ok) {
+   226→        if (json.details) throw new Error(JSON.stringify(json.details))
+   227→        throw new Error(json.error || 'Submission failed')
+   228→      }
+   229→      return json
+   230→    },
+   231→    onSuccess: () => {
+   232→      toast({ title: 'Inquiry sent', description: 'Thank you. Your inquiry has been received.' })
+   233→      queryClient.invalidateQueries({ queryKey: ['domains'] })
+   234→    },
+   235→    onError: (err) => {
+   236→      toast({ title: 'Submission failed', description: err.message, variant: 'destructive' })
+   237→    },
+   238→  })
+   239→}
+   240→
+   241→// ========================
+   242→// ANIMATION VARIANTS
+   243→// ========================
+   244→
+   245→const fadeUp = {
+   246→  hidden: { opacity: 0, y: 20 },
+   247→  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+   248→}
+   249→
+   250→const stagger = {
+   251→  visible: { transition: { staggerChildren: 0.08 } },
+   252→}
+   253→
+   254→// ========================
+   255→// SECTION LABELS
+   256→// ========================
+   257→
+   258→const NAV_ITEMS: {
+   259→  label: string
+   260→  section: 'home' | 'domains' | 'about' | 'services' | 'transactions' | 'contact'
+   261→}[] = [
+   262→  { label: 'Home', section: 'home' },
+   263→  { label: 'Domains', section: 'domains' },
+   264→  { label: 'About', section: 'about' },
+   265→  { label: 'Services', section: 'services' },
+   266→  { label: 'Transactions', section: 'transactions' },
+   267→  { label: 'Contact', section: 'contact' },
+   268→]
+   269→
+   270→// ========================
+   271→// SOCIAL LINKS COMPONENT
+   272→// ========================
+   273→
+   274→function SocialLinks() {
+   275→  const { data: settings } = useSettings()
+   276→  const links = settings?.socialLinks || {}
+   277→
+   278→  return (
+   279→    <div className="flex items-center gap-2">
+   280→      {links.twitter && (
+   281→        <a
+   282→          href={links.twitter}
+   283→          target="_blank"
+   284→          rel="noopener noreferrer"
+   285→          className="p-2 rounded-[10px] hover:bg-elevated transition-colors text-muted-foreground hover:text-teal"
+   286→          aria-label="X (Twitter)"
+   287→        >
+   288→          <Twitter className="size-4" />
+   289→        </a>
+   290→      )}
+   291→      {links.linkedin && (
+   292→        <a
+   293→          href={links.linkedin}
+   294→          target="_blank"
+   295→          rel="noopener noreferrer"
+   296→          className="p-2 rounded-[10px] hover:bg-elevated transition-colors text-muted-foreground hover:text-teal"
+   297→          aria-label="LinkedIn"
+   298→        >
+   299→          <Linkedin className="size-4" />
+   300→        </a>
+   301→      )}
+   302→      {links.instagram && (
+   303→        <a
+   304→          href={links.instagram}
+   305→          target="_blank"
+   306→          rel="noopener noreferrer"
+   307→          className="p-2 rounded-[10px] hover:bg-elevated transition-colors text-muted-foreground hover:text-teal"
+   308→          aria-label="Instagram"
+   309→        >
+   310→          <Instagram className="size-4" />
+   311→        </a>
+   312→      )}
+   313→      {links.facebook && (
+   314→        <a
+   315→          href={links.facebook}
+   316→          target="_blank"
+   317→          rel="noopener noreferrer"
+   318→          className="p-2 rounded-[10px] hover:bg-elevated transition-colors text-muted-foreground hover:text-teal"
+   319→          aria-label="Facebook"
+   320→        >
+   321→          <Facebook className="size-4" />
+   322→        </a>
+   323→      )}
+   324→      {!links.twitter && !links.linkedin && !links.instagram && !links.facebook && (
+   325→        <span className="text-xs text-muted-foreground font-mono-accent">connect coming soon</span>
+   326→      )}
+   327→    </div>
+   328→  )
+   329→}
+   330→
+   331→// ========================
+   332→// MAIN PAGE COMPONENT
+   333→// ========================
+   334→
+   335→export default function HomePage() {
+   336→  const nav = useNavigation()
+   337→
+   338→  return (
+   339→    <div className="min-h-screen flex flex-col relative noise-overlay">
+   340→      <a href="#main-content" className="skip-to-content">
+   341→        Skip to content
+   342→      </a>
+   343→      <Header />
+   344→      <main id="main-content" className="flex-1">
+   345→        <AnimatePresence mode="wait">
+   346→          <motion.div
+   347→            key={nav.section}
+   348→            initial={{ opacity: 0, y: 12 }}
+   349→            animate={{ opacity: 1, y: 0 }}
+   350→            exit={{ opacity: 0, y: -12 }}
+   351→            transition={{ duration: 0.3, ease: 'easeInOut' }}
+   352→          >
+   353→            {nav.section === 'home' && <HomeSection />}
+   354→            {nav.section === 'domains' && <DomainsSection />}
+   355→            {nav.section === 'about' && <AboutSection />}
+   356→            {nav.section === 'services' && <ServicesSection />}
+   357→            {nav.section === 'transactions' && <TransactionsSection />}
+   358→            {nav.section === 'contact' && <ContactSection />}
+   359→          </motion.div>
+   360→        </AnimatePresence>
+   361→      </main>
+   362→      <Footer />
+   363→      <DomainDetailModal />
+   364→      <OfferFormDialog />
+   365→      <PrivacyModal />
+   366→      <TermsModal />
+   367→    </div>
+   368→  )
+   369→}
+   370→
+   371→// ========================
+   372→// HEADER
+   373→// ========================
+   374→
+   375→function Header() {
+   376→  const nav = useNavigation()
+   377→  const [mobileOpen, setMobileOpen] = useState(false)
+   378→
+   379→  const handleNav = (section: typeof nav.section) => {
+   380→    nav.setSection(section)
+   381→    setMobileOpen(false)
+   382→  }
+   383→
+   384→  return (
+   385→    <header className="sticky top-0 z-50 bg-[#061312]/80 backdrop-blur-md surface-border-b">
+   386→      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   387→        <div className="flex items-center justify-between h-16">
+   388→          <button
+   389→            onClick={() => handleNav('home')}
+   390→            className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
+   391→            aria-label="Go to home"
+   392→          >
+   393→            <span className="font-display text-xl font-bold tracking-tight text-teal">NR</span>
+   394→            <span className="hidden sm:inline text-sm font-medium text-[#B8C8C4] tracking-wide">
+   395→              Nizar Rahme
+   396→            </span>
+   397→          </button>
+   398→
+   399→          <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
+   400→            {NAV_ITEMS.map((item) => (
+   401→              <button
+   402→                key={item.section}
+   403→                onClick={() => handleNav(item.section)}
+   404→                className={`px-3 py-2 text-sm rounded-[10px] transition-colors font-medium ${
+   405→                  nav.section === item.section
+   406→                    ? 'text-white bg-elevated'
+   407→                    : 'text-[#718581] hover:text-[#B8C8C4] hover:bg-elevated/50'
+   408→                }`}
+   409→              >
+   410→                {item.label}
+   411→              </button>
+   412→            ))}
+   413→          </nav>
+   414→
+   415→          <div className="flex items-center gap-3">
+   416→            <Button
+   417→              onClick={() => handleNav('domains')}
+   418→              size="sm"
+   419→              className="hidden sm:inline-flex bg-coral text-white hover:bg-coral-hover rounded-[10px] font-medium transition-colors"
+   420→            >
+   421→              Sell a Domain
+   422→            </Button>
+   423→
+   424→            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+   425→              <SheetTrigger asChild>
+   426→                <Button variant="ghost" size="icon" className="lg:hidden text-[#B8C8C4] hover:bg-elevated" aria-label="Open menu">
+   427→                  <Menu className="size-5" />
+   428→                </Button>
+   429→              </SheetTrigger>
+   430→              <SheetContent side="right" className="w-72 bg-[#061312] border-surface-border">
+   431→                <SheetHeader>
+   432→                  <SheetTitle className="font-display text-xl text-white">Menu</SheetTitle>
+   433→                </SheetHeader>
+   434→                <nav className="mt-8 flex flex-col gap-1" aria-label="Mobile navigation">
+   435→                  {NAV_ITEMS.map((item) => (
+   436→                    <button
+   437→                      key={item.section}
+   438→                      onClick={() => handleNav(item.section)}
+   439→                      className={`px-4 py-3 text-left rounded-[10px] text-sm transition-colors ${
+   440→                        nav.section === item.section
+   441→                          ? 'bg-elevated font-medium text-white'
+   442→                          : 'text-[#718581] hover:text-[#B8C8C4] hover:bg-elevated/50'
+   443→                      }`}
+   444→                    >
+   445→                      {item.label}
+   446→                    </button>
+   447→                  ))}
+   448→                  <Separator className="my-4 bg-surface-border" />
+   449→                  <Button
+   450→                    onClick={() => handleNav('domains')}
+   451→                    className="bg-coral text-white hover:bg-coral-hover rounded-[10px]"
+   452→                  >
+   453→                    Sell a Domain
+   454→                  </Button>
+   455→                </nav>
+   456→              </SheetContent>
+   457→            </Sheet>
+   458→          </div>
+   459→        </div>
+   460→      </div>
+   461→    </header>
+   462→  )
+   463→}
+   464→
+   465→// ========================
+   466→// CLAIMED DOMAINS TICKER
+   467→// ========================
+   468→
+   469→function ClaimedTicker() {
+   470→  const { data: transactions } = useTransactions()
+   471→  const tickerRef = useRef<HTMLDivElement>(null)
+   472→
+   473→  if (!transactions || transactions.transactions.length === 0) return null
+   474→
+   475→  const items = transactions.transactions.map((tx) => ({
+   476→    domain: tx.domain,
+   477→    label: tx.status === 'Sold' ? 'SOLD' : 'CLAIMED',
+   478→  }))
+   479→
+   480→  // Double for seamless loop
+   481→  const doubled = [...items, ...items]
+   482→
+   483→  return (
+   484→    <div className="relative overflow-hidden py-4 bg-[#0B211E]/50 surface-border-y" aria-label="Recent domain activity">
+   485→      <div ref={tickerRef} className="animate-ticker flex gap-8 whitespace-nowrap w-max">
+   486→        {doubled.map((item, i) => (
+   487→          <div key={i} className="flex items-center gap-3 shrink-0">
+   488→            <CircleDot className="size-3 text-teal" />
+   489→            <span className="font-display text-sm font-bold text-[#B8C8C4]">{item.domain}</span>
+   490→            <span className="text-xs font-mono-accent text-teal tracking-wider">{item.label}</span>
+   491→          </div>
+   492→        ))}
+   493→      </div>
+   494→    </div>
+   495→  )
+   496→}
+   497→
+   498→// ========================
+   499→// HOME SECTION
+   500→// ========================
+   501→
+   502→function HomeSection() {
+   503→  const { data: featured } = useFeaturedDomains()
+   504→  const { data: stats } = useStats()
+   505→  const { data: transactions } = useTransactions()
+   506→  const nav = useNavigation()
+   507→  const [heroSearch, setHeroSearch] = useState('')
+   508→
+   509→  const heroDomain = featured?.[0] || null
+   510→
+   511→  const handleHeroSearch = (e: FormEvent) => {
+   512→    e.preventDefault()
+   513→    if (heroSearch.trim()) {
+   514→      nav.setSection('domains')
+   515→      // Store search to pass to domains section via a ref approach
+   516→      setTimeout(() => {
+   517→        const searchInput = document.querySelector<HTMLInputElement>('input[aria-label="Search domains"]')
+   518→        if (searchInput) {
+   519→          // Use native input setter to trigger React's onChange
+   520→          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set
+   521→          nativeInputValueSetter?.call(searchInput, heroSearch)
+   522→          searchInput.dispatchEvent(new Event('input', { bubbles: true }))
+   523→        }
+   524→      }, 100)
+   525→    }
+   526→  }
+   527→
+   528→  return (
+   529→    <div>
+   530→      {/* HERO */}
+   531→      <section className="relative py-20 sm:py-28 lg:py-36 overflow-hidden">
+   532→        {/* Ambient glow */}
+   533→        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-teal/5 rounded-full blur-[120px] animate-pulse-glow pointer-events-none" />
+   534→        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-coral/3 rounded-full blur-[100px] pointer-events-none" />
+   535→
+   536→        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   537→          <motion.div initial="hidden" animate="visible" variants={stagger} className="text-center max-w-4xl mx-auto">
+   538→            {/* Eyebrow */}
+   539→            <motion.div variants={fadeUp} className="mb-6">
+   540→              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-teal-muted border border-teal/10 text-xs font-mono-accent text-teal tracking-[0.2em] uppercase">
+   541→                <Crosshair className="size-3" />
+   542→                Premium Digital Real Estate
+   543→              </span>
+   544→            </motion.div>
+   545→
+   546→            {/* Headline */}
+   547→            <motion.h1
+   548→              variants={fadeUp}
+   549→              className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.08] tracking-tight text-white"
+   550→            >
+   551→              Own the Name Behind{' '}
+   552→              <span className="text-teal teal-text-glow">What&rsquo;s Next.</span>
+   553→            </motion.h1>
+   554→
+   555→            {/* Supporting copy */}
+   556→            <motion.p
+   557→              variants={fadeUp}
+   558→              className="mt-6 text-base sm:text-lg text-[#B8C8C4] max-w-2xl mx-auto leading-relaxed"
+   559→            >
+   560→              Curated, brandable domain names for AI, SaaS, fintech, and technology businesses.
+   561→              Each name selected for real-world impact.
+   562→            </motion.p>
+   563→
+   564→            {/* Search bar */}
+   565→            <motion.form variants={fadeUp} onSubmit={handleHeroSearch} className="mt-10 max-w-xl mx-auto">
+   566→              <div className="relative group">
+   567→                <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[#718581] group-focus-within:text-teal transition-colors" />
+   568→                <Input
+   569→                  placeholder="Search premium domains..."
+   570→                  value={heroSearch}
+   571→                  onChange={(e) => setHeroSearch(e.target.value)}
+   572→                  className="w-full h-14 pl-12 pr-28 bg-surface border-surface-border rounded-[14px] text-white placeholder:text-[#718581] text-base focus:border-teal/40 focus:ring-teal/20 transition-all"
+   573→                  aria-label="Search domains from hero"
+   574→                />
+   575→                <Button
+   576→                  type="submit"
+   577→                  className="absolute right-2 top-1/2 -translate-y-1/2 h-10 px-5 bg-coral hover:bg-coral-hover text-white rounded-[10px] font-medium transition-colors"
+   578→                >
+   579→                  Search
+   580→                </Button>
+   581→              </div>
+   582→            </motion.form>
+   583→
+   584→            {/* Quick category pills */}
+   585→            <motion.div variants={fadeUp} className="mt-6 flex flex-wrap justify-center gap-2">
+   586→              {['AI', 'SaaS', 'Fintech', 'Tech', 'Brandable'].map((cat) => (
+   587→                <button
+   588→                  key={cat}
+   589→                  onClick={() => {
+   590→                    nav.setSection('domains')
+   591→                  }}
+   592→                  className="px-3 py-1.5 text-xs font-mono-accent text-[#718581] hover:text-teal border border-surface-border hover:border-teal/20 rounded-full transition-colors"
+   593→                >
+   594→                  {cat}
+   595→                </button>
+   596→              ))}
+   597→            </motion.div>
+   598→          </motion.div>
+   599→
+   600→          {/* Featured Domain Card */}
+   601→          {heroDomain && (
+   602→            <motion.div
+   603→              initial={{ opacity: 0, y: 30 }}
+   604→              animate={{ opacity: 1, y: 0 }}
+   605→              transition={{ duration: 0.6, delay: 0.4 }}
+   606→              className="mt-16 sm:mt-20 max-w-2xl mx-auto"
+   607→            >
+   608→              <div
+   609→                className="relative surface-border rounded-[18px] bg-surface/80 backdrop-blur-sm p-8 sm:p-10 cursor-pointer group domain-card-hover"
+   610→                onClick={() => nav.setSelectedDomain(heroDomain.slug)}
+   611→                role="button"
+   612→                tabIndex={0}
+   613→                onKeyDown={(e) => {
+   614→                  if (e.key === 'Enter') nav.setSelectedDomain(heroDomain.slug)
+   615→                }}
+   616→                aria-label={`View details for ${heroDomain.name}`}
+   617→              >
+   618→                <div className="absolute top-5 right-5 flex gap-2">
+   619→                  <Badge className="bg-teal/10 text-teal border-teal/20 text-xs font-mono-accent rounded-full px-3">
+   620→                    {heroDomain.extension}
+   621→                  </Badge>
+   622→                  <Badge className="bg-coral/10 text-coral border-coral/20 text-xs font-mono-accent rounded-full px-3">
+   623→                    {heroDomain.category}
+   624→                  </Badge>
+   625→                </div>
+   626→
+   627→                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.2em] mb-4">
+   628→                  Featured Domain
+   629→                </p>
+   630→
+   631→                <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white group-hover:text-teal transition-colors leading-tight">
+   632→                  {heroDomain.name}
+   633→                </h2>
+   634→
+   635→                {heroDomain.shortDescription && (
+   636→                  <p className="mt-4 text-sm text-[#718581] max-w-md leading-relaxed">
+   637→                    {heroDomain.shortDescription}
+   638→                  </p>
+   639→                )}
+   640→
+   641→                <div className="mt-6 flex items-center gap-4">
+   642→                  {heroDomain.showPrice && heroDomain.price && (
+   643→                    <p className="font-display text-2xl font-bold text-teal">
+   644→                      ${heroDomain.price.toLocaleString()}
+   645→                    </p>
+   646→                  )}
+   647→                  <Badge variant="outline" className="border-surface-border text-[#718581] text-xs font-mono-accent rounded-full">
+   648→                    {heroDomain.status}
+   649→                  </Badge>
+   650→                </div>
+   651→
+   652→                <div className="mt-6 flex items-center gap-2 text-sm text-[#718581] group-hover:text-teal transition-colors">
+   653→                  <span className="font-medium">View details</span>
+   654→                  <ArrowRight className="size-4" />
+   655→                </div>
+   656→              </div>
+   657→            </motion.div>
+   658→          )}
+   659→        </div>
+   660→      </section>
+   661→
+   662→      {/* CLAIMED DOMAINS TICKER */}
+   663→      <ClaimedTicker />
+   664→
+   665→      {/* TRUST STRIP */}
+   666→      <section className="py-8 surface-border-b">
+   667→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   668→          {stats ? (
+   669→            <div className="flex flex-wrap justify-center gap-10 sm:gap-16">
+   670→              <div className="text-center">
+   671→                <p className="font-display text-3xl sm:text-4xl font-bold text-white">
+   672→                  {stats.totalDomains}+
+   673→                </p>
+   674→                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2">Domains</p>
+   675→              </div>
+   676→              <div className="text-center">
+   677→                <p className="font-display text-3xl sm:text-4xl font-bold text-white">
+   678→                  {stats.atomListed}
+   679→                </p>
+   680→                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2">
+   681→                  Listed on Atom
+   682→                </p>
+   683→              </div>
+   684→              <div className="text-center">
+   685→                <p className="font-display text-3xl sm:text-4xl font-bold text-white">2023</p>
+   686→                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2">
+   687→                  Investing Since
+   688→                </p>
+   689→              </div>
+   690→              <div className="text-center">
+   691→                <p className="font-display text-3xl sm:text-4xl font-bold text-teal">2</p>
+   692→                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2">
+   693→                  Completed Sales
+   694→                </p>
+   695→              </div>
+   696→            </div>
+   697→          ) : (
+   698→            <div className="flex flex-wrap justify-center gap-10 sm:gap-16">
+   699→              {[1, 2, 3, 4].map((i) => (
+   700→                <div key={i} className="text-center">
+   701→                  <Skeleton className="h-10 w-16 mx-auto bg-surface-border/50" />
+   702→                  <Skeleton className="h-3 w-20 mt-3 mx-auto bg-surface-border/30" />
+   703→                </div>
+   704→              ))}
+   705→            </div>
+   706→          )}
+   707→        </div>
+   708→      </section>
+   709→
+   710→      {/* FEATURED DOMAINS */}
+   711→      <section className="py-16 sm:py-24 relative">
+   712→        <div className="absolute inset-0 grid-pattern-subtle pointer-events-none opacity-50" />
+   713→        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   714→          <div className="flex items-end justify-between mb-12">
+   715→            <div>
+   716→              <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">
+   717→                Curated Selection
+   718→              </p>
+   719→              <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">
+   720→                Premium Domains
+   721→              </h2>
+   722→              <p className="text-[#718581] mt-3 max-w-md">
+   723→                Hand-picked brandable domain names for the next generation of digital businesses.
+   724→              </p>
+   725→            </div>
+   726→            <Button
+   727→              variant="ghost"
+   728→              className="hidden sm:inline-flex text-[#718581] hover:text-teal hover:bg-teal-muted rounded-[10px]"
+   729→              onClick={() => nav.setSection('domains')}
+   730→            >
+   731→              View all <ArrowRight className="size-4" />
+   732→            </Button>
+   733→          </div>
+   734→
+   735→          {featured && featured.length > 0 ? (
+   736→            <motion.div
+   737→              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+   738→              initial="hidden"
+   739→              animate="visible"
+   740→              variants={stagger}
+   741→            >
+   742→              {featured.map((domain) => (
+   743→                <DomainCard key={domain.id} domain={domain} />
+   744→              ))}
+   745→            </motion.div>
+   746→          ) : featured ? (
+   747→            <p className="text-[#718581] text-center py-16 font-mono-accent">
+   748→              No featured domains at this time.
+   749→            </p>
+   750→          ) : (
+   751→            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+   752→              {[1, 2, 3].map((i) => (
+   753→                <Skeleton key={i} className="h-56 bg-surface rounded-[16px]" />
+   754→              ))}
+   755→            </div>
+   756→          )}
+   757→
+   758→          <div className="mt-8 text-center sm:hidden">
+   759→            <Button
+   760→              variant="outline"
+   761→              onClick={() => nav.setSection('domains')}
+   762→              className="w-full border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white rounded-[12px]"
+   763→            >
+   764→              View All Domains <ArrowRight className="size-4" />
+   765→            </Button>
+   766→          </div>
+   767→        </div>
+   768→      </section>
+   769→
+   770→      {/* HOW IT WORKS */}
+   771→      <section className="py-16 sm:py-24 bg-surface/50 relative">
+   772→        <div className="absolute inset-0 grid-pattern pointer-events-none opacity-30" />
+   773→        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   774→          <div className="text-center mb-16">
+   775→            <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">
+   776→              Simple Process
+   777→            </p>
+   778→            <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">How It Works</h2>
+   779→          </div>
+   780→
+   781→          <div className="grid md:grid-cols-3 gap-0 max-w-4xl mx-auto relative">
+   782→            {/* Connecting line (desktop) */}
+   783→            <div className="hidden md:block absolute top-8 left-[calc(16.67%+1rem)] right-[calc(16.67%+1rem)] h-px bg-gradient-to-r from-teal/30 via-teal/10 to-teal/30" />
+   784→
+   785→            {[
+   786→              {
+   787→                num: '01',
+   788→                title: 'Discover',
+   789→                desc: 'Find the domain that fits your vision. Browse by category, extension, or keyword.',
+   790→                icon: Search,
+   791→              },
+   792→              {
+   793→                num: '02',
+   794→                title: 'Claim',
+   795→                desc: 'Secure your preferred digital identity. Submit an offer or start a conversation.',
+   796→                icon: Send,
+   797→              },
+   798→              {
+   799→                num: '03',
+   800→                title: 'Launch',
+   801→                desc: 'Build the brand around your new domain. Complete the transfer and go live.',
+   802→                icon: Rocket,
+   803→              },
+   804→            ].map((step) => (
+   805→              <div key={step.num} className="relative text-center px-6 py-4">
+   806→                <div className="relative z-10 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-elevated border border-surface-border text-teal mb-6">
+   807→                  <step.icon className="size-6" />
+   808→                </div>
+   809→                <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-2">
+   810→                  Step {step.num}
+   811→                </p>
+   812→                <h3 className="font-display text-xl font-bold text-white mb-3">{step.title}</h3>
+   813→                <p className="text-sm text-[#718581] leading-relaxed max-w-xs mx-auto">{step.desc}</p>
+   814→              </div>
+   815→            ))}
+   816→          </div>
+   817→        </div>
+   818→      </section>
+   819→
+   820→      {/* SELECTED TRANSACTIONS */}
+   821→      {transactions && transactions.transactions.length > 0 && (
+   822→        <section className="py-16 sm:py-24">
+   823→          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   824→            <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">
+   825→              Track Record
+   826→            </p>
+   827→            <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-12">Selected Transactions</h2>
+   828→            <div className="grid sm:grid-cols-2 gap-4 max-w-3xl">
+   829→              {transactions.transactions.map((tx) => (
+   830→                <div key={tx.domain} className="surface-border rounded-[16px] bg-surface p-6 flex flex-col justify-between domain-card-hover">
+   831→                  <div>
+   832→                    <p className="font-display text-xl font-bold text-white">{tx.domain}</p>
+   833→                    <Badge className="mt-2 bg-teal-muted text-teal border-teal/20 text-xs font-mono-accent rounded-full">
+   834→                      {tx.status}
+   835→                    </Badge>
+   836→                  </div>
+   837→                  <p className="font-display text-3xl font-bold text-teal mt-4">
+   838→                    ${tx.amount.toLocaleString()}
+   839→                  </p>
+   840→                </div>
+   841→              ))}
+   842→            </div>
+   843→            <p className="text-xs text-[#718581] mt-6 max-w-2xl font-mono-accent">
+   844→              These are selected completed transactions and do not represent a guarantee of future
+   845→              sale prices or outcomes.
+   846→            </p>
+   847→          </div>
+   848→        </section>
+   849→      )}
+   850→
+   851→      {/* BEYOND THE NAME / SERVICES TEASER */}
+   852→      <section className="py-16 sm:py-24 relative overflow-hidden">
+   853→        <div className="absolute inset-0 bg-surface/80" />
+   854→        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-teal/5 rounded-full blur-[100px] pointer-events-none" />
+   855→        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+   856→          <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">
+   857→            Additional Services
+   858→          </p>
+   859→          <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">Beyond the Name</h2>
+   860→          <p className="mt-4 text-[#B8C8C4] max-w-2xl mx-auto leading-relaxed">
+   861→            Alongside domain investing, I work on selected digital projects involving WordPress
+   862→            websites, content, social media, SEO, and AI-assisted workflows.
+   863→          </p>
+   864→          <Button
+   865→            onClick={() => nav.setSection('services')}
+   866→            variant="outline"
+   867→            className="mt-8 border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white hover:border-teal/20 rounded-[12px] transition-colors"
+   868→          >
+   869→            Explore Services <ArrowRight className="size-4" />
+   870→          </Button>
+   871→        </div>
+   872→      </section>
+   873→
+   874→      {/* FINAL CTA */}
+   875→      <section className="py-20 sm:py-28 relative overflow-hidden">
+   876→        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-coral/5 rounded-full blur-[100px] pointer-events-none" />
+   877→        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+   878→          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
+   879→            Your next brand deserves the right domain.
+   880→          </h2>
+   881→          <p className="mt-4 text-[#B8C8C4] max-w-2xl mx-auto leading-relaxed">
+   882→            If you are building an AI, SaaS, fintech, technology, or online business, browse the
+   883→            catalog or start a conversation.
+   884→          </p>
+   885→          <div className="mt-10 flex flex-wrap justify-center gap-4">
+   886→            <Button
+   887→              onClick={() => nav.setSection('domains')}
+   888→              className="bg-coral hover:bg-coral-hover text-white rounded-[12px] h-12 px-8 font-medium transition-colors"
+   889→            >
+   890→              Explore Premium Domains <ArrowRight className="size-4" />
+   891→            </Button>
+   892→            <Button onClick={() => nav.setSection('contact')} variant="outline" className="border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white rounded-[12px] h-12 px-8 transition-colors">
+   893→              Contact Nizar
+   894→            </Button>
+   895→          </div>
+   896→        </div>
+   897→      </section>
+   898→    </div>
+   899→  )
+   900→}
+   901→
+   902→// ========================
+   903→// DOMAIN CARD
+   904→// ========================
+   905→
+   906→function DomainCard({ domain }: { domain: PublicDomain }) {
+   907→  const nav = useNavigation()
+   908→
+   909→  return (
+   910→    <motion.div variants={fadeUp}>
+   911→      <div
+   912→        className="group cursor-pointer surface-border rounded-[16px] bg-surface p-5 sm:p-6 domain-card-hover"
+   913→        onClick={() => nav.setSelectedDomain(domain.slug)}
+   914→        role="article"
+   915→        tabIndex={0}
+   916→        onKeyDown={(e) => {
+   917→          if (e.key === 'Enter') nav.setSelectedDomain(domain.slug)
+   918→        }}
+   919→      >
+   920→        <div className="flex items-start justify-between gap-3">
+   921→          <div className="min-w-0 flex-1">
+   922→            <div className="flex items-center gap-2 mb-2">
+   923→              <Badge className="bg-elevated text-[#718581] border-surface-border text-xs font-mono-accent rounded-full px-2.5">
+   924→                {domain.extension}
+   925→              </Badge>
+   926→              {domain.featured && (
+   927→                <Badge className="bg-teal/10 text-teal border-teal/20 text-xs font-mono-accent rounded-full px-2.5">
+   928→                  Featured
+   929→                </Badge>
+   930→              )}
+   931→              <Badge variant="outline" className="border-surface-border text-[#718581] text-xs font-mono-accent rounded-full px-2.5">
+   932→                {domain.category}
+   933→              </Badge>
+   934→            </div>
+   935→            <h3 className="font-display text-lg sm:text-xl font-bold leading-tight text-white group-hover:text-teal transition-colors">
+   936→              {domain.name}
+   937→            </h3>
+   938→          </div>
+   939→          {domain.showPrice && domain.price && (
+   940→            <p className="font-display text-lg font-bold text-teal whitespace-nowrap">
+   941→              ${domain.price.toLocaleString()}
+   942→            </p>
+   943→          )}
+   944→        </div>
+   945→
+   946→        {domain.shortDescription && (
+   947→          <p className="mt-3 text-sm text-[#718581] line-clamp-2 leading-relaxed">
+   948→            {domain.shortDescription}
+   949→          </p>
+   950→        )}
+   951→
+   952→        <div className="mt-4 pt-3 border-t border-surface-border/50 flex items-center justify-between">
+   953→          <span className="text-xs font-mono-accent text-[#718581]">{domain.saleType}</span>
+   954→          <span className="text-xs text-coral font-medium flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+   955→            Make an Offer <ArrowRight className="size-3" />
+   956→          </span>
+   957→        </div>
+   958→      </div>
+   959→    </motion.div>
+   960→  )
+   961→}
+   962→
+   963→// ========================
+   964→// DOMAINS SECTION (CATALOG)
+   965→// ========================
+   966→
+   967→function DomainsSection() {
+   968→  const [search, setSearch] = useState('')
+   969→  const [category, setCategory] = useState('')
+   970→  const [extension, setExtension] = useState('')
+   971→  const [status, setStatus] = useState('')
+   972→  const [featured, setFeatured] = useState(false)
+   973→  const [hasPrice, setHasPrice] = useState(false)
+   974→  const [sort, setSort] = useState('newest')
+   975→  const [page, setPage] = useState(1)
+   976→  const [showFilters, setShowFilters] = useState(false)
+   977→
+   978→  const { data, isLoading } = useDomains(
+   979→    search, category, extension, status, featured, hasPrice, sort, page
+   980→  )
+   981→
+   982→  const totalPages = data ? Math.ceil(data.total / data.limit) : 1
+   983→
+   984→  const resetFilters = () => {
+   985→    setSearch('')
+   986→    setCategory('')
+   987→    setExtension('')
+   988→    setStatus('')
+   989→    setFeatured(false)
+   990→    setHasPrice(false)
+   991→    setSort('newest')
+   992→    setPage(1)
+   993→  }
+   994→
+   995→  return (
+   996→    <div className="py-8 sm:py-12">
+   997→      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   998→        <div className="mb-8">
+   999→          <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">
+  1000→            Browse Catalog
+  1001→          </p>
+  1002→          <h1 className="font-display text-3xl sm:text-4xl font-bold text-white">Domain Catalog</h1>
+  1003→          <p className="text-[#718581] mt-2">
+  1004→            Browse available domain names. Click any domain to view details and make an offer.
+  1005→          </p>
+  1006→        </div>
+  1007→
+  1008→        {/* Search */}
+  1009→        <div className="relative mb-6">
+  1010→          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[#718581]" />
+  1011→          <Input
+  1012→            placeholder="Search domains by name, category, or description..."
+  1013→            value={search}
+  1014→            onChange={(e) => {
+  1015→              setSearch(e.target.value)
+  1016→              setPage(1)
+  1017→            }}
+  1018→            className="pl-12 h-12 bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20 transition-all"
+  1019→            aria-label="Search domains"
+  1020→          />
+  1021→        </div>
+  1022→
+  1023→        {/* Mobile filter toggle */}
+  1024→        <div className="flex items-center justify-between mb-4">
+  1025→          <Button
+  1026→            variant="outline"
+  1027→            size="sm"
+  1028→            className="lg:hidden border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]"
+  1029→            onClick={() => setShowFilters(!showFilters)}
+  1030→          >
+  1031→            <SlidersHorizontal className="size-4 mr-2" />
+  1032→            Filters
+  1033→          </Button>
+  1034→          <div className="hidden lg:block text-sm font-mono-accent text-[#718581]">
+  1035→            {data && <span>{data.total} domain{data.total !== 1 ? 's' : ''} found</span>}
+  1036→          </div>
+  1037→        </div>
+  1038→
+  1039→        {/* Filters */}
+  1040→        <div className={`mb-6 ${showFilters ? 'block' : 'hidden'} lg:block`}>
+  1041→          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+  1042→            <Select
+  1043→              value={category || '_all'}
+  1044→              onValueChange={(v) => {
+  1045→                setCategory(v === '_all' ? '' : v)
+  1046→                setPage(1)
+  1047→              }}
+  1048→            >
+  1049→              <SelectTrigger aria-label="Filter by category" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+  1050→                <SelectValue placeholder="Category" />
+  1051→              </SelectTrigger>
+  1052→              <SelectContent>
+  1053→                <SelectItem value="_all">All Categories</SelectItem>
+  1054→                {data?.categories?.map((c) => (
+  1055→                  <SelectItem key={c} value={c}>{c}</SelectItem>
+  1056→                ))}
+  1057→              </SelectContent>
+  1058→            </Select>
+  1059→
+  1060→            <Select
+  1061→              value={extension || '_all'}
+  1062→              onValueChange={(v) => {
+  1063→                setExtension(v === '_all' ? '' : v)
+  1064→                setPage(1)
+  1065→              }}
+  1066→            >
+  1067→              <SelectTrigger aria-label="Filter by extension" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+  1068→                <SelectValue placeholder="Extension" />
+  1069→              </SelectTrigger>
+  1070→              <SelectContent>
+  1071→                <SelectItem value="_all">All Extensions</SelectItem>
+  1072→                {data?.extensions?.map((ext) => (
+  1073→                  <SelectItem key={ext} value={ext}>{ext}</SelectItem>
+  1074→                ))}
+  1075→              </SelectContent>
+  1076→            </Select>
+  1077→
+  1078→            <Select
+  1079→              value={status || '_all'}
+  1080→              onValueChange={(v) => {
+  1081→                setStatus(v === '_all' ? '' : v)
+  1082→                setPage(1)
+  1083→              }}
+  1084→            >
+  1085→              <SelectTrigger aria-label="Filter by status" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+  1086→                <SelectValue placeholder="Status" />
+  1087→              </SelectTrigger>
+  1088→              <SelectContent>
+  1089→                <SelectItem value="_all">All Statuses</SelectItem>
+  1090→                <SelectItem value="Available">Available</SelectItem>
+  1091→                <SelectItem value="Negotiating">Negotiating</SelectItem>
+  1092→                <SelectItem value="Sold">Sold</SelectItem>
+  1093→              </SelectContent>
+  1094→            </Select>
+  1095→
+  1096→            <Select
+  1097→              value={sort}
+  1098→              onValueChange={(v) => {
+  1099→                setSort(v)
+  1100→                setPage(1)
+  1101→              }}
+  1102→            >
+  1103→              <SelectTrigger aria-label="Sort by" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+  1104→                <SelectValue placeholder="Sort" />
+  1105→              </SelectTrigger>
+  1106→              <SelectContent>
+  1107→                <SelectItem value="newest">Newest</SelectItem>
+  1108→                <SelectItem value="name_asc">A → Z</SelectItem>
+  1109→                <SelectItem value="name_desc">Z → A</SelectItem>
+  1110→                <SelectItem value="featured">Featured First</SelectItem>
+  1111→                <SelectItem value="price_asc">Price: Low → High</SelectItem>
+  1112→                <SelectItem value="price_desc">Price: High → Low</SelectItem>
+  1113→              </SelectContent>
+  1114→            </Select>
+  1115→
+  1116→            <div className="flex items-center gap-4">
+  1117→              <div className="flex items-center gap-2">
+  1118→                <Switch
+  1119→                  id="featured-toggle"
+  1120→                  checked={featured}
+  1121→                  onCheckedChange={(v) => {
+  1122→                    setFeatured(v)
+  1123→                    setPage(1)
+  1124→                  }}
+  1125→                  className="data-[state=checked]:bg-teal"
+  1126→                />
+  1127→                <Label htmlFor="featured-toggle" className="text-sm text-[#B8C8C4] cursor-pointer">
+  1128→                  Featured
+  1129→                </Label>
+  1130→              </div>
+  1131→              <div className="flex items-center gap-2">
+  1132→                <Switch
+  1133→                  id="price-toggle"
+  1134→                  checked={hasPrice}
+  1135→                  onCheckedChange={(v) => {
+  1136→                    setHasPrice(v)
+  1137→                    setPage(1)
+  1138→                  }}
+  1139→                  className="data-[state=checked]:bg-teal"
+  1140→                />
+  1141→                <Label htmlFor="price-toggle" className="text-sm text-[#B8C8C4] cursor-pointer">
+  1142→                  Has Price
+  1143→                </Label>
+  1144→              </div>
+  1145→            </div>
+  1146→          </div>
+  1147→
+  1148→          {(category || extension || status || featured || hasPrice) && (
+  1149→            <div className="mt-3 flex items-center gap-2 flex-wrap">
+  1150→              <span className="text-xs font-mono-accent text-[#718581]">Active filters:</span>
+  1151→              {category && (
+  1152→                <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">
+  1153→                  {category}
+  1154→                  <button
+  1155→                    onClick={() => { setCategory(''); setPage(1) }}
+  1156→                    className="ml-1 hover:text-white"
+  1157→                    aria-label={`Remove ${category} filter`}
+  1158→                  >
+  1159→                    <X className="size-3" />
+  1160→                  </button>
+  1161→                </Badge>
+  1162→              )}
+  1163→              {extension && (
+  1164→                <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">
+  1165→                  {extension}
+  1166→                  <button
+  1167→                    onClick={() => { setExtension(''); setPage(1) }}
+  1168→                    className="ml-1 hover:text-white"
+  1169→                    aria-label={`Remove ${extension} filter`}
+  1170→                  >
+  1171→                    <X className="size-3" />
+  1172→                  </button>
+  1173→                </Badge>
+  1174→              )}
+  1175→              {status && (
+  1176→                <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">
+  1177→                  {status}
+  1178→                  <button
+  1179→                    onClick={() => { setStatus(''); setPage(1) }}
+  1180→                    className="ml-1 hover:text-white"
+  1181→                    aria-label={`Remove ${status} filter`}
+  1182→                  >
+  1183→                    <X className="size-3" />
+  1184→                  </button>
+  1185→                </Badge>
+  1186→              )}
+  1187→              <button onClick={resetFilters} className="text-xs text-teal hover:underline ml-2 font-mono-accent">
+  1188→                Clear all
+  1189→              </button>
+  1190→            </div>
+  1191→          )}
+  1192→        </div>
+  1193→
+  1194→        <div className="mb-4 text-sm font-mono-accent text-[#718581] lg:block hidden">
+  1195→          {data && <span>{data.total} domain{data.total !== 1 ? 's' : ''} found</span>}
+  1196→        </div>
+  1197→
+  1198→        {/* Grid */}
+  1199→        {isLoading ? (
+  1200→          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  1201→            {Array.from({ length: 6 }).map((_, i) => (
+  1202→              <Skeleton key={i} className="h-56 bg-surface rounded-[16px]" />
+  1203→            ))}
+  1204→          </div>
+  1205→        ) : data && data.domains.length > 0 ? (
+  1206→          <>
+  1207→            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  1208→              {data.domains.map((domain) => (
+  1209→                <DomainCard key={domain.id} domain={domain} />
+  1210→              ))}
+  1211→            </div>
+  1212→
+  1213→            {totalPages > 1 && (
+  1214→              <div className="mt-8 flex items-center justify-center gap-2">
+  1215→                <Button
+  1216→                  variant="outline"
+  1217→                  size="sm"
+  1218→                  disabled={page <= 1}
+  1219→                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+  1220→                  aria-label="Previous page"
+  1221→                  className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]"
+  1222→                >
+  1223→                  <ChevronLeft className="size-4" />
+  1224→                  <span className="sr-only">Previous</span>
+  1225→                </Button>
+  1226→                <div className="flex items-center gap-1">
+  1227→                  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+  1228→                    let pageNum: number
+  1229→                    if (totalPages <= 7) {
+  1230→                      pageNum = i + 1
+  1231→                    } else if (page <= 4) {
+  1232→                      pageNum = i + 1
+  1233→                    } else if (page >= totalPages - 3) {
+  1234→                      pageNum = totalPages - 6 + i
+  1235→                    } else {
+  1236→                      pageNum = page - 3 + i
+  1237→                    }
+  1238→                    return (
+  1239→                      <Button
+  1240→                        key={pageNum}
+  1241→                        variant={pageNum === page ? 'default' : 'outline'}
+  1242→                        size="sm"
+  1243→                        className={`w-9 rounded-[10px] ${pageNum === page ? 'bg-teal text-[#061312] hover:bg-teal/90 border-0' : 'border-surface-border text-[#B8C8C4] hover:bg-elevated'}`}
+  1244→                        onClick={() => setPage(pageNum)}
+  1245→                        aria-label={`Page ${pageNum}`}
+  1246→                        aria-current={pageNum === page ? 'page' : undefined}
+  1247→                      >
+  1248→                        {pageNum}
+  1249→                      </Button>
+  1250→                    )
+  1251→                  })}
+  1252→                </div>
+  1253→                <Button
+  1254→                  variant="outline"
+  1255→                  size="sm"
+  1256→                  disabled={page >= totalPages}
+  1257→                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+  1258→                  aria-label="Next page"
+  1259→                  className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]"
+  1260→                >
+  1261→                  <ChevronRight className="size-4" />
+  1262→                  <span className="sr-only">Next</span>
+  1263→                </Button>
+  1264→              </div>
+  1265→            )}
+  1266→          </>
+  1267→        ) : (
+  1268→          <div className="text-center py-20">
+  1269→            <Globe className="size-12 text-surface-border mx-auto mb-4" />
+  1270→            <h3 className="font-display text-xl font-bold text-white mb-2">No domains found</h3>
+  1271→            <p className="text-sm text-[#718581] mb-6">
+  1272→              Try adjusting your search or filters.
+  1273→            </p>
+  1274→            <Button variant="outline" onClick={resetFilters} className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]">
+  1275→              Clear Filters
+  1276→            </Button>
+  1277→          </div>
+  1278→        )}
+  1279→      </div>
+  1280→    </div>
+  1281→  )
+  1282→}
+  1283→
+  1284→// ========================
+  1285→// DOMAIN DETAIL MODAL
+  1286→// ========================
+  1287→
+  1288→function DomainDetailModal() {
+  1289→  const nav = useNavigation()
+  1290→  const { data, isLoading } = useDomainDetail(nav.selectedDomain)
+  1291→  const open = !!nav.selectedDomain
+  1292→
+  1293→  const handleClose = useCallback(() => {
+  1294→    nav.setSelectedDomain(null)
+  1295→  }, [nav])
+  1296→
+  1297→  const handleOffer = () => {
+  1298→    if (data?.domain) {
+  1299→      nav.setOfferDomainName(data.domain.name)
+  1300→      nav.setSelectedDomain(null)
+  1301→      nav.setShowOfferForm(true)
+  1302→    }
+  1303→  }
+  1304→
+  1305→  return (
+  1306→    <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
+  1307→      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+  1308→        {isLoading ? (
+  1309→          <div className="py-8 space-y-4">
+  1310→            <Skeleton className="h-10 w-64 bg-surface-border/50" />
+  1311→            <Skeleton className="h-4 w-40 bg-surface-border/30" />
+  1312→            <Skeleton className="h-20 w-full bg-surface-border/30" />
+  1313→            <Skeleton className="h-32 w-full bg-surface-border/30" />
+  1314→          </div>
+  1315→        ) : data?.domain ? (
+  1316→          <>
+  1317→            <DialogHeader>
+  1318→              <div className="flex items-center gap-2 mb-3">
+  1319→                <Badge className="bg-elevated text-[#718581] border-surface-border text-xs font-mono-accent rounded-full px-3">{data.domain.extension}</Badge>
+  1320→                <Badge className="bg-coral/10 text-coral border-coral/20 text-xs font-mono-accent rounded-full px-3">{data.domain.category}</Badge>
+  1321→                {data.domain.featured && (
+  1322→                  <Badge className="bg-teal/10 text-teal border-teal/20 text-xs font-mono-accent rounded-full px-3">Featured</Badge>
+  1323→                )}
+  1324→              </div>
+  1325→              <DialogTitle className="font-display text-3xl sm:text-4xl font-bold text-white">
+  1326→                {data.domain.name}
+  1327→              </DialogTitle>
+  1328→              <DialogDescription className="sr-only">
+  1329→                Details for {data.domain.name}
+  1330→              </DialogDescription>
+  1331→            </DialogHeader>
+  1332→
+  1333→            <div className="mt-6 space-y-6">
+  1334→              <div className="flex items-center gap-4">
+  1335→                {data.domain.showPrice && data.domain.price && (
+  1336→                  <p className="font-display text-3xl font-bold text-teal">
+  1337→                    ${data.domain.price.toLocaleString()}
+  1338→                  </p>
+  1339→                )}
+  1340→                <Badge variant="outline" className="border-surface-border text-[#718581] text-sm font-mono-accent rounded-full">
+  1341→                  {data.domain.saleType}
+  1342→                </Badge>
+  1343→              </div>
+  1344→
+  1345→              {data.domain.shortDescription && (
+  1346→                <p className="text-[#B8C8C4] leading-relaxed">
+  1347→                  {data.domain.shortDescription}
+  1348→                </p>
+  1349→              )}
+  1350→
+  1351→              {data.domain.tags.length > 0 && (
+  1352→                <div className="flex flex-wrap gap-2">
+  1353→                  {data.domain.tags.map((tag) => (
+  1354→                    <Badge key={tag} variant="secondary" className="text-xs font-mono-accent bg-elevated text-[#B8C8C4] rounded-full px-3">
+  1355→                      {tag}
+  1356→                    </Badge>
+  1357→                  ))}
+  1358→                </div>
+  1359→              )}
+  1360→
+  1361→              {data.domain.useCases.length > 0 && (
+  1362→                <div>
+  1363→                  <h4 className="text-sm font-medium text-white mb-3">Potential use cases</h4>
+  1364→                  <ul className="space-y-2">
+  1365→                    {data.domain.useCases.map((uc) => (
+  1366→                      <li
+  1367→                        key={uc}
+  1368→                        className="flex items-start gap-2 text-sm text-[#B8C8C4]"
+  1369→                      >
+  1370→                        <CheckCircle2 className="size-4 text-teal mt-0.5 shrink-0" />
+  1371→                        {uc}
+  1372→                      </li>
+  1373→                    ))}
+  1374→                  </ul>
+  1375→                </div>
+  1376→              )}
+  1377→
+  1378→              {data.domain.publicNotes && (
+  1379→                <div className="p-4 bg-elevated rounded-xl border border-surface-border">
+  1380→                  <p className="text-sm text-[#B8C8C4]">{data.domain.publicNotes}</p>
+  1381→                </div>
+  1382→              )}
+  1383→
+  1384→              <Button
+  1385→                onClick={handleOffer}
+  1386→                className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-colors"
+  1387→              >
+  1388→                Make an Offer <ArrowRight className="size-4" />
+  1389→              </Button>
+  1390→
+  1391→              {data.relatedDomains.length > 0 && (
+  1392→                <div>
+  1393→                  <Separator className="bg-surface-border mb-6" />
+  1394→                  <h4 className="text-sm font-medium text-white mb-4">Related domains</h4>
+  1395→                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+  1396→                    {data.relatedDomains.map((rd) => (
+  1397→                      <button
+  1398→                        key={rd.id}
+  1399→                        onClick={() => nav.setSelectedDomain(rd.slug)}
+  1400→                        className="shrink-0 surface-border rounded-xl p-4 hover:border-teal/30 transition-colors text-left min-w-[180px] bg-surface"
+  1401→                      >
+  1402→                        <p className="font-display text-sm font-bold text-white truncate">{rd.name}</p>
+  1403→                        <p className="text-xs font-mono-accent text-[#718581] mt-1">{rd.category}</p>
+  1404→                      </button>
+  1405→                    ))}
+  1406→                  </div>
+  1407→                </div>
+  1408→              )}
+  1409→            </div>
+  1410→          </>
+  1411→        ) : null}
+  1412→      </DialogContent>
+  1413→    </Dialog>
+  1414→  )
+  1415→}
+  1416→
+  1417→// ========================
+  1418→// OFFER FORM DIALOG
+  1419→// ========================
+  1420→
+  1421→const offerSchema = z.object({
+  1422→  name: z.string().min(2, 'Name must be at least 2 characters'),
+  1423→  email: z.email('Please enter a valid email address'),
+  1424→  company: z.string().optional(),
+  1425→  offerAmount: z.number().positive().optional(),
+  1426→  intendedUse: z.string().optional(),
+  1427→  message: z.string().min(10, 'Message must be at least 10 characters'),
+  1428→  consent: z.literal(true, {
+  1429→    errorMap: () => ({ message: 'You must consent to proceed' }),
+  1430→  }),
+  1431→})
+  1432→
+  1433→type FormErrors = Record<string, string>
+  1434→
+  1435→function OfferFormDialog() {
+  1436→  const nav = useNavigation()
+  1437→  const submitInquiry = useSubmitInquiry()
+  1438→  const [form, setForm] = useState({
+  1439→    name: '',
+  1440→    email: '',
+  1441→    company: '',
+  1442→    offerAmount: '',
+  1443→    intendedUse: '',
+  1444→    message: '',
+  1445→    consent: false,
+  1446→    honeypot: '',
+  1447→  })
+  1448→  const [errors, setErrors] = useState<FormErrors>({})
+  1449→  const [submitted, setSubmitted] = useState(false)
+  1450→
+  1451→  const resetForm = () => {
+  1452→    setForm({ name: '', email: '', company: '', offerAmount: '', intendedUse: '', message: '', consent: false, honeypot: '' })
+  1453→    setErrors({})
+  1454→    setSubmitted(false)
+  1455→  }
+  1456→
+  1457→  const handleClose = (open: boolean) => {
+  1458→    if (!open) {
+  1459→      nav.setShowOfferForm(false)
+  1460→      resetForm()
+  1461→    }
+  1462→  }
+  1463→
+  1464→  const handleSubmit = (e: FormEvent) => {
+  1465→    e.preventDefault()
+  1466→    setErrors({})
+  1467→
+  1468→    const result = offerSchema.safeParse({
+  1469→      name: form.name,
+  1470→      email: form.email,
+  1471→      company: form.company || undefined,
+  1472→      offerAmount: form.offerAmount ? Number(form.offerAmount) : undefined,
+  1473→      intendedUse: form.intendedUse || undefined,
+  1474→      message: form.message,
+  1475→      consent: form.consent,
+  1476→    })
+  1477→
+  1478→    if (!result.success) {
+  1479→      const fieldErrors: FormErrors = {}
+  1480→      for (const issue of result.error.issues) {
+  1481→        const field = issue.path[0]
+  1482→        if (field) fieldErrors[String(field)] = issue.message
+  1483→      }
+  1484→      setErrors(fieldErrors)
+  1485→      return
+  1486→    }
+  1487→
+  1488→    submitInquiry.mutate(
+  1489→      {
+  1490→        domainSlug: nav.offerDomainName
+  1491→          ? nav.offerDomainName.toLowerCase().replace(/[^a-z0-9-]/g, '-')
+  1492→          : undefined,
+  1493→        ...result.data,
+  1494→        honeypot: form.honeypot,
+  1495→      },
+  1496→      {
+  1497→        onSuccess: () => setSubmitted(true),
+  1498→      }
+  1499→    )
+  1500→  }
+  1501→
+  1502→  if (submitted) {
+  1503→    return (
+  1504→      <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
+  1505→        <DialogContent className="max-w-lg bg-[#0B211E] border-surface-border rounded-2xl">
+  1506→          <div className="text-center py-8">
+  1507→            <CheckCircle2 className="size-12 text-teal mx-auto mb-4" />
+  1508→            <h3 className="font-display text-2xl font-bold text-white mb-2">Thank you.</h3>
+  1509→            <p className="text-[#B8C8C4] leading-relaxed">
+  1510→              Your inquiry has been received. Nizar will review it and get back to you.
+  1511→            </p>
+  1512→            <Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => handleClose(false)}>
+  1513→              Close
+  1514→            </Button>
+  1515→          </div>
+  1516→        </DialogContent>
+  1517→      </Dialog>
+  1518→    )
+  1519→  }
+  1520→
+  1521→  return (
+  1522→    <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
+  1523→      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+  1524→        <DialogHeader>
+  1525→          <DialogTitle className="font-display text-2xl font-bold text-white">Make an Offer</DialogTitle>
+  1526→          <DialogDescription className="text-[#718581]">
+  1527→            {nav.offerDomainName
+  1528→              ? `Submit your offer for ${nav.offerDomainName}`
+  1529→              : 'Submit an inquiry about a domain'}
+  1530→          </DialogDescription>
+  1531→        </DialogHeader>
+  1532→
+  1533→        <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+  1534→          {nav.offerDomainName && (
+  1535→            <div className="p-4 bg-elevated rounded-xl border border-surface-border">
+  1536→              <p className="text-xs font-mono-accent text-[#718581]">Domain</p>
+  1537→              <p className="font-display text-lg font-bold text-white mt-1">{nav.offerDomainName}</p>
+  1538→            </div>
+  1539→          )}
+  1540→
+  1541→          <div className="absolute -left-[9999px]" aria-hidden="true">
+  1542→            <label htmlFor="website">Website</label>
+  1543→            <input
+  1544→              type="text"
+  1545→              id="website"
+  1546→              name="website"
+  1547→              tabIndex={-1}
+  1548→              autoComplete="off"
+  1549→              value={form.honeypot}
+  1550→              onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))}
+  1551→            />
+  1552→          </div>
+  1553→
+  1554→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  1555→            <div className="space-y-2">
+  1556→              <Label htmlFor="offer-name" className="text-[#B8C8C4]">Name *</Label>
+  1557→              <Input
+  1558→                id="offer-name"
+  1559→                value={form.name}
+  1560→                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+  1561→                aria-invalid={!!errors.name}
+  1562→                className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20"
+  1563→              />
+  1564→              {errors.name && <p className="text-xs text-error">{errors.name}</p>}
+  1565→            </div>
+  1566→            <div className="space-y-2">
+  1567→              <Label htmlFor="offer-email" className="text-[#B8C8C4]">Email *</Label>
+  1568→              <Input
+  1569→                id="offer-email"
+  1570→                type="email"
+  1571→                value={form.email}
+  1572→                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+  1573→                aria-invalid={!!errors.email}
+  1574→                className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20"
+  1575→              />
+  1576→              {errors.email && <p className="text-xs text-error">{errors.email}</p>}
+  1577→            </div>
+  1578→          </div>
+  1579→
+  1580→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  1581→            <div className="space-y-2">
+  1582→              <Label htmlFor="offer-company" className="text-[#B8C8C4]">Company / Project</Label>
+  1583→              <Input
+  1584→                id="offer-company"
+  1585→                value={form.company}
+  1586→                onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
+  1587→                className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20"
+  1588→              />
+  1589→            </div>
+  1590→            <div className="space-y-2">
+  1591→              <Label htmlFor="offer-amount" className="text-[#B8C8C4]">Offer Amount (USD)</Label>
+  1592→              <Input
+  1593→                id="offer-amount"
+  1594→                type="number"
+  1595→                min="1"
+  1596→                value={form.offerAmount}
+  1597→                onChange={(e) => setForm((f) => ({ ...f, offerAmount: e.target.value }))}
+  1598→                placeholder="e.g. 500"
+  1599→                className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20"
+  1600→              />
+  1601→            </div>
+  1602→          </div>
+  1603→
+  1604→          <div className="space-y-2">
+  1605→            <Label htmlFor="offer-use" className="text-[#B8C8C4]">Intended Use</Label>
+  1606→            <Input
+  1607→              id="offer-use"
+  1608→              value={form.intendedUse}
+  1609→              onChange={(e) => setForm((f) => ({ ...f, intendedUse: e.target.value }))}
+  1610→              placeholder="e.g. AI startup, SaaS platform"
+  1611→              className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20"
+  1612→            />
+  1613→          </div>
+  1614→
+  1615→          <div className="space-y-2">
+  1616→            <Label htmlFor="offer-message" className="text-[#B8C8C4]">Message *</Label>
+  1617→            <Textarea
+  1618→              id="offer-message"
+  1619→              value={form.message}
+  1620→              onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+  1621→              rows={4}
+  1622→              aria-invalid={!!errors.message}
+  1623→              className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20"
+  1624→            />
+  1625→            {errors.message && <p className="text-xs text-error">{errors.message}</p>}
+  1626→          </div>
+  1627→
+  1628→          <div className="flex items-start gap-2">
+  1629→            <Checkbox
+  1630→              id="offer-consent"
+  1631→              checked={form.consent}
+  1632→              onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))}
+  1633→              className="data-[state=checked]:bg-teal data-[state=checked]:border-teal"
+  1634→            />
+  1635→            <Label htmlFor="offer-consent" className="text-sm text-[#718581] leading-relaxed">
+  1636→              I consent to having my information stored and used to respond to this inquiry. *
+  1637→            </Label>
+  1638→          </div>
+  1639→          {errors.consent && <p className="text-xs text-error">{errors.consent}</p>}
+  1640→
+  1641→          <Button
+  1642→            type="submit"
+  1643→            className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-colors"
+  1644→            disabled={submitInquiry.isPending}
+  1645→          >
+  1646→            {submitInquiry.isPending ? (
+  1647→              <>
+  1648→                <Loader2 className="size-4 animate-spin" />
+  1649→                Submitting...
+  1650→              </>
+  1651→            ) : (
+  1652→              <>
+  1653→                Send Inquiry <Send className="size-4" />
+  1654→              </>
+  1655→            )}
+  1656→          </Button>
+  1657→        </form>
+  1658→      </DialogContent>
+  1659→    </Dialog>
+  1660→  )
+  1661→}
+  1662→
+  1663→// ========================
+  1664→// ABOUT SECTION
+  1665→// ========================
+  1666→
+  1667→function AboutSection() {
+  1668→  return (
+  1669→    <div className="py-12 sm:py-20">
+  1670→      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+  1671→        <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">
+  1672→          About
+  1673→        </p>
+  1674→        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-8">About</h1>
+  1675→
+  1676→        <div className="space-y-6 text-[#B8C8C4] leading-relaxed">
+  1677→          <p>
+  1678→            I&rsquo;m Nizar Rahme. I invest in and curate domain names for businesses operating in AI,
+  1679→            SaaS, fintech, technology, and the broader digital economy.
+  1680→          </p>
+  1681→          <p>
+  1682→            My approach to domain investing is straightforward: I look for names that are short,
+  1683→            memorable, and genuinely brandable—names that could serve as the foundation for a real
+  1684→            business. I don&rsquo;t register names at scale or flip domains for quick returns. Each
+  1685→            name in the catalog has been selected with specific industries and use cases in mind.
+  1686→          </p>
+  1687→          <p>
+  1688→            Beyond domain investing, I have hands-on experience building WordPress websites,
+  1689→            creating digital content, and working with AI-assisted workflows. This practical
+  1690→            background informs how I evaluate names—I think about how a domain will work in
+  1691→            context, not just how it sounds.
+  1692→          </p>
+  1693→        </div>
+  1694→
+  1695→        <Separator className="my-12 bg-surface-border" />
+  1696→
+  1697→        <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-6">How I evaluate a domain</h2>
+  1698→
+  1699→        <div className="space-y-0">
+  1700→          {[
+  1701→            { title: 'Brandability', desc: 'Does the name sound like a real company, not a keyword string?' },
+  1702→            { title: 'Length', desc: 'Shorter is generally better. I prefer names under 12 characters when possible.' },
+  1703→            { title: 'Memorability', desc: 'Can someone recall the name after hearing it once?' },
+  1704→            { title: 'Pronounceability', desc: 'Can it be said out loud without confusion?' },
+  1705→            { title: 'Industry fit', desc: 'Does it align with a growing sector like AI, SaaS, fintech, or digital services?' },
+  1706→            { title: 'Extension quality', desc: '.com is preferred. Other extensions are selected only when the name is strong.' },
+  1707→            { title: 'Search and confusion risk', desc: 'Does it avoid trademark conflicts and confusion with existing brands?' },
+  1708→            { title: 'Practical value', desc: 'Would a real business benefit from owning this name?' },
+  1709→          ].map((item, idx) => (
+  1710→            <div
+  1711→              key={item.title}
+  1712→              className="flex gap-4 py-4 surface-border-b last:border-b-0"
+  1713→            >
+  1714→              <div className="shrink-0">
+  1715→                <div className="w-8 h-8 rounded-full bg-elevated border border-surface-border flex items-center justify-center text-xs font-mono-accent text-teal">
+  1716→                  {idx + 1}
+  1717→                </div>
+  1718→              </div>
+  1719→              <div>
+  1720→                <h3 className="font-medium text-white text-sm">{item.title}</h3>
+  1721→                <p className="text-sm text-[#718581] mt-1">{item.desc}</p>
+  1722→              </div>
+  1723→            </div>
+  1724→          ))}
+  1725→        </div>
+  1726→
+  1727→        <Separator className="my-12 bg-surface-border" />
+  1728→
+  1729→        <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-6">Supporting capabilities</h2>
+  1730→        <ul className="space-y-3">
+  1731→          {[
+  1732→            'WordPress website design and development',
+  1733→            'Content creation and copywriting',
+  1734→            'Social media strategy and management',
+  1735→            'SEO foundations and technical optimization',
+  1736→            'AI-assisted workflows and automation',
+  1737→          ].map((item) => (
+  1738→            <li
+  1739→              key={item}
+  1740→              className="flex items-center gap-3 text-sm text-[#B8C8C4]"
+  1741→            >
+  1742→              <CheckCircle2 className="size-4 text-teal shrink-0" />
+  1743→              {item}
+  1744→            </li>
+  1745→          ))}
+  1746→        </ul>
+  1747→
+  1748→        <Separator className="my-12 bg-surface-border" />
+  1749→
+  1750→        <div className="flex items-center gap-4">
+  1751→          <span className="text-sm text-[#718581] font-mono-accent">Connect:</span>
+  1752→          <SocialLinks />
+  1753→        </div>
+  1754→      </div>
+  1755→    </div>
+  1756→  )
+  1757→}
+  1758→
+  1759→// ========================
+  1760→// SERVICES SECTION
+  1761→// ========================
+  1762→
+  1763→function ServicesSection() {
+  1764→  const nav = useNavigation()
+  1765→
+  1766→  const services = [
+  1767→    {
+  1768→      icon: Globe,
+  1769→      title: 'WordPress Websites',
+  1770→      desc: 'Custom WordPress website design and development, from business sites to content platforms. Focused on clean design, fast performance, and ease of management.',
+  1771→    },
+  1772→    {
+  1773→      icon: FileText,
+  1774→      title: 'Digital Content',
+  1775→      desc: 'Writing, editing, and content strategy for websites, blogs, and marketing materials. Content that communicates clearly and serves a purpose.',
+  1776→    },
+  1777→    {
+  1778→      icon: BarChart3,
+  1779→      title: 'SEO Foundations',
+  1780→      desc: 'Technical SEO setup, keyword research, on-page optimization, and site structure to help websites become findable in search results.',
+  1781→    },
+  1782→    {
+  1783→      icon: Sparkles,
+  1784→      title: 'AI-Assisted Workflows',
+  1785→      desc: 'Building and implementing AI-assisted processes for content generation, data analysis, and operational efficiency using modern tools.',
+  1786→    },
+  1787→    {
+  1788→      icon: Layers,
+  1789→      title: 'Digital Brand Foundations',
+  1790→      desc: 'Naming, domain selection, visual identity basics, and online presence setup for new businesses and projects.',
+  1791→    },
+  1792→  ]
+  1793→
+  1794→  return (
+  1795→    <div className="py-12 sm:py-20">
+  1796→      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+  1797→        <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">
+  1798→          What I Offer
+  1799→        </p>
+  1800→        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Selected Digital Services</h1>
+  1801→        <p className="text-[#718581] max-w-2xl mb-12 leading-relaxed">
+  1802→          Alongside domain investing, I offer select digital services for businesses and projects
+  1803→          that need a hands-on, thoughtful approach to their online presence.
+  1804→        </p>
+  1805→
+  1806→        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  1807→          {services.map((service) => (
+  1808→            <div key={service.title} className="surface-border rounded-[16px] bg-surface p-6 domain-card-hover">
+  1809→              <service.icon className="size-6 text-teal mb-4" />
+  1810→              <h3 className="font-display text-lg font-bold text-white mb-2">{service.title}</h3>
+  1811→              <p className="text-sm text-[#718581] leading-relaxed">{service.desc}</p>
+  1812→            </div>
+  1813→          ))}
+  1814→        </div>
+  1815→
+  1816→        <div className="mt-12 text-center">
+  1817→          <Button
+  1818→            onClick={() => nav.setSection('contact')}
+  1819→            className="bg-coral hover:bg-coral-hover text-white rounded-[12px] h-12 px-8 font-medium transition-colors"
+  1820→          >
+  1821→            Discuss a Project <ArrowRight className="size-4" />
+  1822→          </Button>
+  1823→        </div>
+  1824→      </div>
+  1825→    </div>
+  1826→  )
+  1827→}
+  1828→
+  1829→// ========================
+  1830→// TRANSACTIONS SECTION
+  1831→// ========================
+  1832→
+  1833→function TransactionsSection() {
+  1834→  const { data, isLoading } = useTransactions()
+  1835→
+  1836→  return (
+  1837→    <div className="py-12 sm:py-20">
+  1838→      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+  1839→        <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">
+  1840→          Track Record
+  1841→        </p>
+  1842→        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Transactions</h1>
+  1843→        <p className="text-[#718581] mb-10 leading-relaxed">
+  1844→          A record of completed domain sales. These represent actual transactions, not appraisals
+  1845→          or asking prices.
+  1846→        </p>
+  1847→
+  1848→        {isLoading ? (
+  1849→          <div className="space-y-4">
+  1850→            <Skeleton className="h-32 bg-surface rounded-[16px]" />
+  1851→            <Skeleton className="h-32 bg-surface rounded-[16px]" />
+  1852→          </div>
+  1853→        ) : data ? (
+  1854→          <div className="space-y-4">
+  1855→            {data.transactions.map((tx) => (
+  1856→              <div key={tx.domain} className="surface-border rounded-[16px] bg-surface p-6 sm:p-8 domain-card-hover">
+  1857→                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  1858→                  <div>
+  1859→                    <h3 className="font-display text-xl sm:text-2xl font-bold text-white">{tx.domain}</h3>
+  1860→                    <Badge className="mt-2 bg-teal-muted text-teal border-teal/20 text-xs font-mono-accent rounded-full">
+  1861→                      {tx.status}
+  1862→                    </Badge>
+  1863→                  </div>
+  1864→                  <p className="font-display text-3xl font-bold text-teal">
+  1865→                    ${tx.amount.toLocaleString()}
+  1866→                  </p>
+  1867→                </div>
+  1868→              </div>
+  1869→            ))}
+  1870→          </div>
+  1871→        ) : null}
+  1872→
+  1873→        <div className="mt-8 p-4 bg-elevated rounded-xl border border-surface-border">
+  1874→          <p className="text-xs font-mono-accent text-[#718581] leading-relaxed">
+  1875→            These are selected completed transactions and do not represent a guarantee of future
+  1876→            sale prices or outcomes. Domain values depend on many factors including market demand,
+  1877→            buyer need, and negotiation.
+  1878→          </p>
+  1879→        </div>
+  1880→      </div>
+  1881→    </div>
+  1882→  )
+  1883→}
+  1884→
+  1885→// ========================
+  1886→// CONTACT SECTION
+  1887→// ========================
+  1888→
+  1889→const contactCategories = [
+  1890→  'Acquire a Domain',
+  1891→  'Discuss a Partnership',
+  1892→  'Work With Nizar',
+  1893→  'Other',
+  1894→]
+  1895→
+  1896→const contactSchema = z.object({
+  1897→  name: z.string().min(2, 'Name must be at least 2 characters'),
+  1898→  email: z.email('Please enter a valid email address'),
+  1899→  category: z.string().min(1, 'Please select a category'),
+  1900→  message: z.string().min(10, 'Message must be at least 10 characters'),
+  1901→  consent: z.literal(true, {
+  1902→    errorMap: () => ({ message: 'You must consent to proceed' }),
+  1903→  }),
+  1904→})
+  1905→
+  1906→function ContactSection() {
+  1907→  const { data: settings } = useSettings()
+  1908→  const submitInquiry = useSubmitInquiry()
+  1909→  const [form, setForm] = useState({
+  1910→    name: '',
+  1911→    email: '',
+  1912→    category: '',
+  1913→    message: '',
+  1914→    consent: false,
+  1915→    honeypot: '',
+  1916→  })
+  1917→  const [errors, setErrors] = useState<FormErrors>({})
+  1918→  const [submitted, setSubmitted] = useState(false)
+  1919→
+  1920→  const handleSubmit = (e: FormEvent) => {
+  1921→    e.preventDefault()
+  1922→    setErrors({})
+  1923→
+  1924→    const result = contactSchema.safeParse({
+  1925→      name: form.name,
+  1926→      email: form.email,
+  1927→      category: form.category,
+  1928→      message: form.message,
+  1929→      consent: form.consent,
+  1930→    })
+  1931→
+  1932→    if (!result.success) {
+  1933→      const fieldErrors: FormErrors = {}
+  1934→      for (const issue of result.error.issues) {
+  1935→        const field = issue.path[0]
+  1936→        if (field) fieldErrors[String(field)] = issue.message
+  1937→      }
+  1938→      setErrors(fieldErrors)
+  1939→      return
+  1940→    }
+  1941→
+  1942→    submitInquiry.mutate(
+  1943→      {
+  1944→        ...result.data,
+  1945→        honeypot: form.honeypot,
+  1946→        inquiryType: 'contact',
+  1947→      },
+  1948→      {
+  1949→        onSuccess: () => setSubmitted(true),
+  1950→      }
+  1951→    )
+  1952→  }
+  1953→
+  1954→  if (submitted) {
+  1955→    return (
+  1956→      <div className="py-12 sm:py-20">
+  1957→        <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
+  1958→          <CheckCircle2 className="size-12 text-teal mx-auto mb-4" />
+  1959→          <h1 className="font-display text-3xl font-bold text-white mb-4">Message sent</h1>
+  1960→          <p className="text-[#B8C8C4] leading-relaxed">
+  1961→            Thank you for reaching out. Nizar will review your message and respond as soon as
+  1962→            possible.
+  1963→          </p>
+  1964→          <Button
+  1965→            variant="outline"
+  1966→            className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]"
+  1967→            onClick={() => {
+  1968→              setSubmitted(false)
+  1969→              setForm({ name: '', email: '', category: '', message: '', consent: false, honeypot: '' })
+  1970→            }}
+  1971→          >
+  1972→            Send another message
+  1973→          </Button>
+  1974→        </div>
+  1975→      </div>
+  1976→    )
+  1977→  }
+  1978→
+  1979→  return (
+  1980→    <div className="py-12 sm:py-20">
+  1981→      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+  1982→        <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
+  1983→          <div className="lg:col-span-2">
+  1984→            <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">
+  1985→              Get in Touch
+  1986→            </p>
+  1987→            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Contact</h1>
+  1988→            <p className="text-[#B8C8C4] leading-relaxed mb-8">
+  1989→              Whether you&rsquo;re interested in acquiring a domain, discussing a partnership, or working
+  1990→              together on a digital project, I&rsquo;d like to hear from you.
+  1991→            </p>
+  1992→
+  1993→            {settings && (
+  1994→              <div className="space-y-4 mb-8">
+  1995→                <div className="flex items-center gap-3">
+  1996→                  <Mail className="size-4 text-teal" />
+  1997→                  <a
+  1998→                    href={`mailto:${settings.contactEmail}`}
+  1999→                    className="text-sm text-[#B8C8C4] hover:text-teal transition-colors"
+  2000→                  >
+
+[showing lines 1-2000 of 2306; use offset=2001 with limit to continue reading]
