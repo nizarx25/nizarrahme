@@ -284,7 +284,13 @@ const NAV_ITEMS: {
 
 function SocialLinks() {
   const { data: settings } = useSettings()
-  const links = settings?.socialLinks || {}
+  const links: Record<string, string> = {
+    x: 'https://x.com/mr_nizarrahme',
+    linkedin: 'https://www.linkedin.com/in/nizarrahme/',
+    instagram: 'https://www.instagram.com/mr_nizarrahme/',
+    facebook: 'https://www.facebook.com/mr.nizarrahme',
+    ...settings?.socialLinks,
+  }
 
   return (
     <div className="flex items-center gap-2">
