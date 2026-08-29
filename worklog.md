@@ -1,4 +1,134 @@
 ---
+Task ID: 1
+Agent: Reference Analyst
+Task: Read godzilladn.com reference and document visual design
+
+Work Log:
+- z-ai page_reader failed twice (502 error, process exit), fell back to curl HTML scraping
+- Fetched raw HTML (118KB) from godzilladn.com and saved to /reference-site-raw.html
+- Downloaded 4 CSS files including custom design tokens and component styles
+- Extracted and analyzed: inline styles, Tailwind classes, color palette, typography, layout, sections, animations, SVG decorations
+- Compiled comprehensive design reference to /reference-site.json
+
+Reference Site Design Summary (godzilladn.com):
+
+COLOR SCHEME (Dark Theme):
+- Background: #05080A (near-black, blue-green undertone) with mesh gradient overlay (violet/cyan/fuchsia radial gradients)
+- Background secondary: #0A1113 (cards, search bar)
+- Text primary: #E8F0EC (off-white, slight green tint) — headings, domain names
+- Text secondary: #86A39A (muted sage) — body text, nav links, labels
+- Text tertiary: #4C6259 (dark green) — TLD labels, dates, dividers
+- Accent primary: #46E5C6 (bright mint/cyan-green) — brand identity, glow effects, active states, step numbers
+- Accent secondary: #FF5A36 (warm coral) — CTAs, 'Claim it' hover text, urgency signals
+- Borders: rgba(70,229,198,0.14) — very subtle mint
+- Glow: text-shadow 0 0 28px rgba(70,229,198,0.45) on hero headings
+- Noise overlay: 7% white fractalNoise, overlay blend
+- Selection: #a78bfa59 (purple)
+
+TYPOGRAPHY:
+- Primary: DM Sans (next/font, 400-700), fallback: ui-sans-serif, system-ui
+- Monospace: ui-monospace, SFMono-Regular, Menlo, Consolas (for all metadata: TLDs, dates, eyebrow labels, badge text)
+- Hero domain: clamp(2.1rem, 9vw, 6rem), font-black (900), tracking-tight, line-height 0.92
+- Eyebrow labels: 11px monospace, uppercase, 0.22em tracking, #86A39A
+- Domain card name: 2xl/sm:1.7rem, font-black, tracking-tight
+- Step numbers: 4xl font-black, #46E5C6 with glow text-shadow
+- CTA heading: 4xl→6xl, font-black, line-height 0.95
+- Antialiased font smoothing, color-scheme: dark
+
+LAYOUT STRUCTURE:
+- Max widths: 5xl (hero), 6xl (how-it-works), 7xl (footer)
+- Consistent px-6 horizontal padding
+- Generous vertical spacing: py-20 to py-32 between sections
+- Hero bottom padding: pb-52/sm:pb-60 (cards overlap below)
+- Domain grid: 1 col → 2 col (sm) → 3 col (lg)
+- How-it-works: 3-col grid (md breakpoint)
+
+HERO SECTION:
+- 3 background layers: mesh gradient, mint dot pattern (22px grid, masked to 60%), top-center mint radial glow
+- Eyebrow: 'Godzilla DN · Apex domain marketplace' with glowing green dot
+- Featured domain carousel: 8 domains, dot pagination (18px active mint with glow, 6px inactive dark green #4C6259)
+- Domain displayed as typographic specimen: name (#E8F0EC) + dot (#46E5C6) + TLD (monospace, #86A39A, 0.4em size)
+- Headline: 'Premium domains, hunted and held.' — medium weight
+- Search bar: rounded-full pill, #0A1113 bg, mint border, coral (#FF5A36) submit button
+
+CLAIMED TICKER:
+- Horizontal marquee, 46s linear infinite, pauses on hover, reduced-motion respected
+- 'Claimed' label in coral (#FF5A36), absolute positioned with gradient fade
+- Items: domain (#E8F0EC) + date (#4C6259) + mint separator
+
+DOMAIN CARDS:
+- Flat with grid-line borders (rgba(70,229,198,0.14)), no rounded corners
+- Padding: p-7/sm:p-8, stacked layout
+- Top: TLD badge (11px monospace, TLD #4C6259, Available #46E5C6)
+- Center: Domain name (font-black, name #E8F0EC, .tld #4C6259)
+- Hover reveals: 'Claim it' slides in from left (#FF5A36 monospace), crosshair icon appears top-right
+- Subtle category color tints: amber/emerald/violet at 15% bg and 30% border
+- 8 cards shown on homepage
+
+HOW IT WORKS:
+- 3-column grid, monospace 'How to claim' label with triangular zigzag SVG in #46E5C6
+- Steps: 01/02/03 in 4xl font-black mint with glow, title + description
+- Steps: Track a name, Make your move, Claim & transfer
+
+SERVICES ('The arsenal'):
+- Stacked full-width list rows (not card grid)
+- Each row: title (xl-2xl bold) + description (sm, hidden mobile) + arrow icon (#46E5C6)
+- Bordered with mint border, arrow shifts diagonally on hover
+- Services: Domain broker, Brand naming, AI website
+
+CTA SECTION:
+- Bottom-center mint radial glow background
+- Triangular mountain SVG decoration (#46E5C6 with opacity variation 0.49→0.85)
+- 'Claim your name.' in 4xl-6xl font-black with mint glow text-shadow
+- Coral (#FF5A36) rounded-full button: 'Enter the marketplace'
+
+NAVIGATION:
+- Horizontal top bar, /godzilladn-logo.png
+- Links: Marketplace, Browse (search icon), Claw (New badge), Agents (New badge), Services, Claimed, $99 domains (serif italic mint), How it works, FAQ, Free tools (external)
+- Right: Saved (heart icon #86A39A)
+- Link style: h-9 px-3 rounded-lg text-sm #86A39A, hover:bg-white/0.06
+- New badges: 9px monospace uppercase mint pill, 10% bg, 20% border
+
+FOOTER:
+- Dual-layer triangular mountain SVG (dark base + mint glow overlay at 25%)
+- Trust section: Escrow.com, GoDaddy, Spaceship
+- 3 columns: Marketplace (5 links), Sell (3 links), Company (6 links)
+- Legal: Terms, Privacy, Refund, Cookie Policy
+- Copyright: 2026 Godzilla DN, language toggle EN
+
+ANIMATIONS:
+- Ticker marquee: 46s linear infinite, hover pause, reduced-motion respected
+- Card hover: 'Claim it' slides in 200ms (opacity + translateX), crosshair fades in
+- Card glow: 360ms cubic-bezier, conic-gradient (violet→cyan→fuchsia), blur 14px
+- Service arrow: diagonal shift (translate-x/y 0.5)
+- Button hover: brightness-110
+- Hero domain carousel: dot-based pagination transition
+
+OVERALL DESIGN LANGUAGE:
+- Dark-mode premium tech aesthetic (Vercel meets premium auction house)
+- Single mint accent for brand identity, coral for action/urgency
+- Monospace for all metadata creates data-terminal feel
+- Grid-line card borders (no rounded corners) with hover-reveal interactions
+- Triangular mountain/zigzag SVGs as unique brand motif
+- Noise texture + mesh gradient + dot pattern for depth
+- Generous whitespace, Lucide icons, inline styles for theming
+- Next.js + Tailwind CSS v4 + Lucide React
+
+FILES CREATED:
+- /home/z/my-project/reference-site.json — comprehensive design reference
+- /home/z/my-project/reference-site-raw.html — raw scraped HTML
+- /home/z/my-project/reference-site-parsed.json — parsed text/metadata
+- /home/z/my-project/reference-site-structure.json — structural analysis
+- /home/z/my-project/reference-site-detail.json — section detail analysis
+- /home/z/my-project/ref-custom1.css — primary custom CSS (design tokens)
+- /home/z/my-project/ref-custom2.css — secondary custom CSS (legacy neoclouds)
+
+Stage Summary:
+- Full visual design reference extracted from godzilladn.com via HTML scraping
+- Key differences from current project (navy/ivory/gold editorial): godzilladn uses extreme dark theme (#05080A), mint accent (#46E5C6), monospace metadata typography, grid-line card borders, hover-reveal interactions, triangular SVG brand motif
+- Reference JSON ready for use in redesign tasks
+
+---
 Task ID: 3
 Agent: API Routes Builder
 Task: Build all API routes for the domain marketplace
@@ -66,3 +196,40 @@ Stage Summary:
 - Responsive design with mobile Sheet navigation
 - 4 dialogs/modals (domain detail, offer form, privacy, terms)
 - Premium editorial aesthetic with navy/ivory/gold color system
+
+---
+Task ID: 2
+Agent: UI/UX Enhancement Lead
+Task: Complete premium dark theme visual redesign of existing domain marketplace
+
+Work Log:
+- Audited existing product: ivory/navy/gold editorial theme, DM Serif Display typography, light-mode-only design
+- Analyzed godzilladn.com reference: extreme dark theme, mint/coral accents, monospace metadata, grid-line cards, hover-reveal interactions
+- Redesigned color system in globals.css: Deep Teal-Black (#061312) background, Surface (#0B211E), Elevated (#102A26), Border (#173A35), Coral CTA (#FF4D2E), Teal Accent (#00E5B0)
+- Updated typography system: Replaced DM Serif Display with Space Grotesk (display/heading) + Inter (body), Geist Mono retained for metadata
+- Added premium visual utilities: noise-overlay, grid-pattern, teal-glow, domain-card-hover, animate-ticker, gradient-mesh, font-mono-accent
+- Rewrote page.tsx (~1600 lines) with complete visual redesign while preserving ALL logic:
+  - Header: Dark translucent with backdrop-blur, teal logo accent, coral CTA
+  - Hero: Eyebrow badge with Crosshair icon, bold headline with teal text-glow, integrated search bar, category quick-pills, featured domain card with dark elevated surface
+  - Claimed Domains Ticker: Horizontal marquee using real transaction data, teal dot indicators, 46s infinite animation with hover-pause
+  - Trust Strip: Teal accent on completed sales number, monospace metadata labels
+  - Domain Cards: Dark elevated surface, subtle border, hover translateY(-2px) + teal border glow, monospace badges, coral 'Make an Offer' hover reveal
+  - How It Works: 3 steps (Discover/Claim/Launch) with connecting gradient line, elevated icon containers
+  - Domain Detail Modal: Dark surface background, teal badges, coral CTA
+  - All Forms: Dark inputs with teal focus rings, coral submit buttons, dark elevated info boxes
+  - Footer: Dark semi-transparent background, teal social link hovers
+  - All modals (Privacy, Terms, Offer): Dark surface backgrounds with proper contrast
+- Preserved all functionality: search, filters, pagination, domain detail, offer form, contact form, navigation, modals
+- Preserved all data hooks, types, mutations, Zod validation, navigation store
+- All API routes verified working (featured, domains, stats, transactions, settings)
+- ESLint passed with zero errors
+- CSS design tokens verified in compiled stylesheet
+
+Stage Summary:
+- Complete visual transformation from editorial ivory/navy to premium dark teal-black theme
+- 3 files modified: globals.css, layout.tsx, page.tsx
+- 0 new components created (all changes within existing component structure)
+- 0 API routes modified
+- 0 backend changes
+- 0 database changes
+- Design tokens confirmed in compiled CSS: 061312, 0B211E, 718581, B8C8C4, animate-ticker, domain-card-hover, grid-pattern, noise-overlay, teal-glow

@@ -1,0 +1,152 @@
+{
+  "source_url": "https://godzilladn.com/",
+  "title": "GodzillaDN.com — Premium Domain Marketplace",
+  "framework": "Next.js (App Router, Turbopack)",
+  "css_framework": "Tailwind CSS v4 + custom CSS variables",
+  "icon_library": "Lucide React",
+  "scrape_date": "2025-07-11",
+  "color_scheme": {
+    "background_primary": "#05080A (very dark near-black, slight blue-green tint)",
+    "background_secondary": "#0A1113 (dark card/search background)",
+    "text_primary": "#E8F0EC (off-white with slight green tint)",
+    "text_secondary": "#86A39A (muted sage/gray-green)",
+    "text_tertiary": "#4C6259 (dark muted green)",
+    "accent_primary": "#46E5C6 (bright mint/cyan-green)",
+    "accent_secondary": "#FF5A36 (warm coral/orange-red)",
+    "accent_glow": "rgba(70,229,198,0.45) (mint glow text-shadow)",
+    "border_default": "rgba(70,229,198,0.14)",
+    "cta_button_bg": "#FF5A36",
+    "cta_button_text": "#1A0A06"
+  },
+  "typography": {
+    "primary_font": "DM Sans (next/font, weights 400-700)",
+    "monospace_font": "ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace",
+    "hero_domain_size": "clamp(2.1rem, 9vw, 6rem)",
+    "hero_domain_weight": "900 (font-black)",
+    "eyebrow_style": "11px monospace uppercase 0.22em tracking #86A39A",
+    "domain_card_name": "2xl/sm:1.7rem font-black tracking-tight #E8F0EC",
+    "domain_card_tld": "11px monospace uppercase 0.16em tracking #4C6259",
+    "step_number": "4xl font-black #46E5C6 with text-shadow glow"
+  },
+  "layout_structure": {
+    "max_widths": "max-w-5xl (hero), max-w-6xl (how-it-works), max-w-7xl (footer)",
+    "padding": "px-6 (24px) consistently",
+    "vertical_spacing": "py-20 to py-32 between sections",
+    "domain_grid": "grid-cols-1 sm:2 lg:3"
+  },
+  "hero_section": {
+    "background_layers": [
+      "Mesh gradient (violet/cyan/fuchsia radial gradients)",
+      "Dot pattern (mint dots 22px grid, masked to 60%)",
+      "Top-center mint radial glow"
+    ],
+    "eyebrow": "monospace 11px, 'Godzilla DN . Apex domain marketplace', green dot with glow",
+    "featured_domain_carousel": "8 domains, dot pagination (18px active mint dot, 6px inactive dark green)",
+    "headline": "'Premium domains, hunted and held.' medium weight #E8F0EC",
+    "subheadline": "'Hand-picked brandable...' sm #86A39A",
+    "search_bar": "rounded-full, #0A1113 bg, mint border, coral submit button, Lucide search icon",
+    "bottom_padding": "pb-52 sm:pb-60 (space for card grid overlapping)",
+    "hero_text_shadow": "0 0 28px rgba(70,229,198,0.45), 0 0 4px rgba(70,229,198,0.6)"
+  },
+  "claimed_ticker": {
+    "type": "horizontal marquee, 46s linear infinite, pauses on hover",
+    "label": "'Claimed' in #FF5A36 coral, monospace, absolute positioned with gradient fade",
+    "items": "domain (#E8F0EC) + date (#4C6259) + dot separator",
+    "reduced_motion": "respected (animation: none)"
+  },
+  "domain_cards": {
+    "section_title": "'Unclaimed territory' monospace eyebrow",
+    "grid": "1/2/3 columns responsive",
+    "card_style": "flat with grid-line borders (rgba(70,229,198,0.14)), no rounded corners",
+    "card_padding": "p-7 sm:p-8",
+    "tld_badge": "11px monospace uppercase, TLD in #4C6259, Available in #46E5C6",
+    "domain_name": "2xl/1.7rem font-black, name #E8F0EC, .tld #4C6259",
+    "hover_reveal": "'Claim it' slides in from left (#FF5A36), crosshair icon appears top-right",
+    "category_colors": "subtle amber/emerald/violet tints for different categories",
+    "shown": "8 cards on homepage"
+  },
+  "how_it_works": {
+    "layout": "3-column grid (md), gap-x-12 gap-y-12",
+    "section_label": "monospace 11px uppercase, triangular zigzag SVG in #46E5C6",
+    "step_numbers": "01/02/03 in 4xl font-black #46E5C6 with glow text-shadow",
+    "steps": [
+      "Track a name",
+      "Make your move",
+      "Claim & transfer"
+    ]
+  },
+  "services_section": {
+    "section_label": "'The arsenal' monospace 11px uppercase",
+    "layout": "stacked full-width list rows with bottom borders",
+    "item_structure": "title (xl-2xl bold #E8F0EC) + description (sm #86A39A) + arrow (#46E5C6)",
+    "hover": "arrow shifts diagonally, bg color change",
+    "services": [
+      "Domain broker",
+      "Brand naming",
+      "AI website"
+    ]
+  },
+  "cta_section": {
+    "bg_glow": "bottom-center mint radial gradient",
+    "decoration": "triangular mountain SVG in #46E5C6 with opacity variation",
+    "heading": "'Claim your name.' 4xl-6xl font-black with mint text-shadow glow",
+    "button": "rounded-full h-12 px-7 #FF5A36 bg #1A0A06 text, brightness-110 hover"
+  },
+  "footer": {
+    "top_decoration": "dual-layer triangular mountain SVG (#05080A base + #46E5C6 glow at 25%)",
+    "trust_section": "Escrow.com trust badges, GoDaddy, Spaceship logos",
+    "tagline": "'The apex marketplace for premium domains...'",
+    "contact": "dn@godzilladn.com",
+    "columns": [
+      "Marketplace (5 links)",
+      "Sell (3 links)",
+      "Company (6 links)"
+    ],
+    "legal": "Terms, Privacy, Refund, Cookie Policy",
+    "copyright": "2026 Godzilla DN"
+  },
+  "navigation": {
+    "type": "horizontal top bar",
+    "logo": "/godzilladn-logo.png",
+    "links": "Marketplace, Browse(search icon), Claw(New badge), Agents(New badge), Services, Claimed, $99 domains(mint serif), How it works, FAQ, Free tools(external arrow)",
+    "right_side": "Saved (heart icon, #86A39A)",
+    "link_style": "h-9 px-3 rounded-lg text-sm #86A39A, hover:bg-white/0.06",
+    "new_badge": "9px monospace uppercase mint pill with 10% bg and 20% border"
+  },
+  "animations": {
+    "ticker": "46s linear infinite translateX marquee, pauses on hover",
+    "card_hover_claim": "200ms, opacity 0-1, translateX -4px-0",
+    "card_hover_crosshair": "200ms opacity transition",
+    "card_glow": "360ms cubic-bezier, conic-gradient violet/cyan/fuchsia, blur 14px",
+    "service_arrow": "translate-x-0.5, -translate-y-0.5 diagonal shift",
+    "button_hover": "brightness-110",
+    "reduced_motion": "fully respected"
+  },
+  "design_language": {
+    "aesthetic": "Dark-mode premium tech-forward domain marketplace. Minimalist with strategic accent color use.",
+    "key_principles": [
+      "Extreme dark theme #05080A with blue-green undertone",
+      "Single dominant accent #46E5C6 (mint) for brand identity and glow effects",
+      "Single action accent #FF5A36 (coral) for CTAs and urgency",
+      "Monospace typography for all metadata creating data-terminal aesthetic",
+      "Mint glow/text-shadow on hero headings for ethereal premium feel",
+      "Grid-line borders on domain cards (no rounded corners)",
+      "Hover-reveal interactions ('Claim it' slides in, crosshair appears)",
+      "Triangular mountain/zigzag SVGs as brand motif dividers",
+      "Noise texture overlay at 7% for grain/depth",
+      "Mesh gradient background layer (violet/cyan/fuchsia)",
+      "Dot pattern in hero area",
+      "Generous whitespace (pb-52/60, py-20/32)",
+      "Lucide icons throughout",
+      "color-scheme: dark, antialiased font smoothing",
+      "Pill/rounded-full shapes for buttons and badges only",
+      "Inline styles heavily used (likely for dynamic theming)"
+    ],
+    "mood": "Dark, authoritative, premium, tech-savvy, minimal but expressive",
+    "comparisons": [
+      "Vercel.com (dark theme, minimal)",
+      "Linear.app (dark, subtle glow effects)",
+      "Namecheap premium (domain marketplace)"
+    ]
+  }
+}

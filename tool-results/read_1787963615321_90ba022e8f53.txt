@@ -1,0 +1,2002 @@
+     1→'use client'
+     2→
+     3→import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+     4→import { motion, AnimatePresence } from 'framer-motion'
+     5→import { useNavigation } from '@/store/navigation'
+     6→import { useToast } from '@/hooks/use-toast'
+     7→import { useState, useCallback, type FormEvent } from 'react'
+     8→import { z } from 'zod/v4'
+     9→
+    10→// shadcn/ui components
+    11→import { Button } from '@/components/ui/button'
+    12→import { Card, CardContent } from '@/components/ui/card'
+    13→import {
+    14→  Dialog,
+    15→  DialogContent,
+    16→  DialogHeader,
+    17→  DialogTitle,
+    18→  DialogDescription,
+    19→} from '@/components/ui/dialog'
+    20→import {
+    21→  Sheet,
+    22→  SheetContent,
+    23→  SheetHeader,
+    24→  SheetTitle,
+    25→  SheetTrigger,
+    26→} from '@/components/ui/sheet'
+    27→import {
+    28→  Select,
+    29→  SelectContent,
+    30→  SelectItem,
+    31→  SelectTrigger,
+    32→  SelectValue,
+    33→} from '@/components/ui/select'
+    34→import { Input } from '@/components/ui/input'
+    35→import { Label } from '@/components/ui/label'
+    36→import { Badge } from '@/components/ui/badge'
+    37→import { Separator } from '@/components/ui/separator'
+    38→import { Checkbox } from '@/components/ui/checkbox'
+    39→import { Textarea } from '@/components/ui/textarea'
+    40→import { Skeleton } from '@/components/ui/skeleton'
+    41→import { Switch } from '@/components/ui/switch'
+    42→
+    43→// Lucide icons
+    44→import {
+    45→  Search,
+    46→  Globe,
+    47→  Mail,
+    48→  ArrowRight,
+    49→  Menu,
+    50→  X,
+    51→  CheckCircle2,
+    52→  Send,
+    53→  Linkedin,
+    54→  Instagram,
+    55→  Facebook,
+    56→  Twitter,
+    57→  Loader2,
+    58→  ChevronLeft,
+    59→  ChevronRight,
+    60→  SlidersHorizontal,
+    61→  Hash,
+    62→  Handshake,
+    63→  FileText,
+    64→  BarChart3,
+    65→  Sparkles,
+    66→  Layers,
+    67→} from 'lucide-react'
+    68→
+    69→// ========================
+    70→// TYPES
+    71→// ========================
+    72→
+    73→type PublicDomain = {
+    74→  id: string
+    75→  name: string
+    76→  slug: string
+    77→  extension: string
+    78→  category: string
+    79→  tags: string[]
+    80→  shortDescription: string
+    81→  useCases: string[]
+    82→  status: string
+    83→  featured: boolean
+    84→  price: number | null
+    85→  showPrice: boolean
+    86→  saleType: string
+    87→  publicNotes: string
+    88→  createdAt: string
+    89→  updatedAt: string
+    90→}
+    91→
+    92→type Stats = {
+    93→  totalDomains: number
+    94→  featuredCount: number
+    95→  atomListed: number
+    96→  categories: string[]
+    97→  extensions: string[]
+    98→}
+    99→
+   100→type SiteSettings = {
+   101→  contactEmail: string
+   102→  socialLinks: Record<string, string>
+   103→}
+   104→
+   105→type Transaction = {
+   106→  domain: string
+   107→  status: string
+   108→  amount: number
+   109→}
+   110→
+   111→// ========================
+   112→// DATA HOOKS
+   113→// ========================
+   114→
+   115→function useFeaturedDomains() {
+   116→  return useQuery<PublicDomain[]>({
+   117→    queryKey: ['featured'],
+   118→    queryFn: async () => {
+   119→      const res = await fetch('/api/domains/featured')
+   120→      if (!res.ok) throw new Error('Failed to fetch featured domains')
+   121→      const data = await res.json()
+   122→      return data.domains as PublicDomain[]
+   123→    },
+   124→  })
+   125→}
+   126→
+   127→function useDomains(
+   128→  search: string,
+   129→  category: string,
+   130→  extension: string,
+   131→  status: string,
+   132→  featured: boolean,
+   133→  hasPrice: boolean,
+   134→  sort: string,
+   135→  page: number
+   136→) {
+   137→  const params = new URLSearchParams()
+   138→  if (search) params.set('search', search)
+   139→  if (category) params.set('category', category)
+   140→  if (extension) params.set('extension', extension)
+   141→  if (status) params.set('status', status)
+   142→  if (featured) params.set('featured', 'true')
+   143→  if (hasPrice) params.set('hasPrice', 'true')
+   144→  if (sort) params.set('sort', sort)
+   145→  params.set('page', String(page))
+   146→  params.set('limit', '12')
+   147→
+   148→  return useQuery<{
+   149→    domains: PublicDomain[]
+   150→    total: number
+   151→    page: number
+   152→    limit: number
+   153→    categories: string[]
+   154→    extensions: string[]
+   155→  }>({
+   156→    queryKey: ['domains', search, category, extension, status, featured, hasPrice, sort, page],
+   157→    queryFn: async () => {
+   158→      const res = await fetch(`/api/domains?${params.toString()}`)
+   159→      if (!res.ok) throw new Error('Failed to fetch domains')
+   160→      return res.json()
+   161→    },
+   162→  })
+   163→}
+   164→
+   165→function useDomainDetail(slug: string | null) {
+   166→  return useQuery<{ domain: PublicDomain; relatedDomains: PublicDomain[] } | null>({
+   167→    queryKey: ['domain', slug],
+   168→    queryFn: async () => {
+   169→      if (!slug) return null
+   170→      const res = await fetch(`/api/domains/${slug}`)
+   171→      if (!res.ok) throw new Error('Failed to fetch domain')
+   172→      return res.json()
+   173→    },
+   174→    enabled: !!slug,
+   175→  })
+   176→}
+   177→
+   178→function useStats() {
+   179→  return useQuery<Stats>({
+   180→    queryKey: ['stats'],
+   181→    queryFn: async () => {
+   182→      const res = await fetch('/api/domains/stats')
+   183→      if (!res.ok) throw new Error('Failed to fetch stats')
+   184→      return res.json()
+   185→    },
+   186→  })
+   187→}
+   188→
+   189→function useTransactions() {
+   190→  return useQuery<{ transactions: Transaction[] }>({
+   191→    queryKey: ['transactions'],
+   192→    queryFn: async () => {
+   193→      const res = await fetch('/api/transactions')
+   194→      if (!res.ok) throw new Error('Failed to fetch transactions')
+   195→      return res.json()
+   196→    },
+   197→  })
+   198→}
+   199→
+   200→function useSettings() {
+   201→  return useQuery<SiteSettings>({
+   202→    queryKey: ['settings'],
+   203→    queryFn: async () => {
+   204→      const res = await fetch('/api/settings')
+   205→      if (!res.ok) throw new Error('Failed to fetch settings')
+   206→      return res.json()
+   207→    },
+   208→  })
+   209→}
+   210→
+   211→function useSubmitInquiry() {
+   212→  const queryClient = useQueryClient()
+   213→  const { toast } = useToast()
+   214→
+   215→  return useMutation({
+   216→    mutationFn: async (data: Record<string, unknown>) => {
+   217→      const res = await fetch('/api/inquiries', {
+   218→        method: 'POST',
+   219→        headers: { 'Content-Type': 'application/json' },
+   220→        body: JSON.stringify(data),
+   221→      })
+   222→      const json = await res.json()
+   223→      if (!res.ok) {
+   224→        if (json.details) throw new Error(JSON.stringify(json.details))
+   225→        throw new Error(json.error || 'Submission failed')
+   226→      }
+   227→      return json
+   228→    },
+   229→    onSuccess: () => {
+   230→      toast({ title: 'Inquiry sent', description: 'Thank you. Your inquiry has been received.' })
+   231→      queryClient.invalidateQueries({ queryKey: ['domains'] })
+   232→    },
+   233→    onError: (err) => {
+   234→      toast({ title: 'Submission failed', description: err.message, variant: 'destructive' })
+   235→    },
+   236→  })
+   237→}
+   238→
+   239→// ========================
+   240→// ANIMATION VARIANTS
+   241→// ========================
+   242→
+   243→const fadeUp = {
+   244→  hidden: { opacity: 0, y: 20 },
+   245→  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+   246→}
+   247→
+   248→const stagger = {
+   249→  visible: { transition: { staggerChildren: 0.08 } },
+   250→}
+   251→
+   252→// ========================
+   253→// SECTION LABELS
+   254→// ========================
+   255→
+   256→const NAV_ITEMS: {
+   257→  label: string
+   258→  section: 'home' | 'domains' | 'about' | 'services' | 'transactions' | 'contact'
+   259→}[] = [
+   260→  { label: 'Home', section: 'home' },
+   261→  { label: 'Domains', section: 'domains' },
+   262→  { label: 'About', section: 'about' },
+   263→  { label: 'Services', section: 'services' },
+   264→  { label: 'Transactions', section: 'transactions' },
+   265→  { label: 'Contact', section: 'contact' },
+   266→]
+   267→
+   268→// ========================
+   269→// SOCIAL LINKS COMPONENT
+   270→// ========================
+   271→
+   272→function SocialLinks() {
+   273→  const { data: settings } = useSettings()
+   274→  const links = settings?.socialLinks || {}
+   275→
+   276→  return (
+   277→    <div className="flex items-center gap-2">
+   278→      {links.twitter && (
+   279→        <a
+   280→          href={links.twitter}
+   281→          target="_blank"
+   282→          rel="noopener noreferrer"
+   283→          className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+   284→          aria-label="X (Twitter)"
+   285→        >
+   286→          <Twitter className="size-4" />
+   287→        </a>
+   288→      )}
+   289→      {links.linkedin && (
+   290→        <a
+   291→          href={links.linkedin}
+   292→          target="_blank"
+   293→          rel="noopener noreferrer"
+   294→          className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+   295→          aria-label="LinkedIn"
+   296→        >
+   297→          <Linkedin className="size-4" />
+   298→        </a>
+   299→      )}
+   300→      {links.instagram && (
+   301→        <a
+   302→          href={links.instagram}
+   303→          target="_blank"
+   304→          rel="noopener noreferrer"
+   305→          className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+   306→          aria-label="Instagram"
+   307→        >
+   308→          <Instagram className="size-4" />
+   309→        </a>
+   310→      )}
+   311→      {links.facebook && (
+   312→        <a
+   313→          href={links.facebook}
+   314→          target="_blank"
+   315→          rel="noopener noreferrer"
+   316→          className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+   317→          aria-label="Facebook"
+   318→        >
+   319→          <Facebook className="size-4" />
+   320→        </a>
+   321→      )}
+   322→      {!links.twitter && !links.linkedin && !links.instagram && !links.facebook && (
+   323→        <span className="text-xs text-muted-foreground">Social links coming soon</span>
+   324→      )}
+   325→    </div>
+   326→  )
+   327→}
+   328→
+   329→// ========================
+   330→// MAIN PAGE COMPONENT
+   331→// ========================
+   332→
+   333→export default function HomePage() {
+   334→  const nav = useNavigation()
+   335→
+   336→  return (
+   337→    <div className="min-h-screen flex flex-col">
+   338→      <a href="#main-content" className="skip-to-content">
+   339→        Skip to content
+   340→      </a>
+   341→      <Header />
+   342→      <main id="main-content" className="flex-1">
+   343→        <AnimatePresence mode="wait">
+   344→          <motion.div
+   345→            key={nav.section}
+   346→            initial={{ opacity: 0, y: 12 }}
+   347→            animate={{ opacity: 1, y: 0 }}
+   348→            exit={{ opacity: 0, y: -12 }}
+   349→            transition={{ duration: 0.3, ease: 'easeInOut' }}
+   350→          >
+   351→            {nav.section === 'home' && <HomeSection />}
+   352→            {nav.section === 'domains' && <DomainsSection />}
+   353→            {nav.section === 'about' && <AboutSection />}
+   354→            {nav.section === 'services' && <ServicesSection />}
+   355→            {nav.section === 'transactions' && <TransactionsSection />}
+   356→            {nav.section === 'contact' && <ContactSection />}
+   357→          </motion.div>
+   358→        </AnimatePresence>
+   359→      </main>
+   360→      <Footer />
+   361→      <DomainDetailModal />
+   362→      <OfferFormDialog />
+   363→      <PrivacyModal />
+   364→      <TermsModal />
+   365→    </div>
+   366→  )
+   367→}
+   368→
+   369→// ========================
+   370→// HEADER
+   371→// ========================
+   372→
+   373→function Header() {
+   374→  const nav = useNavigation()
+   375→  const [mobileOpen, setMobileOpen] = useState(false)
+   376→
+   377→  const handleNav = (section: typeof nav.section) => {
+   378→    nav.setSection(section)
+   379→    setMobileOpen(false)
+   380→  }
+   381→
+   382→  return (
+   383→    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm editorial-border-b">
+   384→      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   385→        <div className="flex items-center justify-between h-16">
+   386→          <button
+   387→            onClick={() => handleNav('home')}
+   388→            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+   389→            aria-label="Go to home"
+   390→          >
+   391→            <span className="font-display text-2xl gold-accent">NR</span>
+   392→            <span className="hidden sm:inline text-sm font-medium text-foreground tracking-wide">
+   393→              Nizar Rahme
+   394→            </span>
+   395→          </button>
+   396→
+   397→          <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
+   398→            {NAV_ITEMS.map((item) => (
+   399→              <button
+   400→                key={item.section}
+   401→                onClick={() => handleNav(item.section)}
+   402→                className={`px-3 py-2 text-sm rounded-md transition-colors ${
+   403→                  nav.section === item.section
+   404→                    ? 'text-foreground font-medium bg-secondary'
+   405→                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+   406→                }`}
+   407→              >
+   408→                {item.label}
+   409→              </button>
+   410→            ))}
+   411→          </nav>
+   412→
+   413→          <div className="flex items-center gap-3">
+   414→            <Button
+   415→              onClick={() => handleNav('domains')}
+   416→              size="sm"
+   417→              className="hidden sm:inline-flex bg-navy text-white hover:bg-navy-deep"
+   418→            >
+   419→              Make an Offer
+   420→            </Button>
+   421→
+   422→            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+   423→              <SheetTrigger asChild>
+   424→                <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu">
+   425→                  <Menu className="size-5" />
+   426→                </Button>
+   427→              </SheetTrigger>
+   428→              <SheetContent side="right" className="w-72">
+   429→                <SheetHeader>
+   430→                  <SheetTitle className="font-display text-xl">Menu</SheetTitle>
+   431→                </SheetHeader>
+   432→                <nav className="mt-8 flex flex-col gap-1" aria-label="Mobile navigation">
+   433→                  {NAV_ITEMS.map((item) => (
+   434→                    <button
+   435→                      key={item.section}
+   436→                      onClick={() => handleNav(item.section)}
+   437→                      className={`px-4 py-3 text-left rounded-md text-sm transition-colors ${
+   438→                        nav.section === item.section
+   439→                          ? 'bg-secondary font-medium text-foreground'
+   440→                          : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+   441→                      }`}
+   442→                    >
+   443→                      {item.label}
+   444→                    </button>
+   445→                  ))}
+   446→                  <Separator className="my-4" />
+   447→                  <Button
+   448→                    onClick={() => handleNav('domains')}
+   449→                    className="bg-navy text-white hover:bg-navy-deep"
+   450→                  >
+   451→                    Make an Offer
+   452→                  </Button>
+   453→                </nav>
+   454→              </SheetContent>
+   455→            </Sheet>
+   456→          </div>
+   457→        </div>
+   458→      </div>
+   459→    </header>
+   460→  )
+   461→}
+   462→
+   463→// ========================
+   464→// HOME SECTION
+   465→// ========================
+   466→
+   467→function HomeSection() {
+   468→  const { data: featured } = useFeaturedDomains()
+   469→  const { data: stats } = useStats()
+   470→  const { data: transactions } = useTransactions()
+   471→  const nav = useNavigation()
+   472→
+   473→  const heroDomain = featured?.[0] || null
+   474→
+   475→  return (
+   476→    <div>
+   477→      {/* HERO */}
+   478→      <section className="navy-bg text-white py-16 sm:py-24 lg:py-32 relative overflow-hidden">
+   479→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   480→          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+   481→            <motion.div initial="hidden" animate="visible" variants={stagger}>
+   482→              <motion.h1
+   483→                variants={fadeUp}
+   484→                className="font-display text-4xl sm:text-5xl lg:text-6xl leading-tight tracking-tight"
+   485→              >
+   486→                Brandable domains for the next digital business.
+   487→              </motion.h1>
+   488→              <motion.p
+   489→                variants={fadeUp}
+   490→                className="mt-6 text-base sm:text-lg text-white/70 max-w-xl leading-relaxed"
+   491→              >
+   492→                I curate and invest in domain names for AI, SaaS, fintech, technology, and online
+   493→                businesses—with hands-on experience in websites, digital marketing, and AI-assisted
+   494→                workflows.
+   495→              </motion.p>
+   496→              <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
+   497→                <Button
+   498→                  onClick={() => nav.setSection('domains')}
+   499→                  className="gold-bg text-navy hover:bg-gold-soft font-medium"
+   500→                >
+   501→                  Browse Domains
+   502→                  <ArrowRight className="size-4" />
+   503→                </Button>
+   504→                <Button
+   505→                  onClick={() => nav.setSection('domains')}
+   506→                  variant="outline"
+   507→                  className="border-white/30 text-white hover:bg-white/10"
+   508→                >
+   509→                  Make an Offer
+   510→                </Button>
+   511→              </motion.div>
+   512→            </motion.div>
+   513→
+   514→            <motion.div
+   515→              initial={{ opacity: 0, x: 30 }}
+   516→              animate={{ opacity: 1, x: 0 }}
+   517→              transition={{ duration: 0.6, delay: 0.2 }}
+   518→              className="flex justify-center lg:justify-end"
+   519→            >
+   520→              {heroDomain ? (
+   521→                <div
+   522→                  className="relative p-8 sm:p-10 editorial-border border-white/20 bg-white/5 backdrop-blur-sm rounded-sm cursor-pointer group"
+   523→                  onClick={() => nav.setSelectedDomain(heroDomain.slug)}
+   524→                  role="button"
+   525→                  tabIndex={0}
+   526→                  onKeyDown={(e) => {
+   527→                    if (e.key === 'Enter') nav.setSelectedDomain(heroDomain.slug)
+   528→                  }}
+   529→                  aria-label={`View details for ${heroDomain.name}`}
+   530→                >
+   531→                  <div className="absolute top-4 right-4 flex gap-2">
+   532→                    <Badge className="bg-gold/20 text-gold-soft border-gold/30 text-xs">
+   533→                      {heroDomain.extension}
+   534→                    </Badge>
+   535→                    <Badge className="bg-white/10 text-white/80 border-white/20 text-xs">
+   536→                      {heroDomain.category}
+   537→                    </Badge>
+   538→                  </div>
+   539→                  <p className="text-xs text-white/40 uppercase tracking-widest mb-4">
+   540→                    Featured Domain
+   541→                  </p>
+   542→                  <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-white group-hover:text-gold-soft transition-colors">
+   543→                    {heroDomain.name}
+   544→                  </h2>
+   545→                  {heroDomain.shortDescription && (
+   546→                    <p className="mt-4 text-sm text-white/50 max-w-sm">
+   547→                      {heroDomain.shortDescription}
+   548→                    </p>
+   549→                  )}
+   550→                  {heroDomain.showPrice && heroDomain.price && (
+   551→                    <p className="mt-4 font-display text-2xl gold-accent">
+   552→                      ${heroDomain.price.toLocaleString()}
+   553→                    </p>
+   554→                  )}
+   555→                  <div className="mt-6 flex items-center gap-2 text-xs text-white/40 group-hover:text-white/60 transition-colors">
+   556→                    <span>View details</span>
+   557→                    <ArrowRight className="size-3" />
+   558→                  </div>
+   559→                </div>
+   560→              ) : (
+   561→                <div className="p-8 sm:p-10 editorial-border border-white/20 bg-white/5 backdrop-blur-sm rounded-sm">
+   562→                  <Skeleton className="h-12 w-64 bg-white/10" />
+   563→                  <Skeleton className="h-4 w-40 bg-white/10 mt-4" />
+   564→                  <Skeleton className="h-4 w-56 bg-white/10 mt-2" />
+   565→                </div>
+   566→              )}
+   567→            </motion.div>
+   568→          </div>
+   569→        </div>
+   570→      </section>
+   571→
+   572→      {/* TRUST STRIP */}
+   573→      <section className="py-6 editorial-border-b bg-card">
+   574→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   575→          {stats ? (
+   576→            <div className="flex flex-wrap justify-center gap-8 sm:gap-16">
+   577→              <div className="text-center">
+   578→                <p className="font-display text-2xl sm:text-3xl text-foreground">
+   579→                  {stats.totalDomains}+
+   580→                </p>
+   581→                <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Domains</p>
+   582→              </div>
+   583→              <div className="text-center">
+   584→                <p className="font-display text-2xl sm:text-3xl text-foreground">
+   585→                  {stats.atomListed}
+   586→                </p>
+   587→                <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
+   588→                  Listed on Atom
+   589→                </p>
+   590→              </div>
+   591→              <div className="text-center">
+   592→                <p className="font-display text-2xl sm:text-3xl text-foreground">2023</p>
+   593→                <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
+   594→                  Investing Since
+   595→                </p>
+   596→              </div>
+   597→              <div className="text-center">
+   598→                <p className="font-display text-2xl sm:text-3xl text-foreground">2</p>
+   599→                <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
+   600→                  Completed Sales
+   601→                </p>
+   602→              </div>
+   603→            </div>
+   604→          ) : (
+   605→            <div className="flex flex-wrap justify-center gap-8 sm:gap-16">
+   606→              {[1, 2, 3, 4].map((i) => (
+   607→                <div key={i} className="text-center">
+   608→                  <Skeleton className="h-9 w-16 mx-auto" />
+   609→                  <Skeleton className="h-3 w-20 mt-2" />
+   610→                </div>
+   611→              ))}
+   612→            </div>
+   613→          )}
+   614→        </div>
+   615→      </section>
+   616→
+   617→      {/* FEATURED DOMAINS */}
+   618→      <section className="py-16 sm:py-20">
+   619→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   620→          <div className="flex items-end justify-between mb-10">
+   621→            <div>
+   622→              <h2 className="font-display text-3xl sm:text-4xl">Selected domains</h2>
+   623→              <p className="text-muted-foreground mt-2">
+   624→                A curated collection of brandable domain names.
+   625→              </p>
+   626→            </div>
+   627→            <Button
+   628→              variant="ghost"
+   629→              className="hidden sm:inline-flex text-muted-foreground"
+   630→              onClick={() => nav.setSection('domains')}
+   631→            >
+   632→              View all <ArrowRight className="size-4" />
+   633→            </Button>
+   634→          </div>
+   635→
+   636→          {featured && featured.length > 0 ? (
+   637→            <motion.div
+   638→              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+   639→              initial="hidden"
+   640→              animate="visible"
+   641→              variants={stagger}
+   642→            >
+   643→              {featured.map((domain) => (
+   644→                <DomainCard key={domain.id} domain={domain} />
+   645→              ))}
+   646→            </motion.div>
+   647→          ) : featured ? (
+   648→            <p className="text-muted-foreground text-center py-12">
+   649→              No featured domains at this time.
+   650→            </p>
+   651→          ) : (
+   652→            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+   653→              {[1, 2, 3].map((i) => (
+   654→                <Skeleton key={i} className="h-48 w-full" />
+   655→              ))}
+   656→            </div>
+   657→          )}
+   658→
+   659→          <div className="mt-8 text-center sm:hidden">
+   660→            <Button
+   661→              variant="outline"
+   662→              onClick={() => nav.setSection('domains')}
+   663→              className="w-full"
+   664→            >
+   665→              View All Domains <ArrowRight className="size-4" />
+   666→            </Button>
+   667→          </div>
+   668→        </div>
+   669→      </section>
+   670→
+   671→      {/* HOW IT WORKS */}
+   672→      <section className="py-16 sm:py-20 bg-secondary/50">
+   673→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   674→          <h2 className="font-display text-3xl sm:text-4xl text-center mb-12">How it works</h2>
+   675→          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+   676→            {[
+   677→              {
+   678→                num: '01',
+   679→                title: 'Find a name',
+   680→                desc: 'Browse the catalog and find a domain that fits your brand or project.',
+   681→                icon: Search,
+   682→              },
+   683→              {
+   684→                num: '02',
+   685→                title: 'Send an offer',
+   686→                desc: 'Use the inquiry form to submit your offer or start a conversation.',
+   687→                icon: Send,
+   688→              },
+   689→              {
+   690→                num: '03',
+   691→                title: 'Discuss the acquisition',
+   692→                desc: 'Review the offer together and complete the transfer through a secure marketplace.',
+   693→                icon: Handshake,
+   694→              },
+   695→            ].map((step) => (
+   696→              <div key={step.num} className="text-center">
+   697→                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-navy text-white mb-4">
+   698→                  <step.icon className="size-5" />
+   699→                </div>
+   700→                <p className="text-xs text-gold font-medium uppercase tracking-widest mb-2">
+   701→                  Step {step.num}
+   702→                </p>
+   703→                <h3 className="font-display text-xl mb-2">{step.title}</h3>
+   704→                <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+   705→              </div>
+   706→            ))}
+   707→          </div>
+   708→        </div>
+   709→      </section>
+   710→
+   711→      {/* SELECTED TRANSACTIONS */}
+   712→      {transactions && (
+   713→        <section className="py-16 sm:py-20">
+   714→          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   715→            <h2 className="font-display text-3xl sm:text-4xl mb-10">Selected transactions</h2>
+   716→            <div className="grid sm:grid-cols-2 gap-4 max-w-3xl">
+   717→              {transactions.transactions.map((tx) => (
+   718→                <div key={tx.domain} className="editorial-border p-6 flex flex-col justify-between">
+   719→                  <div>
+   720→                    <p className="font-display text-xl">{tx.domain}</p>
+   721→                    <p className="text-sm text-muted-foreground mt-1">{tx.status}</p>
+   722→                  </div>
+   723→                  <p className="font-display text-2xl gold-accent mt-4">
+   724→                    ${tx.amount.toLocaleString()}
+   725→                  </p>
+   726→                </div>
+   727→              ))}
+   728→            </div>
+   729→            <p className="text-xs text-muted-foreground mt-6 max-w-2xl">
+   730→              These are selected completed transactions and do not represent a guarantee of future
+   731→              sale prices or outcomes.
+   732→            </p>
+   733→          </div>
+   734→        </section>
+   735→      )}
+   736→
+   737→      {/* BEYOND THE NAME */}
+   738→      <section className="py-16 sm:py-20 navy-bg text-white">
+   739→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+   740→          <h2 className="font-display text-3xl sm:text-4xl">Beyond the name</h2>
+   741→          <p className="mt-4 text-white/70 max-w-2xl mx-auto leading-relaxed">
+   742→            Alongside domain investing, I work on selected digital projects involving WordPress
+   743→            websites, content, social media, SEO, and AI-assisted workflows.
+   744→          </p>
+   745→          <Button
+   746→            onClick={() => nav.setSection('services')}
+   747→            variant="outline"
+   748→            className="mt-8 border-white/30 text-white hover:bg-white/10"
+   749→          >
+   750→            Explore Services <ArrowRight className="size-4" />
+   751→          </Button>
+   752→        </div>
+   753→      </section>
+   754→
+   755→      {/* FINAL CTA */}
+   756→      <section className="py-16 sm:py-24">
+   757→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+   758→          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl">
+   759→            Looking for the right name?
+   760→          </h2>
+   761→          <p className="mt-4 text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+   762→            If you are building an AI, SaaS, fintech, technology, or online business, send an offer
+   763→            for a domain or start a conversation about a potential partnership.
+   764→          </p>
+   765→          <div className="mt-8 flex flex-wrap justify-center gap-3">
+   766→            <Button
+   767→              onClick={() => nav.setSection('domains')}
+   768→              className="bg-navy text-white hover:bg-navy-deep"
+   769→            >
+   770→              Browse Domains <ArrowRight className="size-4" />
+   771→            </Button>
+   772→            <Button onClick={() => nav.setSection('contact')} variant="outline">
+   773→              Contact Nizar
+   774→            </Button>
+   775→          </div>
+   776→        </div>
+   777→      </section>
+   778→    </div>
+   779→  )
+   780→}
+   781→
+   782→// ========================
+   783→// DOMAIN CARD
+   784→// ========================
+   785→
+   786→function DomainCard({ domain }: { domain: PublicDomain }) {
+   787→  const nav = useNavigation()
+   788→
+   789→  return (
+   790→    <motion.div variants={fadeUp}>
+   791→      <Card
+   792→        className="group cursor-pointer editorial-border hover:border-gold/50 transition-colors bg-card shadow-none"
+   793→        onClick={() => nav.setSelectedDomain(domain.slug)}
+   794→        role="article"
+   795→        tabIndex={0}
+   796→        onKeyDown={(e) => {
+   797→          if (e.key === 'Enter') nav.setSelectedDomain(domain.slug)
+   798→        }}
+   799→      >
+   800→        <CardContent className="p-5 sm:p-6">
+   801→          <div className="flex items-start justify-between gap-3">
+   802→            <div className="min-w-0">
+   803→              <div className="flex items-center gap-2 mb-1">
+   804→                <Badge variant="secondary" className="text-xs font-normal">
+   805→                  {domain.extension}
+   806→                </Badge>
+   807→                {domain.featured && (
+   808→                  <Badge className="bg-gold/15 text-gold border-gold/25 text-xs">Featured</Badge>
+   809→                )}
+   810→              </div>
+   811→              <h3 className="font-display text-lg sm:text-xl leading-tight truncate group-hover:text-gold transition-colors">
+   812→                {domain.name}
+   813→              </h3>
+   814→            </div>
+   815→            {domain.showPrice && domain.price && (
+   816→              <p className="font-display text-lg gold-accent whitespace-nowrap">
+   817→                ${domain.price.toLocaleString()}
+   818→              </p>
+   819→            )}
+   820→          </div>
+   821→          <Badge variant="outline" className="mt-3 text-xs font-normal">
+   822→            {domain.category}
+   823→          </Badge>
+   824→          {domain.shortDescription && (
+   825→            <p className="mt-3 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+   826→              {domain.shortDescription}
+   827→            </p>
+   828→          )}
+   829→          <div className="mt-4 pt-3 editorial-border-t flex items-center justify-between">
+   830→            <span className="text-xs text-muted-foreground">{domain.saleType}</span>
+   831→            <span className="text-xs gold-accent font-medium flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+   832→              Make an Offer <ArrowRight className="size-3" />
+   833→            </span>
+   834→          </div>
+   835→        </CardContent>
+   836→      </Card>
+   837→    </motion.div>
+   838→  )
+   839→}
+   840→
+   841→// ========================
+   842→// DOMAINS SECTION (CATALOG)
+   843→// ========================
+   844→
+   845→function DomainsSection() {
+   846→  const [search, setSearch] = useState('')
+   847→  const [category, setCategory] = useState('')
+   848→  const [extension, setExtension] = useState('')
+   849→  const [status, setStatus] = useState('')
+   850→  const [featured, setFeatured] = useState(false)
+   851→  const [hasPrice, setHasPrice] = useState(false)
+   852→  const [sort, setSort] = useState('newest')
+   853→  const [page, setPage] = useState(1)
+   854→  const [showFilters, setShowFilters] = useState(false)
+   855→
+   856→  const { data, isLoading } = useDomains(
+   857→    search, category, extension, status, featured, hasPrice, sort, page
+   858→  )
+   859→
+   860→  const totalPages = data ? Math.ceil(data.total / data.limit) : 1
+   861→
+   862→  const resetFilters = () => {
+   863→    setSearch('')
+   864→    setCategory('')
+   865→    setExtension('')
+   866→    setStatus('')
+   867→    setFeatured(false)
+   868→    setHasPrice(false)
+   869→    setSort('newest')
+   870→    setPage(1)
+   871→  }
+   872→
+   873→  return (
+   874→    <div className="py-8 sm:py-12">
+   875→      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   876→        <div className="mb-8">
+   877→          <h1 className="font-display text-3xl sm:text-4xl">Domain Catalog</h1>
+   878→          <p className="text-muted-foreground mt-2">
+   879→            Browse available domain names. Click any domain to view details and make an offer.
+   880→          </p>
+   881→        </div>
+   882→
+   883→        {/* Search */}
+   884→        <div className="relative mb-6">
+   885→          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+   886→          <Input
+   887→            placeholder="Search domains by name, category, or description..."
+   888→            value={search}
+   889→            onChange={(e) => {
+   890→              setSearch(e.target.value)
+   891→              setPage(1)
+   892→            }}
+   893→            className="pl-10 h-11"
+   894→            aria-label="Search domains"
+   895→          />
+   896→        </div>
+   897→
+   898→        {/* Mobile filter toggle */}
+   899→        <div className="flex items-center justify-between mb-4">
+   900→          <Button
+   901→            variant="outline"
+   902→            size="sm"
+   903→            className="lg:hidden"
+   904→            onClick={() => setShowFilters(!showFilters)}
+   905→          >
+   906→            <SlidersHorizontal className="size-4 mr-2" />
+   907→            Filters
+   908→          </Button>
+   909→          <div className="hidden lg:block text-sm text-muted-foreground">
+   910→            {data && <span>{data.total} domain{data.total !== 1 ? 's' : ''} found</span>}
+   911→          </div>
+   912→        </div>
+   913→
+   914→        {/* Filters */}
+   915→        <div className={`mb-6 ${showFilters ? 'block' : 'hidden'} lg:block`}>
+   916→          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+   917→            <Select
+   918→              value={category || '_all'}
+   919→              onValueChange={(v) => {
+   920→                setCategory(v === '_all' ? '' : v)
+   921→                setPage(1)
+   922→              }}
+   923→            >
+   924→              <SelectTrigger aria-label="Filter by category">
+   925→                <SelectValue placeholder="Category" />
+   926→              </SelectTrigger>
+   927→              <SelectContent>
+   928→                <SelectItem value="_all">All Categories</SelectItem>
+   929→                {data?.categories?.map((c) => (
+   930→                  <SelectItem key={c} value={c}>
+   931→                    {c}
+   932→                  </SelectItem>
+   933→                ))}
+   934→              </SelectContent>
+   935→            </Select>
+   936→
+   937→            <Select
+   938→              value={extension || '_all'}
+   939→              onValueChange={(v) => {
+   940→                setExtension(v === '_all' ? '' : v)
+   941→                setPage(1)
+   942→              }}
+   943→            >
+   944→              <SelectTrigger aria-label="Filter by extension">
+   945→                <SelectValue placeholder="Extension" />
+   946→              </SelectTrigger>
+   947→              <SelectContent>
+   948→                <SelectItem value="_all">All Extensions</SelectItem>
+   949→                {data?.extensions?.map((ext) => (
+   950→                  <SelectItem key={ext} value={ext}>
+   951→                    {ext}
+   952→                  </SelectItem>
+   953→                ))}
+   954→              </SelectContent>
+   955→            </Select>
+   956→
+   957→            <Select
+   958→              value={status || '_all'}
+   959→              onValueChange={(v) => {
+   960→                setStatus(v === '_all' ? '' : v)
+   961→                setPage(1)
+   962→              }}
+   963→            >
+   964→              <SelectTrigger aria-label="Filter by status">
+   965→                <SelectValue placeholder="Status" />
+   966→              </SelectTrigger>
+   967→              <SelectContent>
+   968→                <SelectItem value="_all">All Statuses</SelectItem>
+   969→                <SelectItem value="Available">Available</SelectItem>
+   970→                <SelectItem value="Negotiating">Negotiating</SelectItem>
+   971→                <SelectItem value="Sold">Sold</SelectItem>
+   972→              </SelectContent>
+   973→            </Select>
+   974→
+   975→            <Select
+   976→              value={sort}
+   977→              onValueChange={(v) => {
+   978→                setSort(v)
+   979→                setPage(1)
+   980→              }}
+   981→            >
+   982→              <SelectTrigger aria-label="Sort by">
+   983→                <SelectValue placeholder="Sort" />
+   984→              </SelectTrigger>
+   985→              <SelectContent>
+   986→                <SelectItem value="newest">Newest</SelectItem>
+   987→                <SelectItem value="name_asc">A → Z</SelectItem>
+   988→                <SelectItem value="name_desc">Z → A</SelectItem>
+   989→                <SelectItem value="featured">Featured First</SelectItem>
+   990→                <SelectItem value="price_asc">Price: Low → High</SelectItem>
+   991→                <SelectItem value="price_desc">Price: High → Low</SelectItem>
+   992→              </SelectContent>
+   993→            </Select>
+   994→
+   995→            <div className="flex items-center gap-4">
+   996→              <div className="flex items-center gap-2">
+   997→                <Switch
+   998→                  id="featured-toggle"
+   999→                  checked={featured}
+  1000→                  onCheckedChange={(v) => {
+  1001→                    setFeatured(v)
+  1002→                    setPage(1)
+  1003→                  }}
+  1004→                />
+  1005→                <Label htmlFor="featured-toggle" className="text-sm cursor-pointer">
+  1006→                  Featured
+  1007→                </Label>
+  1008→              </div>
+  1009→              <div className="flex items-center gap-2">
+  1010→                <Switch
+  1011→                  id="price-toggle"
+  1012→                  checked={hasPrice}
+  1013→                  onCheckedChange={(v) => {
+  1014→                    setHasPrice(v)
+  1015→                    setPage(1)
+  1016→                  }}
+  1017→                />
+  1018→                <Label htmlFor="price-toggle" className="text-sm cursor-pointer">
+  1019→                  Has Price
+  1020→                </Label>
+  1021→              </div>
+  1022→            </div>
+  1023→          </div>
+  1024→
+  1025→          {(category || extension || status || featured || hasPrice) && (
+  1026→            <div className="mt-3 flex items-center gap-2 flex-wrap">
+  1027→              <span className="text-xs text-muted-foreground">Active filters:</span>
+  1028→              {category && (
+  1029→                <Badge variant="secondary" className="text-xs">
+  1030→                  {category}
+  1031→                  <button
+  1032→                    onClick={() => {
+  1033→                      setCategory('')
+  1034→                      setPage(1)
+  1035→                    }}
+  1036→                    className="ml-1 hover:text-foreground"
+  1037→                    aria-label={`Remove ${category} filter`}
+  1038→                  >
+  1039→                    <X className="size-3" />
+  1040→                  </button>
+  1041→                </Badge>
+  1042→              )}
+  1043→              {extension && (
+  1044→                <Badge variant="secondary" className="text-xs">
+  1045→                  {extension}
+  1046→                  <button
+  1047→                    onClick={() => {
+  1048→                      setExtension('')
+  1049→                      setPage(1)
+  1050→                    }}
+  1051→                    className="ml-1 hover:text-foreground"
+  1052→                    aria-label={`Remove ${extension} filter`}
+  1053→                  >
+  1054→                    <X className="size-3" />
+  1055→                  </button>
+  1056→                </Badge>
+  1057→              )}
+  1058→              {status && (
+  1059→                <Badge variant="secondary" className="text-xs">
+  1060→                  {status}
+  1061→                  <button
+  1062→                    onClick={() => {
+  1063→                      setStatus('')
+  1064→                      setPage(1)
+  1065→                    }}
+  1066→                    className="ml-1 hover:text-foreground"
+  1067→                    aria-label={`Remove ${status} filter`}
+  1068→                  >
+  1069→                    <X className="size-3" />
+  1070→                  </button>
+  1071→                </Badge>
+  1072→              )}
+  1073→              <button onClick={resetFilters} className="text-xs text-gold hover:underline ml-2">
+  1074→                Clear all
+  1075→              </button>
+  1076→            </div>
+  1077→          )}
+  1078→        </div>
+  1079→
+  1080→        <div className="mb-4 text-sm text-muted-foreground lg:block hidden">
+  1081→          {data && <span>{data.total} domain{data.total !== 1 ? 's' : ''} found</span>}
+  1082→        </div>
+  1083→
+  1084→        {/* Grid */}
+  1085→        {isLoading ? (
+  1086→          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  1087→            {Array.from({ length: 6 }).map((_, i) => (
+  1088→              <Skeleton key={i} className="h-52" />
+  1089→            ))}
+  1090→          </div>
+  1091→        ) : data && data.domains.length > 0 ? (
+  1092→          <>
+  1093→            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  1094→              {data.domains.map((domain) => (
+  1095→                <DomainCard key={domain.id} domain={domain} />
+  1096→              ))}
+  1097→            </div>
+  1098→
+  1099→            {totalPages > 1 && (
+  1100→              <div className="mt-8 flex items-center justify-center gap-2">
+  1101→                <Button
+  1102→                  variant="outline"
+  1103→                  size="sm"
+  1104→                  disabled={page <= 1}
+  1105→                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+  1106→                  aria-label="Previous page"
+  1107→                >
+  1108→                  <ChevronLeft className="size-4" />
+  1109→                  <span className="sr-only">Previous</span>
+  1110→                </Button>
+  1111→                <div className="flex items-center gap-1">
+  1112→                  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+  1113→                    let pageNum: number
+  1114→                    if (totalPages <= 7) {
+  1115→                      pageNum = i + 1
+  1116→                    } else if (page <= 4) {
+  1117→                      pageNum = i + 1
+  1118→                    } else if (page >= totalPages - 3) {
+  1119→                      pageNum = totalPages - 6 + i
+  1120→                    } else {
+  1121→                      pageNum = page - 3 + i
+  1122→                    }
+  1123→                    return (
+  1124→                      <Button
+  1125→                        key={pageNum}
+  1126→                        variant={pageNum === page ? 'default' : 'outline'}
+  1127→                        size="sm"
+  1128→                        className="w-9"
+  1129→                        onClick={() => setPage(pageNum)}
+  1130→                        aria-label={`Page ${pageNum}`}
+  1131→                        aria-current={pageNum === page ? 'page' : undefined}
+  1132→                      >
+  1133→                        {pageNum}
+  1134→                      </Button>
+  1135→                    )
+  1136→                  })}
+  1137→                </div>
+  1138→                <Button
+  1139→                  variant="outline"
+  1140→                  size="sm"
+  1141→                  disabled={page >= totalPages}
+  1142→                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+  1143→                  aria-label="Next page"
+  1144→                >
+  1145→                  <ChevronRight className="size-4" />
+  1146→                  <span className="sr-only">Next</span>
+  1147→                </Button>
+  1148→              </div>
+  1149→            )}
+  1150→          </>
+  1151→        ) : (
+  1152→          <div className="text-center py-16">
+  1153→            <Globe className="size-12 text-muted-foreground/40 mx-auto mb-4" />
+  1154→            <h3 className="font-display text-xl mb-2">No domains found</h3>
+  1155→            <p className="text-sm text-muted-foreground mb-4">
+  1156→              Try adjusting your search or filters.
+  1157→            </p>
+  1158→            <Button variant="outline" onClick={resetFilters}>
+  1159→              Clear Filters
+  1160→            </Button>
+  1161→          </div>
+  1162→        )}
+  1163→      </div>
+  1164→    </div>
+  1165→  )
+  1166→}
+  1167→
+  1168→// ========================
+  1169→// DOMAIN DETAIL MODAL
+  1170→// ========================
+  1171→
+  1172→function DomainDetailModal() {
+  1173→  const nav = useNavigation()
+  1174→  const { data, isLoading } = useDomainDetail(nav.selectedDomain)
+  1175→  const open = !!nav.selectedDomain
+  1176→
+  1177→  const handleClose = useCallback(() => {
+  1178→    nav.setSelectedDomain(null)
+  1179→  }, [nav])
+  1180→
+  1181→  const handleOffer = () => {
+  1182→    if (data?.domain) {
+  1183→      nav.setOfferDomainName(data.domain.name)
+  1184→      nav.setSelectedDomain(null)
+  1185→      nav.setShowOfferForm(true)
+  1186→    }
+  1187→  }
+  1188→
+  1189→  return (
+  1190→    <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
+  1191→      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+  1192→        {isLoading ? (
+  1193→          <div className="py-8 space-y-4">
+  1194→            <Skeleton className="h-10 w-64" />
+  1195→            <Skeleton className="h-4 w-40" />
+  1196→            <Skeleton className="h-20 w-full" />
+  1197→            <Skeleton className="h-32 w-full" />
+  1198→          </div>
+  1199→        ) : data?.domain ? (
+  1200→          <>
+  1201→            <DialogHeader>
+  1202→              <div className="flex items-center gap-2 mb-2">
+  1203→                <Badge variant="secondary">{data.domain.extension}</Badge>
+  1204→                <Badge variant="outline">{data.domain.category}</Badge>
+  1205→                {data.domain.featured && (
+  1206→                  <Badge className="bg-gold/15 text-gold border-gold/25">Featured</Badge>
+  1207→                )}
+  1208→              </div>
+  1209→              <DialogTitle className="font-display text-3xl sm:text-4xl">
+  1210→                {data.domain.name}
+  1211→              </DialogTitle>
+  1212→              <DialogDescription className="sr-only">
+  1213→                Details for {data.domain.name}
+  1214→              </DialogDescription>
+  1215→            </DialogHeader>
+  1216→
+  1217→            <div className="mt-6 space-y-6">
+  1218→              <div className="flex items-center gap-4">
+  1219→                {data.domain.showPrice && data.domain.price && (
+  1220→                  <p className="font-display text-3xl gold-accent">
+  1221→                    ${data.domain.price.toLocaleString()}
+  1222→                  </p>
+  1223→                )}
+  1224→                <Badge variant="outline" className="text-sm">
+  1225→                  {data.domain.saleType}
+  1226→                </Badge>
+  1227→              </div>
+  1228→
+  1229→              {data.domain.shortDescription && (
+  1230→                <p className="text-muted-foreground leading-relaxed">
+  1231→                  {data.domain.shortDescription}
+  1232→                </p>
+  1233→              )}
+  1234→
+  1235→              {data.domain.tags.length > 0 && (
+  1236→                <div className="flex flex-wrap gap-2">
+  1237→                  {data.domain.tags.map((tag) => (
+  1238→                    <Badge key={tag} variant="secondary" className="text-xs font-normal">
+  1239→                      {tag}
+  1240→                    </Badge>
+  1241→                  ))}
+  1242→                </div>
+  1243→              )}
+  1244→
+  1245→              {data.domain.useCases.length > 0 && (
+  1246→                <div>
+  1247→                  <h4 className="text-sm font-medium mb-3">Potential use cases</h4>
+  1248→                  <ul className="space-y-2">
+  1249→                    {data.domain.useCases.map((uc) => (
+  1250→                      <li
+  1251→                        key={uc}
+  1252→                        className="flex items-start gap-2 text-sm text-muted-foreground"
+  1253→                      >
+  1254→                        <CheckCircle2 className="size-4 text-gold mt-0.5 shrink-0" />
+  1255→                        {uc}
+  1256→                      </li>
+  1257→                    ))}
+  1258→                  </ul>
+  1259→                </div>
+  1260→              )}
+  1261→
+  1262→              {data.domain.publicNotes && (
+  1263→                <div className="p-4 bg-secondary/50 rounded-md">
+  1264→                  <p className="text-sm text-muted-foreground">{data.domain.publicNotes}</p>
+  1265→                </div>
+  1266→              )}
+  1267→
+  1268→              <Button
+  1269→                onClick={handleOffer}
+  1270→                className="w-full bg-navy text-white hover:bg-navy-deep h-11"
+  1271→              >
+  1272→                Make an Offer <ArrowRight className="size-4" />
+  1273→              </Button>
+  1274→
+  1275→              {data.relatedDomains.length > 0 && (
+  1276→                <div>
+  1277→                  <Separator className="mb-6" />
+  1278→                  <h4 className="text-sm font-medium mb-4">Related domains</h4>
+  1279→                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+  1280→                    {data.relatedDomains.map((rd) => (
+  1281→                      <button
+  1282→                        key={rd.id}
+  1283→                        onClick={() => nav.setSelectedDomain(rd.slug)}
+  1284→                        className="shrink-0 editorial-border p-3 hover:border-gold/50 transition-colors text-left min-w-[180px]"
+  1285→                      >
+  1286→                        <p className="font-display text-sm truncate">{rd.name}</p>
+  1287→                        <p className="text-xs text-muted-foreground mt-1">{rd.category}</p>
+  1288→                      </button>
+  1289→                    ))}
+  1290→                  </div>
+  1291→                </div>
+  1292→              )}
+  1293→            </div>
+  1294→          </>
+  1295→        ) : null}
+  1296→      </DialogContent>
+  1297→    </Dialog>
+  1298→  )
+  1299→}
+  1300→
+  1301→// ========================
+  1302→// OFFER FORM DIALOG
+  1303→// ========================
+  1304→
+  1305→const offerSchema = z.object({
+  1306→  name: z.string().min(2, 'Name must be at least 2 characters'),
+  1307→  email: z.email('Please enter a valid email address'),
+  1308→  company: z.string().optional(),
+  1309→  offerAmount: z.number().positive().optional(),
+  1310→  intendedUse: z.string().optional(),
+  1311→  message: z.string().min(10, 'Message must be at least 10 characters'),
+  1312→  consent: z.literal(true, {
+  1313→    errorMap: () => ({ message: 'You must consent to proceed' }),
+  1314→  }),
+  1315→})
+  1316→
+  1317→type FormErrors = Record<string, string>
+  1318→
+  1319→function OfferFormDialog() {
+  1320→  const nav = useNavigation()
+  1321→  const submitInquiry = useSubmitInquiry()
+  1322→  const [form, setForm] = useState({
+  1323→    name: '',
+  1324→    email: '',
+  1325→    company: '',
+  1326→    offerAmount: '',
+  1327→    intendedUse: '',
+  1328→    message: '',
+  1329→    consent: false,
+  1330→    honeypot: '',
+  1331→  })
+  1332→  const [errors, setErrors] = useState<FormErrors>({})
+  1333→  const [submitted, setSubmitted] = useState(false)
+  1334→
+  1335→  const resetForm = () => {
+  1336→    setForm({ name: '', email: '', company: '', offerAmount: '', intendedUse: '', message: '', consent: false, honeypot: '' })
+  1337→    setErrors({})
+  1338→    setSubmitted(false)
+  1339→  }
+  1340→
+  1341→  const handleClose = (open: boolean) => {
+  1342→    if (!open) {
+  1343→      nav.setShowOfferForm(false)
+  1344→      resetForm()
+  1345→    }
+  1346→  }
+  1347→
+  1348→  const handleSubmit = (e: FormEvent) => {
+  1349→    e.preventDefault()
+  1350→    setErrors({})
+  1351→
+  1352→    const result = offerSchema.safeParse({
+  1353→      name: form.name,
+  1354→      email: form.email,
+  1355→      company: form.company || undefined,
+  1356→      offerAmount: form.offerAmount ? Number(form.offerAmount) : undefined,
+  1357→      intendedUse: form.intendedUse || undefined,
+  1358→      message: form.message,
+  1359→      consent: form.consent,
+  1360→    })
+  1361→
+  1362→    if (!result.success) {
+  1363→      const fieldErrors: FormErrors = {}
+  1364→      for (const issue of result.error.issues) {
+  1365→        const field = issue.path[0]
+  1366→        if (field) fieldErrors[String(field)] = issue.message
+  1367→      }
+  1368→      setErrors(fieldErrors)
+  1369→      return
+  1370→    }
+  1371→
+  1372→    submitInquiry.mutate(
+  1373→      {
+  1374→        domainSlug: nav.offerDomainName
+  1375→          ? nav.offerDomainName.toLowerCase().replace(/[^a-z0-9-]/g, '-')
+  1376→          : undefined,
+  1377→        ...result.data,
+  1378→        honeypot: form.honeypot,
+  1379→      },
+  1380→      {
+  1381→        onSuccess: () => setSubmitted(true),
+  1382→      }
+  1383→    )
+  1384→  }
+  1385→
+  1386→  if (submitted) {
+  1387→    return (
+  1388→      <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
+  1389→        <DialogContent className="max-w-lg">
+  1390→          <div className="text-center py-8">
+  1391→            <CheckCircle2 className="size-12 text-success mx-auto mb-4" />
+  1392→            <h3 className="font-display text-2xl mb-2">Thank you.</h3>
+  1393→            <p className="text-muted-foreground leading-relaxed">
+  1394→              Your inquiry has been received. Nizar will review it and get back to you.
+  1395→            </p>
+  1396→            <Button variant="outline" className="mt-6" onClick={() => handleClose(false)}>
+  1397→              Close
+  1398→            </Button>
+  1399→          </div>
+  1400→        </DialogContent>
+  1401→      </Dialog>
+  1402→    )
+  1403→  }
+  1404→
+  1405→  return (
+  1406→    <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
+  1407→      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+  1408→        <DialogHeader>
+  1409→          <DialogTitle className="font-display text-2xl">Make an Offer</DialogTitle>
+  1410→          <DialogDescription>
+  1411→            {nav.offerDomainName
+  1412→              ? `Submit your offer for ${nav.offerDomainName}`
+  1413→              : 'Submit an inquiry about a domain'}
+  1414→          </DialogDescription>
+  1415→        </DialogHeader>
+  1416→
+  1417→        <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+  1418→          {nav.offerDomainName && (
+  1419→            <div className="p-3 bg-secondary rounded-md">
+  1420→              <p className="text-xs text-muted-foreground">Domain</p>
+  1421→              <p className="font-display text-lg">{nav.offerDomainName}</p>
+  1422→            </div>
+  1423→          )}
+  1424→
+  1425→          <div className="absolute -left-[9999px]" aria-hidden="true">
+  1426→            <label htmlFor="website">Website</label>
+  1427→            <input
+  1428→              type="text"
+  1429→              id="website"
+  1430→              name="website"
+  1431→              tabIndex={-1}
+  1432→              autoComplete="off"
+  1433→              value={form.honeypot}
+  1434→              onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))}
+  1435→            />
+  1436→          </div>
+  1437→
+  1438→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  1439→            <div className="space-y-2">
+  1440→              <Label htmlFor="offer-name">Name *</Label>
+  1441→              <Input
+  1442→                id="offer-name"
+  1443→                value={form.name}
+  1444→                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+  1445→                aria-invalid={!!errors.name}
+  1446→              />
+  1447→              {errors.name && <p className="text-xs text-error">{errors.name}</p>}
+  1448→            </div>
+  1449→            <div className="space-y-2">
+  1450→              <Label htmlFor="offer-email">Email *</Label>
+  1451→              <Input
+  1452→                id="offer-email"
+  1453→                type="email"
+  1454→                value={form.email}
+  1455→                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+  1456→                aria-invalid={!!errors.email}
+  1457→              />
+  1458→              {errors.email && <p className="text-xs text-error">{errors.email}</p>}
+  1459→            </div>
+  1460→          </div>
+  1461→
+  1462→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  1463→            <div className="space-y-2">
+  1464→              <Label htmlFor="offer-company">Company / Project</Label>
+  1465→              <Input
+  1466→                id="offer-company"
+  1467→                value={form.company}
+  1468→                onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
+  1469→              />
+  1470→            </div>
+  1471→            <div className="space-y-2">
+  1472→              <Label htmlFor="offer-amount">Offer Amount (USD)</Label>
+  1473→              <Input
+  1474→                id="offer-amount"
+  1475→                type="number"
+  1476→                min="1"
+  1477→                value={form.offerAmount}
+  1478→                onChange={(e) => setForm((f) => ({ ...f, offerAmount: e.target.value }))}
+  1479→                placeholder="e.g. 500"
+  1480→              />
+  1481→            </div>
+  1482→          </div>
+  1483→
+  1484→          <div className="space-y-2">
+  1485→            <Label htmlFor="offer-use">Intended Use</Label>
+  1486→            <Input
+  1487→              id="offer-use"
+  1488→              value={form.intendedUse}
+  1489→              onChange={(e) => setForm((f) => ({ ...f, intendedUse: e.target.value }))}
+  1490→              placeholder="e.g. AI startup, SaaS platform"
+  1491→            />
+  1492→          </div>
+  1493→
+  1494→          <div className="space-y-2">
+  1495→            <Label htmlFor="offer-message">Message *</Label>
+  1496→            <Textarea
+  1497→              id="offer-message"
+  1498→              value={form.message}
+  1499→              onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+  1500→              rows={4}
+  1501→              aria-invalid={!!errors.message}
+  1502→            />
+  1503→            {errors.message && <p className="text-xs text-error">{errors.message}</p>}
+  1504→          </div>
+  1505→
+  1506→          <div className="flex items-start gap-2">
+  1507→            <Checkbox
+  1508→              id="offer-consent"
+  1509→              checked={form.consent}
+  1510→              onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))}
+  1511→            />
+  1512→            <Label htmlFor="offer-consent" className="text-sm text-muted-foreground leading-relaxed">
+  1513→              I consent to having my information stored and used to respond to this inquiry. *
+  1514→            </Label>
+  1515→          </div>
+  1516→          {errors.consent && <p className="text-xs text-error">{errors.consent}</p>}
+  1517→
+  1518→          <Button
+  1519→            type="submit"
+  1520→            className="w-full bg-navy text-white hover:bg-navy-deep h-11"
+  1521→            disabled={submitInquiry.isPending}
+  1522→          >
+  1523→            {submitInquiry.isPending ? (
+  1524→              <>
+  1525→                <Loader2 className="size-4 animate-spin" />
+  1526→                Submitting...
+  1527→              </>
+  1528→            ) : (
+  1529→              <>
+  1530→                Send Inquiry <Send className="size-4" />
+  1531→              </>
+  1532→            )}
+  1533→          </Button>
+  1534→        </form>
+  1535→      </DialogContent>
+  1536→    </Dialog>
+  1537→  )
+  1538→}
+  1539→
+  1540→// ========================
+  1541→// ABOUT SECTION
+  1542→// ========================
+  1543→
+  1544→function AboutSection() {
+  1545→  return (
+  1546→    <div className="py-12 sm:py-20">
+  1547→      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+  1548→        <h1 className="font-display text-3xl sm:text-4xl mb-8">About</h1>
+  1549→
+  1550→        <div className="space-y-6 text-muted-foreground leading-relaxed">
+  1551→          <p>
+  1552→            I&rsquo;m Nizar Rahme. I invest in and curate domain names for businesses operating in AI,
+  1553→            SaaS, fintech, technology, and the broader digital economy.
+  1554→          </p>
+  1555→          <p>
+  1556→            My approach to domain investing is straightforward: I look for names that are short,
+  1557→            memorable, and genuinely brandable—names that could serve as the foundation for a real
+  1558→            business. I don&rsquo;t register names at scale or flip domains for quick returns. Each
+  1559→            name in the catalog has been selected with specific industries and use cases in mind.
+  1560→          </p>
+  1561→          <p>
+  1562→            Beyond domain investing, I have hands-on experience building WordPress websites,
+  1563→            creating digital content, and working with AI-assisted workflows. This practical
+  1564→            background informs how I evaluate names—I think about how a domain will work in
+  1565→            context, not just how it sounds.
+  1566→          </p>
+  1567→        </div>
+  1568→
+  1569→        <Separator className="my-12" />
+  1570→
+  1571→        <h2 className="font-display text-2xl sm:text-3xl mb-6">How I evaluate a domain</h2>
+  1572→
+  1573→        <div className="space-y-0">
+  1574→          {[
+  1575→            { title: 'Brandability', desc: 'Does the name sound like a real company, not a keyword string?' },
+  1576→            { title: 'Length', desc: 'Shorter is generally better. I prefer names under 12 characters when possible.' },
+  1577→            { title: 'Memorability', desc: 'Can someone recall the name after hearing it once?' },
+  1578→            { title: 'Pronounceability', desc: 'Can it be said out loud without confusion?' },
+  1579→            { title: 'Industry fit', desc: 'Does it align with a growing sector like AI, SaaS, fintech, or digital services?' },
+  1580→            { title: 'Extension quality', desc: '.com is preferred. Other extensions are selected only when the name is strong.' },
+  1581→            { title: 'Search and confusion risk', desc: 'Does it avoid trademark conflicts and confusion with existing brands?' },
+  1582→            { title: 'Practical value', desc: 'Would a real business benefit from owning this name?' },
+  1583→          ].map((item, idx) => (
+  1584→            <div
+  1585→              key={item.title}
+  1586→              className="flex gap-4 py-4 editorial-border-b last:border-b-0"
+  1587→            >
+  1588→              <div className="shrink-0">
+  1589→                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-medium text-gold">
+  1590→                  {idx + 1}
+  1591→                </div>
+  1592→              </div>
+  1593→              <div>
+  1594→                <h3 className="font-medium text-foreground text-sm">{item.title}</h3>
+  1595→                <p className="text-sm text-muted-foreground mt-1">{item.desc}</p>
+  1596→              </div>
+  1597→            </div>
+  1598→          ))}
+  1599→        </div>
+  1600→
+  1601→        <Separator className="my-12" />
+  1602→
+  1603→        <h2 className="font-display text-2xl sm:text-3xl mb-6">Supporting capabilities</h2>
+  1604→        <ul className="space-y-3">
+  1605→          {[
+  1606→            'WordPress website design and development',
+  1607→            'Content creation and copywriting',
+  1608→            'Social media strategy and management',
+  1609→            'SEO foundations and technical optimization',
+  1610→            'AI-assisted workflows and automation',
+  1611→          ].map((item) => (
+  1612→            <li
+  1613→              key={item}
+  1614→              className="flex items-center gap-3 text-sm text-muted-foreground"
+  1615→            >
+  1616→              <CheckCircle2 className="size-4 text-gold shrink-0" />
+  1617→              {item}
+  1618→            </li>
+  1619→          ))}
+  1620→        </ul>
+  1621→
+  1622→        <Separator className="my-12" />
+  1623→
+  1624→        <div className="flex items-center gap-4">
+  1625→          <span className="text-sm text-muted-foreground">Connect:</span>
+  1626→          <SocialLinks />
+  1627→        </div>
+  1628→      </div>
+  1629→    </div>
+  1630→  )
+  1631→}
+  1632→
+  1633→// ========================
+  1634→// SERVICES SECTION
+  1635→// ========================
+  1636→
+  1637→function ServicesSection() {
+  1638→  const nav = useNavigation()
+  1639→
+  1640→  const services = [
+  1641→    {
+  1642→      icon: Globe,
+  1643→      title: 'WordPress Websites',
+  1644→      desc: 'Custom WordPress website design and development, from business sites to content platforms. Focused on clean design, fast performance, and ease of management.',
+  1645→    },
+  1646→    {
+  1647→      icon: FileText,
+  1648→      title: 'Digital Content',
+  1649→      desc: 'Writing, editing, and content strategy for websites, blogs, and marketing materials. Content that communicates clearly and serves a purpose.',
+  1650→    },
+  1651→    {
+  1652→      icon: BarChart3,
+  1653→      title: 'SEO Foundations',
+  1654→      desc: 'Technical SEO setup, keyword research, on-page optimization, and site structure to help websites become findable in search results.',
+  1655→    },
+  1656→    {
+  1657→      icon: Sparkles,
+  1658→      title: 'AI-Assisted Workflows',
+  1659→      desc: 'Building and implementing AI-assisted processes for content generation, data analysis, and operational efficiency using modern tools.',
+  1660→    },
+  1661→    {
+  1662→      icon: Layers,
+  1663→      title: 'Digital Brand Foundations',
+  1664→      desc: 'Naming, domain selection, visual identity basics, and online presence setup for new businesses and projects.',
+  1665→    },
+  1666→  ]
+  1667→
+  1668→  return (
+  1669→    <div className="py-12 sm:py-20">
+  1670→      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+  1671→        <h1 className="font-display text-3xl sm:text-4xl mb-4">Selected digital services</h1>
+  1672→        <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
+  1673→          Alongside domain investing, I offer select digital services for businesses and projects
+  1674→          that need a hands-on, thoughtful approach to their online presence.
+  1675→        </p>
+  1676→
+  1677→        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  1678→          {services.map((service) => (
+  1679→            <Card key={service.title} className="editorial-border shadow-none bg-card">
+  1680→              <CardContent className="p-6">
+  1681→                <service.icon className="size-6 text-gold mb-4" />
+  1682→                <h3 className="font-display text-lg mb-2">{service.title}</h3>
+  1683→                <p className="text-sm text-muted-foreground leading-relaxed">{service.desc}</p>
+  1684→              </CardContent>
+  1685→            </Card>
+  1686→          ))}
+  1687→        </div>
+  1688→
+  1689→        <div className="mt-12 text-center">
+  1690→          <Button
+  1691→            onClick={() => nav.setSection('contact')}
+  1692→            className="bg-navy text-white hover:bg-navy-deep"
+  1693→          >
+  1694→            Discuss a Project <ArrowRight className="size-4" />
+  1695→          </Button>
+  1696→        </div>
+  1697→      </div>
+  1698→    </div>
+  1699→  )
+  1700→}
+  1701→
+  1702→// ========================
+  1703→// TRANSACTIONS SECTION
+  1704→// ========================
+  1705→
+  1706→function TransactionsSection() {
+  1707→  const { data, isLoading } = useTransactions()
+  1708→
+  1709→  return (
+  1710→    <div className="py-12 sm:py-20">
+  1711→      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+  1712→        <h1 className="font-display text-3xl sm:text-4xl mb-4">Transactions</h1>
+  1713→        <p className="text-muted-foreground mb-10 leading-relaxed">
+  1714→          A record of completed domain sales. These represent actual transactions, not appraisals
+  1715→          or asking prices.
+  1716→        </p>
+  1717→
+  1718→        {isLoading ? (
+  1719→          <div className="space-y-4">
+  1720→            <Skeleton className="h-32" />
+  1721→            <Skeleton className="h-32" />
+  1722→          </div>
+  1723→        ) : data ? (
+  1724→          <div className="space-y-4">
+  1725→            {data.transactions.map((tx) => (
+  1726→              <div key={tx.domain} className="editorial-border p-6 sm:p-8">
+  1727→                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  1728→                  <div>
+  1729→                    <h3 className="font-display text-xl sm:text-2xl">{tx.domain}</h3>
+  1730→                    <Badge variant="outline" className="mt-2">
+  1731→                      {tx.status}
+  1732→                    </Badge>
+  1733→                  </div>
+  1734→                  <p className="font-display text-3xl gold-accent">
+  1735→                    ${tx.amount.toLocaleString()}
+  1736→                  </p>
+  1737→                </div>
+  1738→              </div>
+  1739→            ))}
+  1740→          </div>
+  1741→        ) : null}
+  1742→
+  1743→        <div className="mt-8 p-4 bg-secondary/50 rounded-md">
+  1744→          <p className="text-xs text-muted-foreground leading-relaxed">
+  1745→            These are selected completed transactions and do not represent a guarantee of future
+  1746→            sale prices or outcomes. Domain values depend on many factors including market demand,
+  1747→            buyer need, and negotiation.
+  1748→          </p>
+  1749→        </div>
+  1750→      </div>
+  1751→    </div>
+  1752→  )
+  1753→}
+  1754→
+  1755→// ========================
+  1756→// CONTACT SECTION
+  1757→// ========================
+  1758→
+  1759→const contactCategories = [
+  1760→  'Acquire a Domain',
+  1761→  'Discuss a Partnership',
+  1762→  'Work With Nizar',
+  1763→  'Other',
+  1764→]
+  1765→
+  1766→const contactSchema = z.object({
+  1767→  name: z.string().min(2, 'Name must be at least 2 characters'),
+  1768→  email: z.email('Please enter a valid email address'),
+  1769→  category: z.string().min(1, 'Please select a category'),
+  1770→  message: z.string().min(10, 'Message must be at least 10 characters'),
+  1771→  consent: z.literal(true, {
+  1772→    errorMap: () => ({ message: 'You must consent to proceed' }),
+  1773→  }),
+  1774→})
+  1775→
+  1776→function ContactSection() {
+  1777→  const { data: settings } = useSettings()
+  1778→  const submitInquiry = useSubmitInquiry()
+  1779→  const [form, setForm] = useState({
+  1780→    name: '',
+  1781→    email: '',
+  1782→    category: '',
+  1783→    message: '',
+  1784→    consent: false,
+  1785→    honeypot: '',
+  1786→  })
+  1787→  const [errors, setErrors] = useState<FormErrors>({})
+  1788→  const [submitted, setSubmitted] = useState(false)
+  1789→
+  1790→  const handleSubmit = (e: FormEvent) => {
+  1791→    e.preventDefault()
+  1792→    setErrors({})
+  1793→
+  1794→    const result = contactSchema.safeParse({
+  1795→      name: form.name,
+  1796→      email: form.email,
+  1797→      category: form.category,
+  1798→      message: form.message,
+  1799→      consent: form.consent,
+  1800→    })
+  1801→
+  1802→    if (!result.success) {
+  1803→      const fieldErrors: FormErrors = {}
+  1804→      for (const issue of result.error.issues) {
+  1805→        const field = issue.path[0]
+  1806→        if (field) fieldErrors[String(field)] = issue.message
+  1807→      }
+  1808→      setErrors(fieldErrors)
+  1809→      return
+  1810→    }
+  1811→
+  1812→    submitInquiry.mutate(
+  1813→      {
+  1814→        ...result.data,
+  1815→        honeypot: form.honeypot,
+  1816→        inquiryType: 'contact',
+  1817→      },
+  1818→      {
+  1819→        onSuccess: () => setSubmitted(true),
+  1820→      }
+  1821→    )
+  1822→  }
+  1823→
+  1824→  if (submitted) {
+  1825→    return (
+  1826→      <div className="py-12 sm:py-20">
+  1827→        <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
+  1828→          <CheckCircle2 className="size-12 text-success mx-auto mb-4" />
+  1829→          <h1 className="font-display text-3xl mb-4">Message sent</h1>
+  1830→          <p className="text-muted-foreground leading-relaxed">
+  1831→            Thank you for reaching out. Nizar will review your message and respond as soon as
+  1832→            possible.
+  1833→          </p>
+  1834→          <Button
+  1835→            variant="outline"
+  1836→            className="mt-6"
+  1837→            onClick={() => {
+  1838→              setSubmitted(false)
+  1839→              setForm({ name: '', email: '', category: '', message: '', consent: false, honeypot: '' })
+  1840→            }}
+  1841→          >
+  1842→            Send another message
+  1843→          </Button>
+  1844→        </div>
+  1845→      </div>
+  1846→    )
+  1847→  }
+  1848→
+  1849→  return (
+  1850→    <div className="py-12 sm:py-20">
+  1851→      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+  1852→        <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
+  1853→          <div className="lg:col-span-2">
+  1854→            <h1 className="font-display text-3xl sm:text-4xl mb-4">Contact</h1>
+  1855→            <p className="text-muted-foreground leading-relaxed mb-8">
+  1856→              Whether you&rsquo;re interested in acquiring a domain, discussing a partnership, or working
+  1857→              together on a digital project, I&rsquo;d like to hear from you.
+  1858→            </p>
+  1859→
+  1860→            {settings && (
+  1861→              <div className="space-y-4 mb-8">
+  1862→                <div className="flex items-center gap-3">
+  1863→                  <Mail className="size-4 text-gold" />
+  1864→                  <a
+  1865→                    href={`mailto:${settings.contactEmail}`}
+  1866→                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+  1867→                  >
+  1868→                    {settings.contactEmail}
+  1869→                  </a>
+  1870→                </div>
+  1871→              </div>
+  1872→            )}
+  1873→
+  1874→            <div className="mb-8">
+  1875→              <p className="text-sm font-medium mb-3">Follow</p>
+  1876→              <SocialLinks />
+  1877→            </div>
+  1878→          </div>
+  1879→
+  1880→          <div className="lg:col-span-3">
+  1881→            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+  1882→              <div className="absolute -left-[9999px]" aria-hidden="true">
+  1883→                <label htmlFor="contact-website">Website</label>
+  1884→                <input
+  1885→                  type="text"
+  1886→                  id="contact-website"
+  1887→                  name="website"
+  1888→                  tabIndex={-1}
+  1889→                  autoComplete="off"
+  1890→                  value={form.honeypot}
+  1891→                  onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))}
+  1892→                />
+  1893→              </div>
+  1894→
+  1895→              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  1896→                <div className="space-y-2">
+  1897→                  <Label htmlFor="contact-name">Name *</Label>
+  1898→                  <Input
+  1899→                    id="contact-name"
+  1900→                    value={form.name}
+  1901→                    onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+  1902→                    aria-invalid={!!errors.name}
+  1903→                  />
+  1904→                  {errors.name && <p className="text-xs text-error">{errors.name}</p>}
+  1905→                </div>
+  1906→                <div className="space-y-2">
+  1907→                  <Label htmlFor="contact-email">Email *</Label>
+  1908→                  <Input
+  1909→                    id="contact-email"
+  1910→                    type="email"
+  1911→                    value={form.email}
+  1912→                    onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+  1913→                    aria-invalid={!!errors.email}
+  1914→                  />
+  1915→                  {errors.email && <p className="text-xs text-error">{errors.email}</p>}
+  1916→                </div>
+  1917→              </div>
+  1918→
+  1919→              <div className="space-y-2">
+  1920→                <Label htmlFor="contact-category">Category *</Label>
+  1921→                <Select
+  1922→                  value={form.category}
+  1923→                  onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}
+  1924→                >
+  1925→                  <SelectTrigger id="contact-category" aria-invalid={!!errors.category}>
+  1926→                    <SelectValue placeholder="Select a category" />
+  1927→                  </SelectTrigger>
+  1928→                  <SelectContent>
+  1929→                    {contactCategories.map((cat) => (
+  1930→                      <SelectItem key={cat} value={cat}>
+  1931→                        {cat}
+  1932→                      </SelectItem>
+  1933→                    ))}
+  1934→                  </SelectContent>
+  1935→                </Select>
+  1936→                {errors.category && <p className="text-xs text-error">{errors.category}</p>}
+  1937→              </div>
+  1938→
+  1939→              <div className="space-y-2">
+  1940→                <Label htmlFor="contact-message">Message *</Label>
+  1941→                <Textarea
+  1942→                  id="contact-message"
+  1943→                  value={form.message}
+  1944→                  onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+  1945→                  rows={5}
+  1946→                  aria-invalid={!!errors.message}
+  1947→                />
+  1948→                {errors.message && <p className="text-xs text-error">{errors.message}</p>}
+  1949→              </div>
+  1950→
+  1951→              <div className="flex items-start gap-2">
+  1952→                <Checkbox
+  1953→                  id="contact-consent"
+  1954→                  checked={form.consent}
+  1955→                  onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))}
+  1956→                />
+  1957→                <Label
+  1958→                  htmlFor="contact-consent"
+  1959→                  className="text-sm text-muted-foreground leading-relaxed"
+  1960→                >
+  1961→                  I consent to having my information stored and used to respond to this inquiry. *
+  1962→                </Label>
+  1963→              </div>
+  1964→              {errors.consent && <p className="text-xs text-error">{errors.consent}</p>}
+  1965→
+  1966→              <Button
+  1967→                type="submit"
+  1968→                className="w-full sm:w-auto bg-navy text-white hover:bg-navy-deep h-11"
+  1969→                disabled={submitInquiry.isPending}
+  1970→              >
+  1971→                {submitInquiry.isPending ? (
+  1972→                  <>
+  1973→                    <Loader2 className="size-4 animate-spin" />
+  1974→                    Sending...
+  1975→                  </>
+  1976→                ) : (
+  1977→                  <>
+  1978→                    Send Message <Send className="size-4" />
+  1979→                  </>
+  1980→                )}
+  1981→              </Button>
+  1982→            </form>
+  1983→          </div>
+  1984→        </div>
+  1985→      </div>
+  1986→    </div>
+  1987→  )
+  1988→}
+  1989→
+  1990→// ========================
+  1991→// FOOTER
+  1992→// ========================
+  1993→
+  1994→function Footer() {
+  1995→  const nav = useNavigation()
+  1996→  const { data: settings } = useSettings()
+  1997→
+  1998→  return (
+  1999→    <footer className="mt-auto editorial-border-t bg-card">
+  2000→      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+[showing lines 1-2000 of 2171; use offset=2001 with limit to continue reading]

@@ -1,0 +1,602 @@
+     1→   668→   668→        </div>
+     2→   669→   669→      </section>
+     3→   670→   670→
+     4→   671→   671→      {/* HOW IT WORKS */}
+     5→   672→   672→      <section className="py-16 sm:py-20 bg-secondary/50">
+     6→   673→   673→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+     7→   674→   674→          <h2 className="font-display text-3xl sm:text-4xl text-center mb-12">How it works</h2>
+     8→   675→   675→          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+     9→   676→   676→            {[
+    10→   677→   677→              {
+    11→   678→   678→                num: '01',
+    12→   679→   679→                title: 'Find a name',
+    13→   680→   680→                desc: 'Browse the catalog and find a domain that fits your brand or project.',
+    14→   681→   681→                icon: Search,
+    15→   682→   682→              },
+    16→   683→   683→              {
+    17→   684→   684→                num: '02',
+    18→   685→   685→                title: 'Send an offer',
+    19→   686→   686→                desc: 'Use the inquiry form to submit your offer or start a conversation.',
+    20→   687→   687→                icon: Send,
+    21→   688→   688→              },
+    22→   689→   689→              {
+    23→   690→   690→                num: '03',
+    24→   691→   691→                title: 'Discuss the acquisition',
+    25→   692→   692→                desc: 'Review the offer together and complete the transfer through a secure marketplace.',
+    26→   693→   693→                icon: Handshake,
+    27→   694→   694→              },
+    28→   695→   695→            ].map((step) => (
+    29→   696→   696→              <div key={step.num} className="text-center">
+    30→   697→   697→                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-navy text-white mb-4">
+    31→   698→   698→                  <step.icon className="size-5" />
+    32→   699→   699→                </div>
+    33→   700→   700→                <p className="text-xs text-gold font-medium uppercase tracking-widest mb-2">
+    34→   701→   701→                  Step {step.num}
+    35→   702→   702→                </p>
+    36→   703→   703→                <h3 className="font-display text-xl mb-2">{step.title}</h3>
+    37→   704→   704→                <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+    38→   705→   705→              </div>
+    39→   706→   706→            ))}
+    40→   707→   707→          </div>
+    41→   708→   708→        </div>
+    42→   709→   709→      </section>
+    43→   710→   710→
+    44→   711→   711→      {/* SELECTED TRANSACTIONS */}
+    45→   712→   712→      {transactions && (
+    46→   713→   713→        <section className="py-16 sm:py-20">
+    47→   714→   714→          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    48→   715→   715→            <h2 className="font-display text-3xl sm:text-4xl mb-10">Selected transactions</h2>
+    49→   716→   716→            <div className="grid sm:grid-cols-2 gap-4 max-w-3xl">
+    50→   717→   717→              {transactions.transactions.map((tx) => (
+    51→   718→   718→                <div key={tx.domain} className="editorial-border p-6 flex flex-col justify-between">
+    52→   719→   719→                  <div>
+    53→   720→   720→                    <p className="font-display text-xl">{tx.domain}</p>
+    54→   721→   721→                    <p className="text-sm text-muted-foreground mt-1">{tx.status}</p>
+    55→   722→   722→                  </div>
+    56→   723→   723→                  <p className="font-display text-2xl gold-accent mt-4">
+    57→   724→   724→                    ${tx.amount.toLocaleString()}
+    58→   725→   725→                  </p>
+    59→   726→   726→                </div>
+    60→   727→   727→              ))}
+    61→   728→   728→            </div>
+    62→   729→   729→            <p className="text-xs text-muted-foreground mt-6 max-w-2xl">
+    63→   730→   730→              These are selected completed transactions and do not represent a guarantee of future
+    64→   731→   731→              sale prices or outcomes.
+    65→   732→   732→            </p>
+    66→   733→   733→          </div>
+    67→   734→   734→        </section>
+    68→   735→   735→      )}
+    69→   736→   736→
+    70→   737→   737→      {/* BEYOND THE NAME */}
+    71→   738→   738→      <section className="py-16 sm:py-20 navy-bg text-white">
+    72→   739→   739→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    73→   740→   740→          <h2 className="font-display text-3xl sm:text-4xl">Beyond the name</h2>
+    74→   741→   741→          <p className="mt-4 text-white/70 max-w-2xl mx-auto leading-relaxed">
+    75→   742→   742→            Alongside domain investing, I work on selected digital projects involving WordPress
+    76→   743→   743→            websites, content, social media, SEO, and AI-assisted workflows.
+    77→   744→   744→          </p>
+    78→   745→   745→          <Button
+    79→   746→   746→            onClick={() => nav.setSection('services')}
+    80→   747→   747→            variant="outline"
+    81→   748→   748→            className="mt-8 border-white/30 text-white hover:bg-white/10"
+    82→   749→   749→          >
+    83→   750→   750→            Explore Services <ArrowRight className="size-4" />
+    84→   751→   751→          </Button>
+    85→   752→   752→        </div>
+    86→   753→   753→      </section>
+    87→   754→   754→
+    88→   755→   755→      {/* FINAL CTA */}
+    89→   756→   756→      <section className="py-16 sm:py-24">
+    90→   757→   757→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    91→   758→   758→          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl">
+    92→   759→   759→            Looking for the right name?
+    93→   760→   760→          </h2>
+    94→   761→   761→          <p className="mt-4 text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+    95→   762→   762→            If you are building an AI, SaaS, fintech, technology, or online business, send an offer
+    96→   763→   763→            for a domain or start a conversation about a potential partnership.
+    97→   764→   764→          </p>
+    98→   765→   765→          <div className="mt-8 flex flex-wrap justify-center gap-3">
+    99→   766→   766→            <Button
+   100→   767→   767→              onClick={() => nav.setSection('domains')}
+   101→   768→   768→              className="bg-navy text-white hover:bg-navy-deep"
+   102→   769→   769→            >
+   103→   770→   770→              Browse Domains <ArrowRight className="size-4" />
+   104→   771→   771→            </Button>
+   105→   772→   772→            <Button onClick={() => nav.setSection('contact')} variant="outline">
+   106→   773→   773→              Contact Nizar
+   107→   774→   774→            </Button>
+   108→   775→   775→          </div>
+   109→   776→   776→        </div>
+   110→   777→   777→      </section>
+   111→   778→   778→    </div>
+   112→   779→   779→  )
+   113→   780→   780→}
+   114→   781→   781→
+   115→   782→   782→// ========================
+   116→   783→   783→// DOMAIN CARD
+   117→   784→   784→// ========================
+   118→   785→   785→
+   119→   786→   786→function DomainCard({ domain }: { domain: PublicDomain }) {
+   120→   787→   787→  const nav = useNavigation()
+   121→   788→   788→
+   122→   789→   789→  return (
+   123→   790→   790→    <motion.div variants={fadeUp}>
+   124→   791→   791→      <Card
+   125→   792→   792→        className="group cursor-pointer editorial-border hover:border-gold/50 transition-colors bg-card shadow-none"
+   126→   793→   793→        onClick={() => nav.setSelectedDomain(domain.slug)}
+   127→   794→   794→        role="article"
+   128→   795→   795→        tabIndex={0}
+   129→   796→   796→        onKeyDown={(e) => {
+   130→   797→   797→          if (e.key === 'Enter') nav.setSelectedDomain(domain.slug)
+   131→   798→   798→        }}
+   132→   799→   799→      >
+   133→   800→   800→        <CardContent className="p-5 sm:p-6">
+   134→   801→   801→          <div className="flex items-start justify-between gap-3">
+   135→   802→   802→            <div className="min-w-0">
+   136→   803→   803→              <div className="flex items-center gap-2 mb-1">
+   137→   804→   804→                <Badge variant="secondary" className="text-xs font-normal">
+   138→   805→   805→                  {domain.extension}
+   139→   806→   806→                </Badge>
+   140→   807→   807→                {domain.featured && (
+   141→   808→   808→                  <Badge className="bg-gold/15 text-gold border-gold/25 text-xs">Featured</Badge>
+   142→   809→   809→                )}
+   143→   810→   810→              </div>
+   144→   811→   811→              <h3 className="font-display text-lg sm:text-xl leading-tight truncate group-hover:text-gold transition-colors">
+   145→   812→   812→                {domain.name}
+   146→   813→   813→              </h3>
+   147→   814→   814→            </div>
+   148→   815→   815→            {domain.showPrice && domain.price && (
+   149→   816→   816→              <p className="font-display text-lg gold-accent whitespace-nowrap">
+   150→   817→   817→                ${domain.price.toLocaleString()}
+   151→   818→   818→              </p>
+   152→   819→   819→            )}
+   153→   820→   820→          </div>
+   154→   821→   821→          <Badge variant="outline" className="mt-3 text-xs font-normal">
+   155→   822→   822→            {domain.category}
+   156→   823→   823→          </Badge>
+   157→   824→   824→          {domain.shortDescription && (
+   158→   825→   825→            <p className="mt-3 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+   159→   826→   826→              {domain.shortDescription}
+   160→   827→   827→            </p>
+   161→   828→   828→          )}
+   162→   829→   829→          <div className="mt-4 pt-3 editorial-border-t flex items-center justify-between">
+   163→   830→   830→            <span className="text-xs text-muted-foreground">{domain.saleType}</span>
+   164→   831→   831→            <span className="text-xs gold-accent font-medium flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+   165→   832→   832→              Make an Offer <ArrowRight className="size-3" />
+   166→   833→   833→            </span>
+   167→   834→   834→          </div>
+   168→   835→   835→        </CardContent>
+   169→   836→   836→      </Card>
+   170→   837→   837→    </motion.div>
+   171→   838→   838→  )
+   172→   839→   839→}
+   173→   840→   840→
+   174→   841→   841→// ========================
+   175→   842→   842→// DOMAINS SECTION (CATALOG)
+   176→   843→   843→// ========================
+   177→   844→   844→
+   178→   845→   845→function DomainsSection() {
+   179→   846→   846→  const [search, setSearch] = useState('')
+   180→   847→   847→  const [category, setCategory] = useState('')
+   181→   848→   848→  const [extension, setExtension] = useState('')
+   182→   849→   849→  const [status, setStatus] = useState('')
+   183→   850→   850→  const [featured, setFeatured] = useState(false)
+   184→   851→   851→  const [hasPrice, setHasPrice] = useState(false)
+   185→   852→   852→  const [sort, setSort] = useState('newest')
+   186→   853→   853→  const [page, setPage] = useState(1)
+   187→   854→   854→  const [showFilters, setShowFilters] = useState(false)
+   188→   855→   855→
+   189→   856→   856→  const { data, isLoading } = useDomains(
+   190→   857→   857→    search, category, extension, status, featured, hasPrice, sort, page
+   191→   858→   858→  )
+   192→   859→   859→
+   193→   860→   860→  const totalPages = data ? Math.ceil(data.total / data.limit) : 1
+   194→   861→   861→
+   195→   862→   862→  const resetFilters = () => {
+   196→   863→   863→    setSearch('')
+   197→   864→   864→    setCategory('')
+   198→   865→   865→    setExtension('')
+   199→   866→   866→    setStatus('')
+   200→   867→   867→    setFeatured(false)
+   201→   868→   868→    setHasPrice(false)
+   202→   869→   869→    setSort('newest')
+   203→   870→   870→    setPage(1)
+   204→   871→   871→  }
+   205→   872→   872→
+   206→   873→   873→  return (
+   207→   874→   874→    <div className="py-8 sm:py-12">
+   208→   875→   875→      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   209→   876→   876→        <div className="mb-8">
+   210→   877→   877→          <h1 className="font-display text-3xl sm:text-4xl">Domain Catalog</h1>
+   211→   878→   878→          <p className="text-muted-foreground mt-2">
+   212→   879→   879→            Browse available domain names. Click any domain to view details and make an offer.
+   213→   880→   880→          </p>
+   214→   881→   881→        </div>
+   215→   882→   882→
+   216→   883→   883→        {/* Search */}
+   217→   884→   884→        <div className="relative mb-6">
+   218→   885→   885→          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+   219→   886→   886→          <Input
+   220→   887→   887→            placeholder="Search domains by name, category, or description..."
+   221→   888→   888→            value={search}
+   222→   889→   889→            onChange={(e) => {
+   223→   890→   890→              setSearch(e.target.value)
+   224→   891→   891→              setPage(1)
+   225→   892→   892→            }}
+   226→   893→   893→            className="pl-10 h-11"
+   227→   894→   894→            aria-label="Search domains"
+   228→   895→   895→          />
+   229→   896→   896→        </div>
+   230→   897→   897→
+   231→   898→   898→        {/* Mobile filter toggle */}
+   232→   899→   899→        <div className="flex items-center justify-between mb-4">
+   233→   900→   900→          <Button
+   234→   901→   901→            variant="outline"
+   235→   902→   902→            size="sm"
+   236→   903→   903→            className="lg:hidden"
+   237→   904→   904→            onClick={() => setShowFilters(!showFilters)}
+   238→   905→   905→          >
+   239→   906→   906→            <SlidersHorizontal className="size-4 mr-2" />
+   240→   907→   907→            Filters
+   241→   908→   908→          </Button>
+   242→   909→   909→          <div className="hidden lg:block text-sm text-muted-foreground">
+   243→   910→   910→            {data && <span>{data.total} domain{data.total !== 1 ? 's' : ''} found</span>}
+   244→   911→   911→          </div>
+   245→   912→   912→        </div>
+   246→   913→   913→
+   247→   914→   914→        {/* Filters */}
+   248→   915→   915→        <div className={`mb-6 ${showFilters ? 'block' : 'hidden'} lg:block`}>
+   249→   916→   916→          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+   250→   917→   917→            <Select
+   251→   918→   918→              value={category || '_all'}
+   252→   919→   919→              onValueChange={(v) => {
+   253→   920→   920→                setCategory(v === '_all' ? '' : v)
+   254→   921→   921→                setPage(1)
+   255→   922→   922→              }}
+   256→   923→   923→            >
+   257→   924→   924→              <SelectTrigger aria-label="Filter by category">
+   258→   925→   925→                <SelectValue placeholder="Category" />
+   259→   926→   926→              </SelectTrigger>
+   260→   927→   927→              <SelectContent>
+   261→   928→   928→                <SelectItem value="_all">All Categories</SelectItem>
+   262→   929→   929→                {data?.categories?.map((c) => (
+   263→   930→   930→                  <SelectItem key={c} value={c}>
+   264→   931→   931→                    {c}
+   265→   932→   932→                  </SelectItem>
+   266→   933→   933→                ))}
+   267→   934→   934→              </SelectContent>
+   268→   935→   935→            </Select>
+   269→   936→   936→
+   270→   937→   937→            <Select
+   271→   938→   938→              value={extension || '_all'}
+   272→   939→   939→              onValueChange={(v) => {
+   273→   940→   940→                setExtension(v === '_all' ? '' : v)
+   274→   941→   941→                setPage(1)
+   275→   942→   942→              }}
+   276→   943→   943→            >
+   277→   944→   944→              <SelectTrigger aria-label="Filter by extension">
+   278→   945→   945→                <SelectValue placeholder="Extension" />
+   279→   946→   946→              </SelectTrigger>
+   280→   947→   947→              <SelectContent>
+   281→   948→   948→                <SelectItem value="_all">All Extensions</SelectItem>
+   282→   949→   949→                {data?.extensions?.map((ext) => (
+   283→   950→   950→                  <SelectItem key={ext} value={ext}>
+   284→   951→   951→                    {ext}
+   285→   952→   952→                  </SelectItem>
+   286→   953→   953→                ))}
+   287→   954→   954→              </SelectContent>
+   288→   955→   955→            </Select>
+   289→   956→   956→
+   290→   957→   957→            <Select
+   291→   958→   958→              value={status || '_all'}
+   292→   959→   959→              onValueChange={(v) => {
+   293→   960→   960→                setStatus(v === '_all' ? '' : v)
+   294→   961→   961→                setPage(1)
+   295→   962→   962→              }}
+   296→   963→   963→            >
+   297→   964→   964→              <SelectTrigger aria-label="Filter by status">
+   298→   965→   965→                <SelectValue placeholder="Status" />
+   299→   966→   966→              </SelectTrigger>
+   300→   967→   967→              <SelectContent>
+   301→   968→   968→                <SelectItem value="_all">All Statuses</SelectItem>
+   302→   969→   969→                <SelectItem value="Available">Available</SelectItem>
+   303→   970→   970→                <SelectItem value="Negotiating">Negotiating</SelectItem>
+   304→   971→   971→                <SelectItem value="Sold">Sold</SelectItem>
+   305→   972→   972→              </SelectContent>
+   306→   973→   973→            </Select>
+   307→   974→   974→
+   308→   975→   975→            <Select
+   309→   976→   976→              value={sort}
+   310→   977→   977→              onValueChange={(v) => {
+   311→   978→   978→                setSort(v)
+   312→   979→   979→                setPage(1)
+   313→   980→   980→              }}
+   314→   981→   981→            >
+   315→   982→   982→              <SelectTrigger aria-label="Sort by">
+   316→   983→   983→                <SelectValue placeholder="Sort" />
+   317→   984→   984→              </SelectTrigger>
+   318→   985→   985→              <SelectContent>
+   319→   986→   986→                <SelectItem value="newest">Newest</SelectItem>
+   320→   987→   987→                <SelectItem value="name_asc">A → Z</SelectItem>
+   321→   988→   988→                <SelectItem value="name_desc">Z → A</SelectItem>
+   322→   989→   989→                <SelectItem value="featured">Featured First</SelectItem>
+   323→   990→   990→                <SelectItem value="price_asc">Price: Low → High</SelectItem>
+   324→   991→   991→                <SelectItem value="price_desc">Price: High → Low</SelectItem>
+   325→   992→   992→              </SelectContent>
+   326→   993→   993→            </Select>
+   327→   994→   994→
+   328→   995→   995→            <div className="flex items-center gap-4">
+   329→   996→   996→              <div className="flex items-center gap-2">
+   330→   997→   997→                <Switch
+   331→   998→   998→                  id="featured-toggle"
+   332→   999→   999→                  checked={featured}
+   333→  1000→  1000→                  onCheckedChange={(v) => {
+   334→  1001→  1001→                    setFeatured(v)
+   335→  1002→  1002→                    setPage(1)
+   336→  1003→  1003→                  }}
+   337→  1004→  1004→                />
+   338→  1005→  1005→                <Label htmlFor="featured-toggle" className="text-sm cursor-pointer">
+   339→  1006→  1006→                  Featured
+   340→  1007→  1007→                </Label>
+   341→  1008→  1008→              </div>
+   342→  1009→  1009→              <div className="flex items-center gap-2">
+   343→  1010→  1010→                <Switch
+   344→  1011→  1011→                  id="price-toggle"
+   345→  1012→  1012→                  checked={hasPrice}
+   346→  1013→  1013→                  onCheckedChange={(v) => {
+   347→  1014→  1014→                    setHasPrice(v)
+   348→  1015→  1015→                    setPage(1)
+   349→  1016→  1016→                  }}
+   350→  1017→  1017→                />
+   351→  1018→  1018→                <Label htmlFor="price-toggle" className="text-sm cursor-pointer">
+   352→  1019→  1019→                  Has Price
+   353→  1020→  1020→                </Label>
+   354→  1021→  1021→              </div>
+   355→  1022→  1022→            </div>
+   356→  1023→  1023→          </div>
+   357→  1024→  1024→
+   358→  1025→  1025→          {(category || extension || status || featured || hasPrice) && (
+   359→  1026→  1026→            <div className="mt-3 flex items-center gap-2 flex-wrap">
+   360→  1027→  1027→              <span className="text-xs text-muted-foreground">Active filters:</span>
+   361→  1028→  1028→              {category && (
+   362→  1029→  1029→                <Badge variant="secondary" className="text-xs">
+   363→  1030→  1030→                  {category}
+   364→  1031→  1031→                  <button
+   365→  1032→  1032→                    onClick={() => {
+   366→  1033→  1033→                      setCategory('')
+   367→  1034→  1034→                      setPage(1)
+   368→  1035→  1035→                    }}
+   369→  1036→  1036→                    className="ml-1 hover:text-foreground"
+   370→  1037→  1037→                    aria-label={`Remove ${category} filter`}
+   371→  1038→  1038→                  >
+   372→  1039→  1039→                    <X className="size-3" />
+   373→  1040→  1040→                  </button>
+   374→  1041→  1041→                </Badge>
+   375→  1042→  1042→              )}
+   376→  1043→  1043→              {extension && (
+   377→  1044→  1044→                <Badge variant="secondary" className="text-xs">
+   378→  1045→  1045→                  {extension}
+   379→  1046→  1046→                  <button
+   380→  1047→  1047→                    onClick={() => {
+   381→  1048→  1048→                      setExtension('')
+   382→  1049→  1049→                      setPage(1)
+   383→  1050→  1050→                    }}
+   384→  1051→  1051→                    className="ml-1 hover:text-foreground"
+   385→  1052→  1052→                    aria-label={`Remove ${extension} filter`}
+   386→  1053→  1053→                  >
+   387→  1054→  1054→                    <X className="size-3" />
+   388→  1055→  1055→                  </button>
+   389→  1056→  1056→                </Badge>
+   390→  1057→  1057→              )}
+   391→  1058→  1058→              {status && (
+   392→  1059→  1059→                <Badge variant="secondary" className="text-xs">
+   393→  1060→  1060→                  {status}
+   394→  1061→  1061→                  <button
+   395→  1062→  1062→                    onClick={() => {
+   396→  1063→  1063→                      setStatus('')
+   397→  1064→  1064→                      setPage(1)
+   398→  1065→  1065→                    }}
+   399→  1066→  1066→                    className="ml-1 hover:text-foreground"
+   400→  1067→  1067→                    aria-label={`Remove ${status} filter`}
+   401→  1068→  1068→                  >
+   402→  1069→  1069→                    <X className="size-3" />
+   403→  1070→  1070→                  </button>
+   404→  1071→  1071→                </Badge>
+   405→  1072→  1072→              )}
+   406→  1073→  1073→              <button onClick={resetFilters} className="text-xs text-gold hover:underline ml-2">
+   407→  1074→  1074→                Clear all
+   408→  1075→  1075→              </button>
+   409→  1076→  1076→            </div>
+   410→  1077→  1077→          )}
+   411→  1078→  1078→        </div>
+   412→  1079→  1079→
+   413→  1080→  1080→        <div className="mb-4 text-sm text-muted-foreground lg:block hidden">
+   414→  1081→  1081→          {data && <span>{data.total} domain{data.total !== 1 ? 's' : ''} found</span>}
+   415→  1082→  1082→        </div>
+   416→  1083→  1083→
+   417→  1084→  1084→        {/* Grid */}
+   418→  1085→  1085→        {isLoading ? (
+   419→  1086→  1086→          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+   420→  1087→  1087→            {Array.from({ length: 6 }).map((_, i) => (
+   421→  1088→  1088→              <Skeleton key={i} className="h-52" />
+   422→  1089→  1089→            ))}
+   423→  1090→  1090→          </div>
+   424→  1091→  1091→        ) : data && data.domains.length > 0 ? (
+   425→  1092→  1092→          <>
+   426→  1093→  1093→            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+   427→  1094→  1094→              {data.domains.map((domain) => (
+   428→  1095→  1095→                <DomainCard key={domain.id} domain={domain} />
+   429→  1096→  1096→              ))}
+   430→  1097→  1097→            </div>
+   431→  1098→  1098→
+   432→  1099→  1099→            {totalPages > 1 && (
+   433→  1100→  1100→              <div className="mt-8 flex items-center justify-center gap-2">
+   434→  1101→  1101→                <Button
+   435→  1102→  1102→                  variant="outline"
+   436→  1103→  1103→                  size="sm"
+   437→  1104→  1104→                  disabled={page <= 1}
+   438→  1105→  1105→                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+   439→  1106→  1106→                  aria-label="Previous page"
+   440→  1107→  1107→                >
+   441→  1108→  1108→                  <ChevronLeft className="size-4" />
+   442→  1109→  1109→                  <span className="sr-only">Previous</span>
+   443→  1110→  1110→                </Button>
+   444→  1111→  1111→                <div className="flex items-center gap-1">
+   445→  1112→  1112→                  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+   446→  1113→  1113→                    let pageNum: number
+   447→  1114→  1114→                    if (totalPages <= 7) {
+   448→  1115→  1115→                      pageNum = i + 1
+   449→  1116→  1116→                    } else if (page <= 4) {
+   450→  1117→  1117→                      pageNum = i + 1
+   451→  1118→  1118→                    } else if (page >= totalPages - 3) {
+   452→  1119→  1119→                      pageNum = totalPages - 6 + i
+   453→  1120→  1120→                    } else {
+   454→  1121→  1121→                      pageNum = page - 3 + i
+   455→  1122→  1122→                    }
+   456→  1123→  1123→                    return (
+   457→  1124→  1124→                      <Button
+   458→  1125→  1125→                        key={pageNum}
+   459→  1126→  1126→                        variant={pageNum === page ? 'default' : 'outline'}
+   460→  1127→  1127→                        size="sm"
+   461→  1128→  1128→                        className="w-9"
+   462→  1129→  1129→                        onClick={() => setPage(pageNum)}
+   463→  1130→  1130→                        aria-label={`Page ${pageNum}`}
+   464→  1131→  1131→                        aria-current={pageNum === page ? 'page' : undefined}
+   465→  1132→  1132→                      >
+   466→  1133→  1133→                        {pageNum}
+   467→  1134→  1134→                      </Button>
+   468→  1135→  1135→                    )
+   469→  1136→  1136→                  })}
+   470→  1137→  1137→                </div>
+   471→  1138→  1138→                <Button
+   472→  1139→  1139→                  variant="outline"
+   473→  1140→  1140→                  size="sm"
+   474→  1141→  1141→                  disabled={page >= totalPages}
+   475→  1142→  1142→                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+   476→  1143→  1143→                  aria-label="Next page"
+   477→  1144→  1144→                >
+   478→  1145→  1145→                  <ChevronRight className="size-4" />
+   479→  1146→  1146→                  <span className="sr-only">Next</span>
+   480→  1147→  1147→                </Button>
+   481→  1148→  1148→              </div>
+   482→  1149→  1149→            )}
+   483→  1150→  1150→          </>
+   484→  1151→  1151→        ) : (
+   485→  1152→  1152→          <div className="text-center py-16">
+   486→  1153→  1153→            <Globe className="size-12 text-muted-foreground/40 mx-auto mb-4" />
+   487→  1154→  1154→            <h3 className="font-display text-xl mb-2">No domains found</h3>
+   488→  1155→  1155→            <p className="text-sm text-muted-foreground mb-4">
+   489→  1156→  1156→              Try adjusting your search or filters.
+   490→  1157→  1157→            </p>
+   491→  1158→  1158→            <Button variant="outline" onClick={resetFilters}>
+   492→  1159→  1159→              Clear Filters
+   493→  1160→  1160→            </Button>
+   494→  1161→  1161→          </div>
+   495→  1162→  1162→        )}
+   496→  1163→  1163→      </div>
+   497→  1164→  1164→    </div>
+   498→  1165→  1165→  )
+   499→  1166→  1166→}
+   500→  1167→  1167→
+   501→  1168→  1168→// ========================
+   502→  1169→  1169→// DOMAIN DETAIL MODAL
+   503→  1170→  1170→// ========================
+   504→  1171→  1171→
+   505→  1172→  1172→function DomainDetailModal() {
+   506→  1173→  1173→  const nav = useNavigation()
+   507→  1174→  1174→  const { data, isLoading } = useDomainDetail(nav.selectedDomain)
+   508→  1175→  1175→  const open = !!nav.selectedDomain
+   509→  1176→  1176→
+   510→  1177→  1177→  const handleClose = useCallback(() => {
+   511→  1178→  1178→    nav.setSelectedDomain(null)
+   512→  1179→  1179→  }, [nav])
+   513→  1180→  1180→
+   514→  1181→  1181→  const handleOffer = () => {
+   515→  1182→  1182→    if (data?.domain) {
+   516→  1183→  1183→      nav.setOfferDomainName(data.domain.name)
+   517→  1184→  1184→      nav.setSelectedDomain(null)
+   518→  1185→  1185→      nav.setShowOfferForm(true)
+   519→  1186→  1186→    }
+   520→  1187→  1187→  }
+   521→  1188→  1188→
+   522→  1189→  1189→  return (
+   523→  1190→  1190→    <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
+   524→  1191→  1191→      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+   525→  1192→  1192→        {isLoading ? (
+   526→  1193→  1193→          <div className="py-8 space-y-4">
+   527→  1194→  1194→            <Skeleton className="h-10 w-64" />
+   528→  1195→  1195→            <Skeleton className="h-4 w-40" />
+   529→  1196→  1196→            <Skeleton className="h-20 w-full" />
+   530→  1197→  1197→            <Skeleton className="h-32 w-full" />
+   531→  1198→  1198→          </div>
+   532→  1199→  1199→        ) : data?.domain ? (
+   533→  1200→  1200→          <>
+   534→  1201→  1201→            <DialogHeader>
+   535→  1202→  1202→              <div className="flex items-center gap-2 mb-2">
+   536→  1203→  1203→                <Badge variant="secondary">{data.domain.extension}</Badge>
+   537→  1204→  1204→                <Badge variant="outline">{data.domain.category}</Badge>
+   538→  1205→  1205→                {data.domain.featured && (
+   539→  1206→  1206→                  <Badge className="bg-gold/15 text-gold border-gold/25">Featured</Badge>
+   540→  1207→  1207→                )}
+   541→  1208→  1208→              </div>
+   542→  1209→  1209→              <DialogTitle className="font-display text-3xl sm:text-4xl">
+   543→  1210→  1210→                {data.domain.name}
+   544→  1211→  1211→              </DialogTitle>
+   545→  1212→  1212→              <DialogDescription className="sr-only">
+   546→  1213→  1213→                Details for {data.domain.name}
+   547→  1214→  1214→              </DialogDescription>
+   548→  1215→  1215→            </DialogHeader>
+   549→  1216→  1216→
+   550→  1217→  1217→            <div className="mt-6 space-y-6">
+   551→  1218→  1218→              <div className="flex items-center gap-4">
+   552→  1219→  1219→                {data.domain.showPrice && data.domain.price && (
+   553→  1220→  1220→                  <p className="font-display text-3xl gold-accent">
+   554→  1221→  1221→                    ${data.domain.price.toLocaleString()}
+   555→  1222→  1222→                  </p>
+   556→  1223→  1223→                )}
+   557→  1224→  1224→                <Badge variant="outline" className="text-sm">
+   558→  1225→  1225→                  {data.domain.saleType}
+   559→  1226→  1226→                </Badge>
+   560→  1227→  1227→              </div>
+   561→  1228→  1228→
+   562→  1229→  1229→              {data.domain.shortDescription && (
+   563→  1230→  1230→                <p className="text-muted-foreground leading-relaxed">
+   564→  1231→  1231→                  {data.domain.shortDescription}
+   565→  1232→  1232→                </p>
+   566→  1233→  1233→              )}
+   567→  1234→  1234→
+   568→  1235→  1235→              {data.domain.tags.length > 0 && (
+   569→  1236→  1236→                <div className="flex flex-wrap gap-2">
+   570→  1237→  1237→                  {data.domain.tags.map((tag) => (
+   571→  1238→  1238→                    <Badge key={tag} variant="secondary" className="text-xs font-normal">
+   572→  1239→  1239→                      {tag}
+   573→  1240→  1240→                    </Badge>
+   574→  1241→  1241→                  ))}
+   575→  1242→  1242→                </div>
+   576→  1243→  1243→              )}
+   577→  1244→  1244→
+   578→  1245→  1245→              {data.domain.useCases.length > 0 && (
+   579→  1246→  1246→                <div>
+   580→  1247→  1247→                  <h4 className="text-sm font-medium mb-3">Potential use cases</h4>
+   581→  1248→  1248→                  <ul className="space-y-2">
+   582→  1249→  1249→                    {data.domain.useCases.map((uc) => (
+   583→  1250→  1250→                      <li
+   584→  1251→  1251→                        key={uc}
+   585→  1252→  1252→                        className="flex items-start gap-2 text-sm text-muted-foreground"
+   586→  1253→  1253→                      >
+   587→  1254→  1254→                        <CheckCircle2 className="size-4 text-gold mt-0.5 shrink-0" />
+   588→  1255→  1255→                        {uc}
+   589→  1256→  1256→                      </li>
+   590→  1257→  1257→                    ))}
+   591→  1258→  1258→                  </ul>
+   592→  1259→  1259→                </div>
+   593→  1260→  1260→              )}
+   594→  1261→  1261→
+   595→  1262→  1262→              {data.domain.publicNotes && (
+   596→  1263→  1263→                <div className="p-4 bg-secondary/50 rounded-md">
+   597→  1264→  1264→                  <p className="text-sm text-muted-foreground">{data.domain.publicNotes}</p>
+   598→  1265→  1265→                </div>
+   599→  1266→  1266→              )}
+   600→  1267→  1267→
+   601→
+   602→[showing lines 668-1267 of 2002; use offset=1268 with limit to continue reading]
