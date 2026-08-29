@@ -25,15 +25,15 @@ const SITE_URL = "https://nizarrahme.com";
 const ICON_URL = "/favicon.png";
 
 const SOCIAL_URLS = {
-  x: "https://x.com/nizarx25",
+  x: "https://x.com/mr_nizarrahme",
   linkedin: "https://www.linkedin.com/in/nizarrahme",
-  instagram: "https://www.instagram.com/nizarrahme",
-  facebook: "https://www.facebook.com/nizarrahme",
+  instagram: "https://www.instagram.com/mr_nizarrahme",
+  facebook: "https://www.facebook.com/mr.nizarrahme",
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "NIZAR RAHME | Brandable Domain Names for AI, SaaS & Fintech",
+  title: "NIZAR RAHME | 💎Domain Investor · AI Intermediate · Security Trainee🔥",
   description:
     "NIZAR RAHME curates premium brandable domain names for AI startups, SaaS platforms, fintech companies, and technology businesses. Browse a hand-picked portfolio of memorable, short, and investment-grade .com domains available for immediate acquisition. Each domain is evaluated for brandability, memorability, and industry fit.",
   keywords: [
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "NIZAR RAHME | Brandable Domain Names for AI, SaaS & Fintech",
+    title: "NIZAR RAHME | 💎Domain Investor · AI Intermediate · Security Trainee🔥",
     description:
       "Curated premium domain names for AI startups, SaaS platforms, fintech, and technology businesses. Brandable, memorable, and available for acquisition.",
     type: "website",
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "NIZAR RAHME | Brandable Domain Names for AI, SaaS & Fintech",
+    title: "NIZAR RAHME | 💎Domain Investor · AI Intermediate · Security Trainee🔥",
     description:
       "Curated premium domain names for AI startups, SaaS platforms, fintech, and technology businesses.",
     image: ICON_URL,
