@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { safeJsonParse, sanitizeString } from '@/lib/auth'
+import { queryFallbackDomains } from '@/lib/fallback-data'
 
 const ALLOWED_SORTS = ['newest', 'name_asc', 'name_desc', 'featured', 'price_asc', 'price_desc'] as const
 
@@ -119,42 +120,40 @@ export async function GET(request: NextRequest) {
         break
     }
 
-    // Fetch data
-    const [domains, total] = await Promise.all([
-      db.domain.findMany({
-        where,
-        orderBy,
-        skip: (page - 1) * limit,
-        take: limit,
-      }),
-      db.domain.count({ where }),
-    ])
+    // Try database first, fall back to seed data
+    try {
+      const [domains, total] = await Promise.all([
+        db.domain.findMany({
+          where,
+          orderBy,
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        db.domain.count({ where }),
+      ])
 
-    // Fetch unique categories and extensions for filters
-    const [categories, extensions] = await Promise.all([
-      db.domain.findMany({
-        distinct: ['category'],
-        select: { category: true },
-        orderBy: { category: 'asc' },
-      }),
-      db.domain.findMany({
-        distinct: ['extension'],
-        select: { extension: true },
-        orderBy: { extension: 'asc' },
-      }),
-    ])
+      // If DB has data, use it
+      if (total > 0) {
+        const [categories, extensions] = await Promise.all([
+          db.domain.findMany({ distinct: ['category'], select: { category: true }, orderBy: { category: 'asc' } }),
+          db.domain.findMany({ distinct: ['extension'], select: { extension: true }, orderBy: { extension: 'asc' } }),
+        ])
 
-    // Only return public-safe fields
-    const publicDomains = domains.map(toPublicDomain)
+        return NextResponse.json({
+          domains: domains.map(toPublicDomain),
+          total,
+          page,
+          limit,
+          categories: categories.map((c) => c.category),
+          extensions: extensions.map((e) => e.extension),
+        })
+      }
+    } catch {
+      // DB error — fall through to fallback
+    }
 
-    return NextResponse.json({
-      domains: publicDomains,
-      total,
-      page,
-      limit,
-      categories: categories.map((c) => c.category),
-      extensions: extensions.map((e) => e.extension),
-    })
+    // Fallback to bundled seed data
+    return NextResponse.json(queryFallbackDomains({ search, category, extension, status, featured, hasPrice, sort, page, limit }))
   } catch (error) {
     console.error('Error fetching domains:', error)
     return NextResponse.json({ error: 'Failed to fetch domains' }, { status: 500 })
