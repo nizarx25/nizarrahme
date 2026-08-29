@@ -22,7 +22,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 const SITE_URL = "https://nizarrahme.com";
-const ICON_URL = "/logo.svg";
+const ICON_URL = "/favicon.png";
 
 const SOCIAL_URLS = {
   x: "https://x.com/nizarx25",
@@ -55,7 +55,11 @@ export const metadata: Metadata = {
   category: "business",
   authors: [{ name: "NIZAR RAHME" }],
   icons: {
-    icon: ICON_URL,
+    icon: [
+      { url: "/favicon.png", sizes: "1024x1024", type: "image/png" },
+    ],
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
   },
   alternates: {
     canonical: "/",
