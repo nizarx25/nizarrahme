@@ -1410,46 +1410,46 @@ function DomainDetailModal() {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+      <DialogContent className="sm:max-w-2xl max-h-[90dvh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl p-4 sm:p-6">
         {isLoading ? (
-          <div className="py-8 space-y-4"><Skeleton className="h-10 w-64 bg-surface-border/50" /><Skeleton className="h-4 w-40 bg-surface-border/30" /><Skeleton className="h-20 w-full bg-surface-border/30" /><Skeleton className="h-32 w-full bg-surface-border/30" /></div>
+          <div className="py-4 sm:py-8 space-y-3 sm:space-y-4"><Skeleton className="h-8 w-48 bg-surface-border/50" /><Skeleton className="h-3 w-32 bg-surface-border/30" /><Skeleton className="h-16 w-full bg-surface-border/30" /><Skeleton className="h-24 w-full bg-surface-border/30" /></div>
         ) : data?.domain ? (
           <>
             <DialogHeader>
-              <div className="flex items-center gap-2 mb-3">
-                <Badge className="bg-elevated text-[#718581] border-surface-border text-xs font-mono-accent rounded-full px-3">{data.domain.extension}</Badge>
-                <Badge className="bg-coral/10 text-coral border-coral/20 text-xs font-mono-accent rounded-full px-3">{data.domain.category}</Badge>
-                {data.domain.featured && <Badge className="bg-teal/10 text-teal border-teal/20 text-xs font-mono-accent rounded-full px-3">Featured</Badge>}
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                <Badge className="bg-elevated text-[#718581] border-surface-border text-[10px] sm:text-xs font-mono-accent rounded-full px-2 sm:px-3 py-0">{data.domain.extension}</Badge>
+                <Badge className="bg-coral/10 text-coral border-coral/20 text-[10px] sm:text-xs font-mono-accent rounded-full px-2 sm:px-3 py-0">{data.domain.category}</Badge>
+                {data.domain.featured && <Badge className="bg-teal/10 text-teal border-teal/20 text-[10px] sm:text-xs font-mono-accent rounded-full px-2 sm:px-3 py-0">Featured</Badge>}
               </div>
-              <DialogTitle className="font-display text-3xl sm:text-4xl font-bold text-white">{data.domain.name}</DialogTitle>
+              <DialogTitle className="font-display text-xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight pr-8">{data.domain.name}</DialogTitle>
               <DialogDescription className="sr-only">Details for {data.domain.name}</DialogDescription>
             </DialogHeader>
-            <div className="mt-6 space-y-6">
-              <div className="flex items-center gap-4">
-                {data.domain.showPrice && data.domain.price && <p className="font-display text-3xl font-bold text-teal">${data.domain.price.toLocaleString()}</p>}
-                <Badge variant="outline" className="border-surface-border text-[#718581] text-sm font-mono-accent rounded-full">{data.domain.saleType}</Badge>
+            <div className="mt-3 sm:mt-6 space-y-3 sm:space-y-5">
+              <div className="flex items-center gap-3 sm:gap-4">
+                {data.domain.showPrice && data.domain.price && <p className="font-display text-2xl sm:text-3xl font-bold text-teal">${data.domain.price.toLocaleString()}</p>}
+                <Badge variant="outline" className="border-surface-border text-[#718581] text-xs sm:text-sm font-mono-accent rounded-full">{data.domain.saleType}</Badge>
               </div>
-              {data.domain.shortDescription && <p className="text-[#B8C8C4] leading-relaxed">{data.domain.shortDescription}</p>}
-              {data.domain.tags.length > 0 && <div className="flex flex-wrap gap-2">{data.domain.tags.map((tag) => <Badge key={tag} variant="secondary" className="text-xs font-mono-accent bg-elevated text-[#B8C8C4] rounded-full px-3">{tag}</Badge>)}</div>}
+              {data.domain.shortDescription && <p className="text-sm text-[#B8C8C4] leading-relaxed">{data.domain.shortDescription}</p>}
+              {data.domain.tags.length > 0 && <div className="flex flex-wrap gap-1.5 sm:gap-2">{data.domain.tags.map((tag) => <Badge key={tag} variant="secondary" className="text-[10px] sm:text-xs font-mono-accent bg-elevated text-[#B8C8C4] rounded-full px-2 sm:px-3 py-0">{tag}</Badge>)}</div>}
               {data.domain.useCases.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-white mb-3">Potential use cases</h4>
-                  <ul className="space-y-2">{data.domain.useCases.map((uc) => <li key={uc} className="flex items-start gap-2 text-sm text-[#B8C8C4]"><CheckCircle2 className="size-4 text-teal mt-0.5 shrink-0" />{uc}</li>)}</ul>
+                  <h4 className="text-xs sm:text-sm font-medium text-white mb-2 sm:mb-3">Potential use cases</h4>
+                  <ul className="space-y-1.5 sm:space-y-2">{data.domain.useCases.map((uc) => <li key={uc} className="flex items-start gap-2 text-xs sm:text-sm text-[#B8C8C4]"><CheckCircle2 className="size-3.5 sm:size-4 text-teal mt-0.5 shrink-0" />{uc}</li>)}</ul>
                 </div>
               )}
-              {data.domain.publicNotes && <div className="p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-sm text-[#B8C8C4]">{data.domain.publicNotes}</p></div>}
-              <Button onClick={handleOffer} className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]">
+              {data.domain.publicNotes && <div className="p-3 sm:p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-xs sm:text-sm text-[#B8C8C4]">{data.domain.publicNotes}</p></div>}
+              <Button onClick={handleOffer} className="w-full bg-coral hover:bg-coral-hover text-white h-11 sm:h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)] text-sm sm:text-base">
                 <ShoppingCart className="size-4 mr-2" /> Make an Offer <ArrowRight className="size-4" />
               </Button>
               {data.relatedDomains.length > 0 && (
                 <div>
-                  <Separator className="bg-surface-border mb-6" />
-                  <h4 className="text-sm font-medium text-white mb-4">Related domains</h4>
-                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+                  <Separator className="bg-surface-border mb-3 sm:mb-6" />
+                  <h4 className="text-xs sm:text-sm font-medium text-white mb-3">Related domains</h4>
+                  <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 -mx-1 px-1">
                     {data.relatedDomains.map((rd) => (
-                      <button key={rd.id} onClick={() => nav.setSelectedDomain(rd.slug)} className="shrink-0 surface-border rounded-xl p-4 hover:border-teal/30 transition-colors text-left min-w-[180px] bg-surface">
-                        <p className="font-display text-sm font-bold text-white truncate">{rd.name}</p>
-                        <p className="text-xs font-mono-accent text-[#718581] mt-1">{rd.category}</p>
+                      <button key={rd.id} onClick={() => nav.setSelectedDomain(rd.slug)} className="shrink-0 surface-border rounded-xl p-3 sm:p-4 hover:border-teal/30 transition-colors text-left min-w-[140px] sm:min-w-[180px] bg-surface">
+                        <p className="font-display text-xs sm:text-sm font-bold text-white truncate">{rd.name}</p>
+                        <p className="text-[10px] sm:text-xs font-mono-accent text-[#718581] mt-1">{rd.category}</p>
                       </button>
                     ))}
                   </div>
@@ -1497,35 +1497,35 @@ function OfferFormDialog() {
 
   if (submitted) return (
     <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
-      <DialogContent className="bg-[#0B211E] border-surface-border rounded-2xl">
-        <div className="text-center py-6 sm:py-8"><CheckCircle2 className="size-10 sm:size-12 text-teal mx-auto mb-4" /><h3 className="font-display text-xl sm:text-2xl font-bold text-white mb-2">Thank you.</h3><p className="text-sm text-[#B8C8C4] leading-relaxed px-2">Your inquiry has been received. NIZAR RAHME will review it and get back to you.</p><Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => handleClose(false)}>Close</Button></div>
+      <DialogContent className="bg-[#0B211E] border-surface-border rounded-2xl p-4 sm:p-6">
+        <div className="text-center py-4 sm:py-8"><CheckCircle2 className="size-8 sm:size-12 text-teal mx-auto mb-3 sm:mb-4" /><h3 className="font-display text-lg sm:text-2xl font-bold text-white mb-2">Thank you.</h3><p className="text-xs sm:text-sm text-[#B8C8C4] leading-relaxed px-2">Your inquiry has been received. NIZAR RAHME will review it and get back to you.</p><Button variant="outline" className="mt-4 sm:mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => handleClose(false)}>Close</Button></div>
       </DialogContent>
     </Dialog>
   )
 
   return (
     <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
-      <DialogContent className="bg-[#0B211E] border-surface-border rounded-2xl max-h-[85dvh] overflow-y-auto">
-        <DialogHeader className="pb-2">
-          <DialogTitle className="font-display text-xl sm:text-2xl font-bold text-white pr-8">Make an Offer</DialogTitle>
-          <DialogDescription className="text-sm text-[#718581]">{nav.offerDomainName ? `Submit your offer for ${nav.offerDomainName}` : 'Submit an inquiry about a domain'}</DialogDescription>
+      <DialogContent className="bg-[#0B211E] border-surface-border rounded-2xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6">
+        <DialogHeader className="pb-1 sm:pb-2">
+          <DialogTitle className="font-display text-lg sm:text-2xl font-bold text-white pr-8">Make an Offer</DialogTitle>
+          <DialogDescription className="text-xs sm:text-sm text-[#718581]">{nav.offerDomainName ? `Submit your offer for ${nav.offerDomainName}` : 'Submit an inquiry about a domain'}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="mt-4 sm:mt-6 space-y-4 sm:space-y-5" noValidate aria-label="Domain offer form">
-          {nav.offerDomainName && <div className="p-3 sm:p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-xs font-mono-accent text-[#718581]">Domain</p><p className="font-display text-base sm:text-lg font-bold bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent mt-1">{nav.offerDomainName}</p></div>}
+        <form onSubmit={handleSubmit} className="mt-3 sm:mt-6 space-y-3 sm:space-y-5" noValidate aria-label="Domain offer form">
+          {nav.offerDomainName && <div className="p-2.5 sm:p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-[10px] sm:text-xs font-mono-accent text-[#718581]">Domain</p><p className="font-display text-sm sm:text-lg font-bold bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent mt-0.5 sm:mt-1">{nav.offerDomainName}</p></div>}
           <div className="absolute -left-[9999px]" aria-hidden="true"><label htmlFor="website">Website</label><input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" value={form.honeypot} onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))} /></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-1.5"><Label htmlFor="offer-name" className="text-sm text-[#B8C8C4]">Name *</Label><Input id="offer-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} aria-errormessage="offer-name-error" className="bg-surface border-surface-border rounded-[10px] h-11 text-white text-sm focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p id="offer-name-error" role="alert" className="text-xs text-error mt-1">{errors.name}</p>}</div>
-            <div className="space-y-1.5"><Label htmlFor="offer-email" className="text-sm text-[#B8C8C4]">Email *</Label><Input id="offer-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} aria-errormessage="offer-email-error" className="bg-surface border-surface-border rounded-[10px] h-11 text-white text-sm focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p id="offer-email-error" role="alert" className="text-xs text-error mt-1">{errors.email}</p>}</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
+            <div className="space-y-1"><Label htmlFor="offer-name" className="text-xs sm:text-sm text-[#B8C8C4]">Name *</Label><Input id="offer-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} aria-errormessage="offer-name-error" className="bg-surface border-surface-border rounded-[10px] h-10 sm:h-11 text-white text-sm focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p id="offer-name-error" role="alert" className="text-[10px] sm:text-xs text-error mt-0.5">{errors.name}</p>}</div>
+            <div className="space-y-1"><Label htmlFor="offer-email" className="text-xs sm:text-sm text-[#B8C8C4]">Email *</Label><Input id="offer-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} aria-errormessage="offer-email-error" className="bg-surface border-surface-border rounded-[10px] h-10 sm:h-11 text-white text-sm focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p id="offer-email-error" role="alert" className="text-[10px] sm:text-xs text-error mt-0.5">{errors.email}</p>}</div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-1.5"><Label htmlFor="offer-company" className="text-sm text-[#B8C8C4]">Company / Project</Label><Input id="offer-company" value={form.company} onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))} className="bg-surface border-surface-border rounded-[10px] h-11 text-white text-sm focus:border-teal/40 focus:ring-teal/20" /></div>
-            <div className="space-y-1.5"><Label htmlFor="offer-amount" className="text-sm text-[#B8C8C4]">Offer Amount (USD)</Label><Input id="offer-amount" type="number" min="1" inputMode="numeric" value={form.offerAmount} onChange={(e) => setForm((f) => ({ ...f, offerAmount: e.target.value }))} placeholder="e.g. 500" className="bg-surface border-surface-border rounded-[10px] h-11 text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
+            <div className="space-y-1"><Label htmlFor="offer-company" className="text-xs sm:text-sm text-[#B8C8C4]">Company / Project</Label><Input id="offer-company" value={form.company} onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))} className="bg-surface border-surface-border rounded-[10px] h-10 sm:h-11 text-white text-sm focus:border-teal/40 focus:ring-teal/20" /></div>
+            <div className="space-y-1"><Label htmlFor="offer-amount" className="text-xs sm:text-sm text-[#B8C8C4]">Offer Amount (USD)</Label><Input id="offer-amount" type="number" min="1" inputMode="numeric" value={form.offerAmount} onChange={(e) => setForm((f) => ({ ...f, offerAmount: e.target.value }))} placeholder="e.g. 500" className="bg-surface border-surface-border rounded-[10px] h-10 sm:h-11 text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
           </div>
-          <div className="space-y-1.5"><Label htmlFor="offer-use" className="text-sm text-[#B8C8C4]">Intended Use</Label><Input id="offer-use" value={form.intendedUse} onChange={(e) => setForm((f) => ({ ...f, intendedUse: e.target.value }))} placeholder="e.g. AI startup, SaaS platform" className="bg-surface border-surface-border rounded-[10px] h-11 text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
-          <div className="space-y-1.5"><Label htmlFor="offer-message" className="text-sm text-[#B8C8C4]">Message *</Label><Textarea id="offer-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={3} aria-invalid={!!errors.message} aria-errormessage="offer-message-error" className="bg-surface border-surface-border rounded-[10px] text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p id="offer-message-error" role="alert" className="text-xs text-error mt-1">{errors.message}</p>}</div>
-          <div className="flex items-start gap-2.5 pt-1"><Checkbox id="offer-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} aria-errormessage="offer-consent-error" className="data-[state=checked]:bg-teal data-[state=checked]:border-teal mt-0.5" /><Label htmlFor="offer-consent" className="text-xs sm:text-sm text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
-          {errors.consent && <p id="offer-consent-error" role="alert" className="text-xs text-error">{errors.consent}</p>}
-          <Button type="submit" className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)] text-sm" disabled={submitInquiry.isPending}>{submitInquiry.isPending ? <><Loader2 className="size-4 animate-spin" /> Submitting...</> : <>Send Inquiry <Send className="size-4" /></>}</Button>
+          <div className="space-y-1"><Label htmlFor="offer-use" className="text-xs sm:text-sm text-[#B8C8C4]">Intended Use</Label><Input id="offer-use" value={form.intendedUse} onChange={(e) => setForm((f) => ({ ...f, intendedUse: e.target.value }))} placeholder="e.g. AI startup, SaaS platform" className="bg-surface border-surface-border rounded-[10px] h-10 sm:h-11 text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
+          <div className="space-y-1"><Label htmlFor="offer-message" className="text-xs sm:text-sm text-[#B8C8C4]">Message *</Label><Textarea id="offer-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={3} aria-invalid={!!errors.message} aria-errormessage="offer-message-error" className="bg-surface border-surface-border rounded-[10px] text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p id="offer-message-error" role="alert" className="text-[10px] sm:text-xs text-error mt-0.5">{errors.message}</p>}</div>
+          <div className="flex items-start gap-2 pt-0.5"><Checkbox id="offer-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} aria-errormessage="offer-consent-error" className="data-[state=checked]:bg-teal data-[state=checked]:border-teal mt-0.5" /><Label htmlFor="offer-consent" className="text-[10px] sm:text-xs text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
+          {errors.consent && <p id="offer-consent-error" role="alert" className="text-[10px] sm:text-xs text-error">{errors.consent}</p>}
+          <Button type="submit" className="w-full bg-coral hover:bg-coral-hover text-white h-11 sm:h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)] text-sm" disabled={submitInquiry.isPending}>{submitInquiry.isPending ? <><Loader2 className="size-4 animate-spin" /> Submitting...</> : <>Send Inquiry <Send className="size-4" /></>}</Button>
         </form>
       </DialogContent>
     </Dialog>

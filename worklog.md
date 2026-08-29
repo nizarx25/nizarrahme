@@ -399,3 +399,20 @@ Stage Summary:
 - WhatsApp completely removed from the site
 - Service cards are now clickable with rich gradient hover effects
 - 2 files modified: page.tsx, layout.tsx
+---
+Task ID: 1
+Agent: Main Agent
+Task: Fix domain info dialog to be fit-to-screen on mobile devices
+
+Work Log:
+- Read DomainDetailModal (lines 1404-1464) and OfferFormDialog (lines 1482-1533)
+- Identified issues: max-w-2xl overriding base mobile margins, large font sizes (text-3xl/text-4xl on mobile), excessive spacing (space-y-6, p-6), large button heights
+- Changed DomainDetailModal: sm:max-w-2xl (preserve base mobile max-w), p-4 sm:p-6, reduced title to text-xl sm:text-3xl lg:text-4xl, reduced price to text-2xl sm:text-3xl, reduced all spacing with sm: breakpoints, reduced badge sizes, compacted use cases, reduced button to h-11 sm:h-12, compacted related domains cards
+- Changed OfferFormDialog: added p-4 sm:p-6, reduced all form element spacing, reduced label/input sizes, changed grid from md:grid-cols-2 to sm:grid-cols-2, reduced button height to h-11 sm:h-12
+- Fixed invalid sm:rows={3} JSX attribute on Textarea (changed to plain rows={3})
+
+Stage Summary:
+- Domain Detail Dialog: 343px wide (16px margins) × 480px tall on 375×812 viewport - fits perfectly
+- Offer Form Dialog: 343px wide × 731px tall (90dvh with scroll) - fits within viewport
+- Lint passes clean
+- All changes responsive with sm: breakpoints for desktop enhancement
