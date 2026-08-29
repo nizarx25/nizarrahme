@@ -1,0 +1,502 @@
+     1→  1301→  const [featured, setFeatured] = useState(false)
+     2→  1302→  const [hasPrice, setHasPrice] = useState(false)
+     3→  1303→  const [sort, setSort] = useState('newest')
+     4→  1304→  const [page, setPage] = useState(1)
+     5→  1305→  const [showFilters, setShowFilters] = useState(false)
+     6→  1306→
+     7→  1307→  const { data, isLoading } = useDomains(
+     8→  1308→    search, category, extension, status, featured, hasPrice, sort, page
+     9→  1309→  )
+    10→  1310→
+    11→  1311→  const totalPages = data ? Math.ceil(data.total / data.limit) : 1
+    12→  1312→
+    13→  1313→  const resetFilters = () => {
+    14→  1314→    setSearch(''); setCategory(''); setExtension(''); setStatus('')
+    15→  1315→    setFeatured(false); setHasPrice(false); setSort('newest'); setPage(1)
+    16→  1316→  }
+    17→  1317→
+    18→  1318→  return (
+    19→  1319→    <div className="py-8 sm:py-12">
+    20→  1320→      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    21→  1321→        <div className="mb-8">
+    22→  1322→          <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Browse Catalog</p>
+    23→  1323→          <h1 className="font-display text-3xl sm:text-4xl font-bold text-white">Domain Catalog</h1>
+    24→  1324→          <p className="text-[#718581] mt-2">Browse available domain names. Click any domain to view details and make an offer.</p>
+    25→  1325→        </div>
+    26→  1326→
+    27→  1327→        <div className="relative mb-6">
+    28→  1328→          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[#718581]" />
+    29→  1329→          <Input
+    30→  1330→            placeholder="Search domains by name, category, or description..."
+    31→  1331→            value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+    32→  1332→            className="pl-12 h-12 bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20 transition-all"
+    33→  1333→            aria-label="Search domains"
+    34→  1334→          />
+    35→  1335→        </div>
+    36→  1336→
+    37→  1337→        <div className="flex items-center justify-between mb-4">
+    38→  1338→          <Button variant="outline" size="sm" className="lg:hidden border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]" onClick={() => setShowFilters(!showFilters)}>
+    39→  1339→            <SlidersHorizontal className="size-4 mr-2" /> Filters
+    40→  1340→          </Button>
+    41→  1341→          <div className="hidden lg:block text-sm font-mono-accent text-[#718581]">
+    42→  1342→            {data && <span>{data.total} domain{data.total !== 1 ? 's' : ''} found</span>}
+    43→  1343→          </div>
+    44→  1344→        </div>
+    45→  1345→
+    46→  1346→        <div className={`mb-6 ${showFilters ? 'block' : 'hidden'} lg:block`}>
+    47→  1347→          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+    48→  1348→            <Select value={category || '_all'} onValueChange={(v) => { setCategory(v === '_all' ? '' : v); setPage(1) }}>
+    49→  1349→              <SelectTrigger aria-label="Filter by category" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+    50→  1350→                <SelectValue placeholder="Category" />
+    51→  1351→              </SelectTrigger>
+    52→  1352→              <SelectContent>{data?.categories?.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+    53→  1353→            </Select>
+    54→  1354→            <Select value={extension || '_all'} onValueChange={(v) => { setExtension(v === '_all' ? '' : v); setPage(1) }}>
+    55→  1355→              <SelectTrigger aria-label="Filter by extension" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+    56→  1356→                <SelectValue placeholder="Extension" />
+    57→  1357→              </SelectTrigger>
+    58→  1358→              <SelectContent>{data?.extensions?.map((ext) => <SelectItem key={ext} value={ext}>{ext}</SelectItem>)}</SelectContent>
+    59→  1359→            </Select>
+    60→  1360→            <Select value={status || '_all'} onValueChange={(v) => { setStatus(v === '_all' ? '' : v); setPage(1) }}>
+    61→  1361→              <SelectTrigger aria-label="Filter by status" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+    62→  1362→                <SelectValue placeholder="Status" />
+    63→  1363→              </SelectTrigger>
+    64→  1364→              <SelectContent>
+    65→  1365→                <SelectItem value="Available">Available</SelectItem>
+    66→  1366→                <SelectItem value="Negotiating">Negotiating</SelectItem>
+    67→  1367→                <SelectItem value="Sold">Sold</SelectItem>
+    68→  1368→              </SelectContent>
+    69→  1369→            </Select>
+    70→  1370→            <Select value={sort} onValueChange={(v) => { setSort(v); setPage(1) }}>
+    71→  1371→              <SelectTrigger aria-label="Sort by" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+    72→  1372→                <SelectValue placeholder="Sort" />
+    73→  1373→              </SelectTrigger>
+    74→  1374→              <SelectContent>
+    75→  1375→                <SelectItem value="newest">Newest</SelectItem>
+    76→  1376→                <SelectItem value="name_asc">A → Z</SelectItem>
+    77→  1377→                <SelectItem value="name_desc">Z → A</SelectItem>
+    78→  1378→                <SelectItem value="featured">Featured First</SelectItem>
+    79→  1379→                <SelectItem value="price_asc">Price: Low → High</SelectItem>
+    80→  1380→                <SelectItem value="price_desc">Price: High → Low</SelectItem>
+    81→  1381→              </SelectContent>
+    82→  1382→            </Select>
+    83→  1383→            <div className="flex items-center gap-4">
+    84→  1384→              <div className="flex items-center gap-2">
+    85→  1385→                <Switch id="featured-toggle" checked={featured} onCheckedChange={(v) => { setFeatured(v); setPage(1) }} className="data-[state=checked]:bg-teal" />
+    86→  1386→                <Label htmlFor="featured-toggle" className="text-sm text-[#B8C8C4] cursor-pointer">Featured</Label>
+    87→  1387→              </div>
+    88→  1388→              <div className="flex items-center gap-2">
+    89→  1389→                <Switch id="price-toggle" checked={hasPrice} onCheckedChange={(v) => { setHasPrice(v); setPage(1) }} className="data-[state=checked]:bg-teal" />
+    90→  1390→                <Label htmlFor="price-toggle" className="text-sm text-[#B8C8C4] cursor-pointer">Has Price</Label>
+    91→  1391→              </div>
+    92→  1392→            </div>
+    93→  1393→          </div>
+    94→  1394→          {(category || extension || status || featured || hasPrice) && (
+    95→  1395→            <div className="mt-3 flex items-center gap-2 flex-wrap">
+    96→  1396→              <span className="text-xs font-mono-accent text-[#718581]">Active filters:</span>
+    97→  1397→              {category && <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">{category}<button onClick={() => { setCategory(''); setPage(1) }} className="ml-1 hover:text-white" aria-label={`Remove ${category} filter`}><X className="size-3" /></button></Badge>}
+    98→  1398→              {extension && <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">{extension}<button onClick={() => { setExtension(''); setPage(1) }} className="ml-1 hover:text-white" aria-label={`Remove ${extension} filter`}><X className="size-3" /></button></Badge>}
+    99→  1399→              {status && <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">{status}<button onClick={() => { setStatus(''); setPage(1) }} className="ml-1 hover:text-white" aria-label={`Remove ${status} filter`}><X className="size-3" /></button></Badge>}
+   100→  1400→              <button onClick={resetFilters} className="text-xs text-teal hover:underline ml-2 font-mono-accent">Clear all</button>
+   101→  1401→            </div>
+   102→  1402→          )}
+   103→  1403→        </div>
+   104→  1404→
+   105→  1405→        {isLoading ? (
+   106→  1406→          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-56 bg-surface rounded-[16px]" />)}</div>
+   107→  1407→        ) : data && data.domains.length > 0 ? (
+   108→  1408→          <>
+   109→  1409→            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{data.domains.map((domain) => <DomainCard key={domain.id} domain={domain} />)}</div>
+   110→  1410→            {totalPages > 1 && (
+   111→  1411→              <div className="mt-8 flex items-center justify-center gap-2">
+   112→  1412→                <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} aria-label="Previous page" className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]">
+   113→  1413→                  <ChevronLeft className="size-4" /><span className="sr-only">Previous</span>
+   114→  1414→                </Button>
+   115→  1415→                <div className="flex items-center gap-1">
+   116→  1416→                  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+   117→  1417→                    let pageNum: number
+   118→  1418→                    if (totalPages <= 7) pageNum = i + 1
+   119→  1419→                    else if (page <= 4) pageNum = i + 1
+   120→  1420→                    else if (page >= totalPages - 3) pageNum = totalPages - 6 + i
+   121→  1421→                    else pageNum = page - 3 + i
+   122→  1422→                    return (
+   123→  1423→                      <Button key={pageNum} variant={pageNum === page ? 'default' : 'outline'} size="sm"
+   124→  1424→                        className={`w-9 rounded-[10px] ${pageNum === page ? 'bg-teal text-[#061312] hover:bg-teal/90 border-0' : 'border-surface-border text-[#B8C8C4] hover:bg-elevated'}`}
+   125→  1425→                        onClick={() => setPage(pageNum)} aria-label={`Page ${pageNum}`} aria-current={pageNum === page ? 'page' : undefined}>{pageNum}</Button>
+   126→  1426→                    )
+   127→  1427→                  })}
+   128→  1428→                </div>
+   129→  1429→                <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} aria-label="Next page" className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]">
+   130→  1430→                  <ChevronRight className="size-4" /><span className="sr-only">Next</span>
+   131→  1431→                </Button>
+   132→  1432→              </div>
+   133→  1433→            )}
+   134→  1434→          </>
+   135→  1435→        ) : (
+   136→  1436→          <div className="text-center py-20">
+   137→  1437→            <Globe className="size-12 text-surface-border mx-auto mb-4" />
+   138→  1438→            <h3 className="font-display text-xl font-bold text-white mb-2">No domains found</h3>
+   139→  1439→            <p className="text-sm text-[#718581] mb-6">Try adjusting your search or filters.</p>
+   140→  1440→            <Button variant="outline" onClick={resetFilters} className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]">Clear Filters</Button>
+   141→  1441→          </div>
+   142→  1442→        )}
+   143→  1443→      </div>
+   144→  1444→    </div>
+   145→  1445→  )
+   146→  1446→}
+   147→  1447→
+   148→  1448→// ========================
+   149→  1449→// DOMAIN DETAIL MODAL
+   150→  1450→// ========================
+   151→  1451→
+   152→  1452→function DomainDetailModal() {
+   153→  1453→  const nav = useNavigation()
+   154→  1454→  const { data, isLoading } = useDomainDetail(nav.selectedDomain)
+   155→  1455→  const open = !!nav.selectedDomain
+   156→  1456→  const handleClose = useCallback(() => { nav.setSelectedDomain(null) }, [nav])
+   157→  1457→  const handleOffer = () => { if (data?.domain) { nav.setOfferDomainName(data.domain.name); nav.setSelectedDomain(null); nav.setShowOfferForm(true) } }
+   158→  1458→
+   159→  1459→  return (
+   160→  1460→    <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
+   161→  1461→      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+   162→  1462→        {isLoading ? (
+   163→  1463→          <div className="py-8 space-y-4"><Skeleton className="h-10 w-64 bg-surface-border/50" /><Skeleton className="h-4 w-40 bg-surface-border/30" /><Skeleton className="h-20 w-full bg-surface-border/30" /><Skeleton className="h-32 w-full bg-surface-border/30" /></div>
+   164→  1464→        ) : data?.domain ? (
+   165→  1465→          <>
+   166→  1466→            <DialogHeader>
+   167→  1467→              <div className="flex items-center gap-2 mb-3">
+   168→  1468→                <Badge className="bg-elevated text-[#718581] border-surface-border text-xs font-mono-accent rounded-full px-3">{data.domain.extension}</Badge>
+   169→  1469→                <Badge className="bg-coral/10 text-coral border-coral/20 text-xs font-mono-accent rounded-full px-3">{data.domain.category}</Badge>
+   170→  1470→                {data.domain.featured && <Badge className="bg-teal/10 text-teal border-teal/20 text-xs font-mono-accent rounded-full px-3">Featured</Badge>}
+   171→  1471→              </div>
+   172→  1472→              <DialogTitle className="font-display text-3xl sm:text-4xl font-bold text-white">{data.domain.name}</DialogTitle>
+   173→  1473→              <DialogDescription className="sr-only">Details for {data.domain.name}</DialogDescription>
+   174→  1474→            </DialogHeader>
+   175→  1475→            <div className="mt-6 space-y-6">
+   176→  1476→              <div className="flex items-center gap-4">
+   177→  1477→                {data.domain.showPrice && data.domain.price && <p className="font-display text-3xl font-bold text-teal">${data.domain.price.toLocaleString()}</p>}
+   178→  1478→                <Badge variant="outline" className="border-surface-border text-[#718581] text-sm font-mono-accent rounded-full">{data.domain.saleType}</Badge>
+   179→  1479→              </div>
+   180→  1480→              {data.domain.shortDescription && <p className="text-[#B8C8C4] leading-relaxed">{data.domain.shortDescription}</p>}
+   181→  1481→              {data.domain.tags.length > 0 && <div className="flex flex-wrap gap-2">{data.domain.tags.map((tag) => <Badge key={tag} variant="secondary" className="text-xs font-mono-accent bg-elevated text-[#B8C8C4] rounded-full px-3">{tag}</Badge>)}</div>}
+   182→  1482→              {data.domain.useCases.length > 0 && (
+   183→  1483→                <div>
+   184→  1484→                  <h4 className="text-sm font-medium text-white mb-3">Potential use cases</h4>
+   185→  1485→                  <ul className="space-y-2">{data.domain.useCases.map((uc) => <li key={uc} className="flex items-start gap-2 text-sm text-[#B8C8C4]"><CheckCircle2 className="size-4 text-teal mt-0.5 shrink-0" />{uc}</li>)}</ul>
+   186→  1486→                </div>
+   187→  1487→              )}
+   188→  1488→              {data.domain.publicNotes && <div className="p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-sm text-[#B8C8C4]">{data.domain.publicNotes}</p></div>}
+   189→  1489→              <Button onClick={handleOffer} className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]">
+   190→  1490→                <ShoppingCart className="size-4 mr-2" /> Make an Offer <ArrowRight className="size-4" />
+   191→  1491→              </Button>
+   192→  1492→              {data.relatedDomains.length > 0 && (
+   193→  1493→                <div>
+   194→  1494→                  <Separator className="bg-surface-border mb-6" />
+   195→  1495→                  <h4 className="text-sm font-medium text-white mb-4">Related domains</h4>
+   196→  1496→                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+   197→  1497→                    {data.relatedDomains.map((rd) => (
+   198→  1498→                      <button key={rd.id} onClick={() => nav.setSelectedDomain(rd.slug)} className="shrink-0 surface-border rounded-xl p-4 hover:border-teal/30 transition-colors text-left min-w-[180px] bg-surface">
+   199→  1499→                        <p className="font-display text-sm font-bold text-white truncate">{rd.name}</p>
+   200→  1500→                        <p className="text-xs font-mono-accent text-[#718581] mt-1">{rd.category}</p>
+   201→  1501→                      </button>
+   202→  1502→                    ))}
+   203→  1503→                  </div>
+   204→  1504→                </div>
+   205→  1505→              )}
+   206→  1506→            </div>
+   207→  1507→          </>
+   208→  1508→        ) : null}
+   209→  1509→      </DialogContent>
+   210→  1510→    </Dialog>
+   211→  1511→  )
+   212→  1512→}
+   213→  1513→
+   214→  1514→// ========================
+   215→  1515→// OFFER FORM DIALOG
+   216→  1516→// ========================
+   217→  1517→
+   218→  1518→const offerSchema = z.object({
+   219→  1519→  name: z.string().min(2, 'Name must be at least 2 characters'),
+   220→  1520→  email: z.email('Please enter a valid email address'),
+   221→  1521→  company: z.string().optional(),
+   222→  1522→  offerAmount: z.number().positive().optional(),
+   223→  1523→  intendedUse: z.string().optional(),
+   224→  1524→  message: z.string().min(10, 'Message must be at least 10 characters'),
+   225→  1525→  consent: z.literal(true, { errorMap: () => ({ message: 'You must consent to proceed' }) }),
+   226→  1526→})
+   227→  1527→
+   228→  1528→type FormErrors = Record<string, string>
+   229→  1529→
+   230→  1530→function OfferFormDialog() {
+   231→  1531→  const nav = useNavigation()
+   232→  1532→  const submitInquiry = useSubmitInquiry()
+   233→  1533→  const [form, setForm] = useState({ name: '', email: '', company: '', offerAmount: '', intendedUse: '', message: '', consent: false, honeypot: '' })
+   234→  1534→  const [errors, setErrors] = useState<FormErrors>({})
+   235→  1535→  const [submitted, setSubmitted] = useState(false)
+   236→  1536→  const resetForm = () => { setForm({ name: '', email: '', company: '', offerAmount: '', intendedUse: '', message: '', consent: false, honeypot: '' }); setErrors({}); setSubmitted(false) }
+   237→  1537→  const handleClose = (open: boolean) => { if (!open) { nav.setShowOfferForm(false); resetForm() } }
+   238→  1538→
+   239→  1539→  const handleSubmit = (e: FormEvent) => {
+   240→  1540→    e.preventDefault(); setErrors({})
+   241→  1541→    const result = offerSchema.safeParse({ name: form.name, email: form.email, company: form.company || undefined, offerAmount: form.offerAmount ? Number(form.offerAmount) : undefined, intendedUse: form.intendedUse || undefined, message: form.message, consent: form.consent })
+   242→  1542→    if (!result.success) { const fieldErrors: FormErrors = {}; for (const issue of result.error.issues) { const field = issue.path[0]; if (field) fieldErrors[String(field)] = issue.message } setErrors(fieldErrors); return }
+   243→  1543→    submitInquiry.mutate({ domainSlug: nav.offerDomainName ? nav.offerDomainName.toLowerCase().replace(/[^a-z0-9-]/g, '-') : undefined, ...result.data, honeypot: form.honeypot }, { onSuccess: () => setSubmitted(true) })
+   244→  1544→  }
+   245→  1545→
+   246→  1546→  if (submitted) return (
+   247→  1547→    <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
+   248→  1548→      <DialogContent className="max-w-lg bg-[#0B211E] border-surface-border rounded-2xl">
+   249→  1549→        <div className="text-center py-8"><CheckCircle2 className="size-12 text-teal mx-auto mb-4" /><h3 className="font-display text-2xl font-bold text-white mb-2">Thank you.</h3><p className="text-[#B8C8C4] leading-relaxed">Your inquiry has been received. Nizar will review it and get back to you.</p><Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => handleClose(false)}>Close</Button></div>
+   250→  1550→      </DialogContent>
+   251→  1551→    </Dialog>
+   252→  1552→  )
+   253→  1553→
+   254→  1554→  return (
+   255→  1555→    <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
+   256→  1556→      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+   257→  1557→        <DialogHeader>
+   258→  1558→          <DialogTitle className="font-display text-2xl font-bold text-white">Make an Offer</DialogTitle>
+   259→  1559→          <DialogDescription className="text-[#718581]">{nav.offerDomainName ? `Submit your offer for ${nav.offerDomainName}` : 'Submit an inquiry about a domain'}</DialogDescription>
+   260→  1560→        </DialogHeader>
+   261→  1561→        <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+   262→  1562→          {nav.offerDomainName && <div className="p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-xs font-mono-accent text-[#718581]">Domain</p><p className="font-display text-lg font-bold text-white mt-1">{nav.offerDomainName}</p></div>}
+   263→  1563→          <div className="absolute -left-[9999px]" aria-hidden="true"><label htmlFor="website">Website</label><input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" value={form.honeypot} onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))} /></div>
+   264→  1564→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   265→  1565→            <div className="space-y-2"><Label htmlFor="offer-name" className="text-[#B8C8C4]">Name *</Label><Input id="offer-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p className="text-xs text-error">{errors.name}</p>}</div>
+   266→  1566→            <div className="space-y-2"><Label htmlFor="offer-email" className="text-[#B8C8C4]">Email *</Label><Input id="offer-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p className="text-xs text-error">{errors.email}</p>}</div>
+   267→  1567→          </div>
+   268→  1568→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   269→  1569→            <div className="space-y-2"><Label htmlFor="offer-company" className="text-[#B8C8C4]">Company / Project</Label><Input id="offer-company" value={form.company} onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" /></div>
+   270→  1570→            <div className="space-y-2"><Label htmlFor="offer-amount" className="text-[#B8C8C4]">Offer Amount (USD)</Label><Input id="offer-amount" type="number" min="1" value={form.offerAmount} onChange={(e) => setForm((f) => ({ ...f, offerAmount: e.target.value }))} placeholder="e.g. 500" className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
+   271→  1571→          </div>
+   272→  1572→          <div className="space-y-2"><Label htmlFor="offer-use" className="text-[#B8C8C4]">Intended Use</Label><Input id="offer-use" value={form.intendedUse} onChange={(e) => setForm((f) => ({ ...f, intendedUse: e.target.value }))} placeholder="e.g. AI startup, SaaS platform" className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
+   273→  1573→          <div className="space-y-2"><Label htmlFor="offer-message" className="text-[#B8C8C4]">Message *</Label><Textarea id="offer-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={4} aria-invalid={!!errors.message} className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p className="text-xs text-error">{errors.message}</p>}</div>
+   274→  1574→          <div className="flex items-start gap-2"><Checkbox id="offer-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} className="data-[state=checked]:bg-teal data-[state=checked]:border-teal" /><Label htmlFor="offer-consent" className="text-sm text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
+   275→  1575→          {errors.consent && <p className="text-xs text-error">{errors.consent}</p>}
+   276→  1576→          <Button type="submit" className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]" disabled={submitInquiry.isPending}>{submitInquiry.isPending ? <><Loader2 className="size-4 animate-spin" /> Submitting...</> : <>Send Inquiry <Send className="size-4" /></>}</Button>
+   277→  1577→        </form>
+   278→  1578→      </DialogContent>
+   279→  1579→    </Dialog>
+   280→  1580→  )
+   281→  1581→}
+   282→  1582→
+   283→  1583→// ========================
+   284→  1584→// ABOUT SECTION
+   285→  1585→// ========================
+   286→  1586→
+   287→  1587→function AboutSection() {
+   288→  1588→  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+   289→  1589→
+   290→  1590→  return (
+   291→  1591→    <div className="py-12 sm:py-20">
+   292→  1592→      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+   293→  1593→        <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">About</p>
+   294→  1594→        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-8">About</h1>
+   295→  1595→        <div className="space-y-6 text-[#B8C8C4] leading-relaxed">
+   296→  1596→          <p>I&rsquo;m Nizar Rahme. I invest in and curate domain names for businesses operating in AI, SaaS, fintech, technology, and the broader digital economy.</p>
+   297→  1597→          <p>My approach to domain investing is straightforward: I look for names that are short, memorable, and genuinely brandable—names that could serve as the foundation for a real business. I don&rsquo;t register names at scale or flip domains for quick returns. Each name in the catalog has been selected with specific industries and use cases in mind.</p>
+   298→  1598→          <p>Beyond domain investing, I have hands-on experience building WordPress websites, creating digital content, and working with AI-assisted workflows. This practical background informs how I evaluate names—I think about how a domain will work in context, not just how it sounds.</p>
+   299→  1599→        </div>
+   300→  1600→
+   301→  1601→        <Separator className="my-12 bg-surface-border" />
+   302→  1602→
+   303→  1603→        <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-8">How I Evaluate a Domain</h2>
+   304→  1604→        <div className="space-y-0">
+   305→  1605→          {[
+   306→  1606→            { title: 'Brandability', desc: 'Does the name sound like a real company, not a keyword string?' },
+   307→  1607→            { title: 'Length', desc: 'Shorter is generally better. I prefer names under 12 characters when possible.' },
+   308→  1608→            { title: 'Memorability', desc: 'Can someone recall the name after hearing it once?' },
+   309→  1609→            { title: 'Pronounceability', desc: 'Can it be said out loud without confusion?' },
+   310→  1610→            { title: 'Industry fit', desc: 'Does it align with a growing sector like AI, SaaS, fintech, or digital services?' },
+   311→  1611→            { title: 'Extension quality', desc: '.com is preferred. Other extensions are selected only when the name is strong.' },
+   312→  1612→            { title: 'Search and confusion risk', desc: 'Does it avoid trademark conflicts and confusion with existing brands?' },
+   313→  1613→            { title: 'Practical value', desc: 'Would a real business benefit from owning this name?' },
+   314→  1614→          ].map((item, idx) => (
+   315→  1615→            <motion.div
+   316→  1616→              key={item.title}
+   317→  1617→              onMouseEnter={() => setHoveredIndex(idx)}
+   318→  1618→              onMouseLeave={() => setHoveredIndex(null)}
+   319→  1619→              className={`flex gap-4 py-4 px-3 -mx-3 rounded-xl surface-border-b last:border-b-0 transition-all duration-300 cursor-default relative overflow-hidden ${
+   320→  1620→                hoveredIndex === idx ? 'bg-gradient-to-r from-teal/8 via-elevated/50 to-transparent' : ''
+   321→  1621→              }`}
+   322→  1622→            >
+   323→  1623→              {hoveredIndex === idx && (
+   324→  1624→                <motion.div
+   325→  1625→                  layoutId="evalHighlight"
+   326→  1626→                  className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-teal to-teal-soft"
+   327→  1627→                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+   328→  1628→                />
+   329→  1629→              )}
+   330→  1630→              <motion.div
+   331→  1631→                animate={{
+   332→  1632→                  scale: hoveredIndex === idx ? 1.2 : 1,
+   333→  1633→                }}
+   334→  1634→                transition={{ duration: 0.2 }}
+   335→  1635→                className="shrink-0"
+   336→  1636→              >
+   337→  1637→                <div className={`w-8 h-8 rounded-lg bg-elevated border flex items-center justify-center text-xs font-mono-accent transition-all duration-300 ${
+   338→  1638→                  hoveredIndex === idx ? 'text-[#061312] border-teal/40 bg-gradient-to-br from-teal to-teal-soft shadow-[0_0_16px_rgba(0,229,176,0.25)]' : 'text-teal/70 border-surface-border'
+   339→  1639→                }`}>
+   340→  1640→                  {idx + 1}
+   341→  1641→                </div>
+   342→  1642→              </motion.div>
+   343→  1643→              <div className="min-w-0">
+   344→  1644→                <h3 className={`font-medium text-sm transition-all duration-300 ${hoveredIndex === idx ? 'bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent' : 'text-white'}`}>{item.title}</h3>
+   345→  1645→                <p className={`text-sm leading-relaxed transition-colors duration-300 ${hoveredIndex === idx ? 'text-[#B8C8C4]' : 'text-[#718581]'}`}>{item.desc}</p>
+   346→  1646→              </div>
+   347→  1647→              {hoveredIndex === idx && (
+   348→  1648→                <motion.div
+   349→  1649→                  initial={{ opacity: 0, x: -10 }}
+   350→  1650→                  animate={{ opacity: 1, x: 0 }}
+   351→  1651→                  className="shrink-0 self-center"
+   352→  1652→                >
+   353→  1653→                  <Sparkles className="size-4 text-teal" />
+   354→  1654→                </motion.div>
+   355→  1655→              )}
+   356→  1656→            </motion.div>
+   357→  1657→          ))}
+   358→  1658→        </div>
+   359→  1659→
+   360→  1660→        <Separator className="my-12 bg-surface-border" />
+   361→  1661→        <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-6">Supporting capabilities</h2>
+   362→  1662→        <ul className="space-y-3">{['WordPress website design and development', 'Content creation and copywriting', 'Social media strategy and management', 'SEO foundations and technical optimization', 'AI-assisted workflows and automation'].map((item) => (<li key={item} className="flex items-center gap-3 text-sm text-[#B8C8C4]"><CheckCircle2 className="size-4 text-teal shrink-0" />{item}</li>))}</ul>
+   363→  1663→        <Separator className="my-12 bg-surface-border" />
+   364→  1664→        <div className="flex items-center gap-4">
+   365→  1665→          <span className="text-sm text-[#718581] font-mono-accent">Connect:</span>
+   366→  1666→          <SocialLinks />
+   367→  1667→        </div>
+   368→  1668→      </div>
+   369→  1669→    </div>
+   370→  1670→  )
+   371→  1671→}
+   372→  1672→
+   373→  1673→// ========================
+   374→  1674→// SERVICES SECTION
+   375→  1675→// ========================
+   376→  1676→
+   377→  1677→function ServicesSection() {
+   378→  1678→  const nav = useNavigation()
+   379→  1679→  const services = [
+   380→  1680→    { icon: Globe, title: 'WordPress Websites', desc: 'Custom WordPress website design and development, from business sites to content platforms. Focused on clean design, fast performance, and ease of management.' },
+   381→  1681→    { icon: FileText, title: 'Digital Content', desc: 'Writing, editing, and content strategy for websites, blogs, and marketing materials. Content that communicates clearly and serves a purpose.' },
+   382→  1682→    { icon: BarChart3, title: 'SEO Foundations', desc: 'Technical SEO setup, keyword research, on-page optimization, and site structure to help websites become findable in search results.' },
+   383→  1683→    { icon: Sparkles, title: 'AI-Assisted Workflows', desc: 'Building and implementing AI-assisted processes for content generation, data analysis, and operational efficiency using modern tools.' },
+   384→  1684→    { icon: Layers, title: 'Digital Brand Foundations', desc: 'Naming, domain selection, visual identity basics, and online presence setup for new businesses and projects.' },
+   385→  1685→  ]
+   386→  1686→
+   387→  1687→  return (
+   388→  1688→    <div className="py-12 sm:py-20">
+   389→  1689→      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+   390→  1690→        <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">What I Offer</p>
+   391→  1691→        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Selected Digital Services</h1>
+   392→  1692→        <p className="text-[#718581] max-w-2xl mb-12 leading-relaxed">Alongside domain investing, I offer select digital services for businesses and projects that need a hands-on, thoughtful approach to their online presence.</p>
+   393→  1693→        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{services.map((service, idx) => (
+   394→  1694→          <motion.div key={service.title} whileHover={{ y: -6 }} className="surface-border rounded-[16px] bg-surface p-6 domain-card-hover relative overflow-hidden group">
+   395→  1695→            <div className="absolute inset-0 bg-gradient-to-br from-teal/5 via-transparent to-coral/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+   396→  1696→            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal/0 to-transparent group-hover:via-teal/50 transition-all duration-500" />
+   397→  1697→            <service.icon className="size-6 text-teal mb-4 group-hover:drop-shadow-[0_0_8px_rgba(0,229,176,0.4)] transition-all" />
+   398→  1698→            <h3 className="font-display text-lg font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-teal group-hover:to-teal-soft transition-all duration-300">{service.title}</h3>
+   399→  1699→            <p className="text-sm text-[#718581] leading-relaxed group-hover:text-[#B8C8C4] transition-colors">{service.desc}</p>
+   400→  1700→          </motion.div>
+   401→  1701→        ))}</div>
+   402→  1702→        <div className="mt-12 text-center">
+   403→  1703→          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+   404→  1704→            <Button onClick={() => nav.setSection('contact')} className="bg-gradient-to-r from-coral to-coral-hover text-white rounded-[12px] h-12 px-8 font-medium transition-all hover:shadow-[0_0_24px_rgba(255,77,46,0.4)] hover:brightness-110">
+   405→  1705→              Discuss a Project <ArrowRight className="size-4" />
+   406→  1706→            </Button>
+   407→  1707→          </motion.div>
+   408→  1708→        </div>
+   409→  1709→      </div>
+   410→  1710→    </div>
+   411→  1711→  )
+   412→  1712→}
+   413→  1713→
+   414→  1714→// ========================
+   415→  1715→// TRANSACTIONS SECTION
+   416→  1716→// ========================
+   417→  1717→
+   418→  1718→function TransactionsSection() {
+   419→  1719→  const { data, isLoading } = useTransactions()
+   420→  1720→  return (
+   421→  1721→    <div className="py-12 sm:py-20">
+   422→  1722→      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+   423→  1723→        <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Track Record</p>
+   424→  1724→        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Transactions</h1>
+   425→  1725→        <p className="text-[#718581] mb-10 leading-relaxed">A record of completed domain sales. These represent actual transactions, not appraisals or asking prices.</p>
+   426→  1726→        {isLoading ? <div className="space-y-4"><Skeleton className="h-32 bg-surface rounded-[16px]" /><Skeleton className="h-32 bg-surface rounded-[16px]" /></div> : data ? (
+   427→  1727→          <div className="space-y-4">{data.transactions.map((tx) => (
+   428→  1728→            <motion.div key={tx.domain} whileHover={{ y: -2 }} className="surface-border rounded-[16px] bg-surface p-6 sm:p-8 domain-card-hover">
+   429→  1729→              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+   430→  1730→                <div><h3 className="font-display text-xl sm:text-2xl font-bold text-white">{tx.domain}</h3><Badge className="mt-2 bg-teal-muted text-teal border-teal/20 text-xs font-mono-accent rounded-full">{tx.status}</Badge></div>
+   431→  1731→                <p className="font-display text-3xl font-bold text-teal">${tx.amount.toLocaleString()}</p>
+   432→  1732→              </div>
+   433→  1733→            </motion.div>
+   434→  1734→          ))}</div>
+   435→  1735→        ) : null}
+   436→  1736→        <div className="mt-8 p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-xs font-mono-accent text-[#718581] leading-relaxed">These are selected completed transactions and do not represent a guarantee of future sale prices or outcomes. Domain values depend on many factors including market demand, buyer need, and negotiation.</p></div>
+   437→  1737→      </div>
+   438→  1738→    </div>
+   439→  1739→  )
+   440→  1740→}
+   441→  1741→
+   442→  1742→// ========================
+   443→  1743→// CONTACT SECTION
+   444→  1744→// ========================
+   445→  1745→
+   446→  1746→const contactCategories = ['Acquire a Domain', 'Discuss a Partnership', 'Work With Nizar', 'Other']
+   447→  1747→const contactSchema = z.object({
+   448→  1748→  name: z.string().min(2, 'Name must be at least 2 characters'),
+   449→  1749→  email: z.email('Please enter a valid email address'),
+   450→  1750→  category: z.string().min(1, 'Please select a category'),
+   451→  1751→  message: z.string().min(10, 'Message must be at least 10 characters'),
+   452→  1752→  consent: z.literal(true, { errorMap: () => ({ message: 'You must consent to proceed' }) }),
+   453→  1753→})
+   454→  1754→
+   455→  1755→function ContactSection() {
+   456→  1756→  const { data: settings } = useSettings()
+   457→  1757→  const submitInquiry = useSubmitInquiry()
+   458→  1758→  const [form, setForm] = useState({ name: '', email: '', category: '', message: '', consent: false, honeypot: '' })
+   459→  1759→  const [errors, setErrors] = useState<FormErrors>({})
+   460→  1760→  const [submitted, setSubmitted] = useState(false)
+   461→  1761→
+   462→  1762→  const handleSubmit = (e: FormEvent) => {
+   463→  1763→    e.preventDefault(); setErrors({})
+   464→  1764→    const result = contactSchema.safeParse({ name: form.name, email: form.email, category: form.category, message: form.message, consent: form.consent })
+   465→  1765→    if (!result.success) { const fieldErrors: FormErrors = {}; for (const issue of result.error.issues) { const field = issue.path[0]; if (field) fieldErrors[String(field)] = issue.message } setErrors(fieldErrors); return }
+   466→  1766→    submitInquiry.mutate({ ...result.data, honeypot: form.honeypot, inquiryType: 'contact' }, { onSuccess: () => setSubmitted(true) })
+   467→  1767→  }
+   468→  1768→
+   469→  1769→  if (submitted) return (
+   470→  1770→    <div className="py-12 sm:py-20">
+   471→  1771→      <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
+   472→  1772→        <CheckCircle2 className="size-12 text-teal mx-auto mb-4" /><h1 className="font-display text-3xl font-bold text-white mb-4">Message sent</h1>
+   473→  1773→        <p className="text-[#B8C8C4] leading-relaxed">Thank you for reaching out. Nizar will review your message and respond as soon as possible.</p>
+   474→  1774→        <Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => { setSubmitted(false); setForm({ name: '', email: '', category: '', message: '', consent: false, honeypot: '' }) }}>Send another message</Button>
+   475→  1775→      </div>
+   476→  1776→    </div>
+   477→  1777→  )
+   478→  1778→
+   479→  1779→  return (
+   480→  1780→    <div className="py-12 sm:py-20">
+   481→  1781→      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+   482→  1782→        <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
+   483→  1783→          <div className="lg:col-span-2">
+   484→  1784→            <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Get in Touch</p>
+   485→  1785→            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Contact</h1>
+   486→  1786→            <p className="text-[#B8C8C4] leading-relaxed mb-8">Whether you&rsquo;re interested in acquiring a domain, discussing a partnership, or working together on a digital project, I&rsquo;d like to hear from you.</p>
+   487→  1787→            <div className="space-y-3 mb-8">
+   488→  1788→              <a href={`mailto:${settings?.contactEmail || ''}`} className="flex items-center gap-3 group">
+   489→  1789→                <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-teal-muted border border-teal/10 group-hover:border-teal/30 group-hover:shadow-[0_0_16px_rgba(0,229,176,0.1)] transition-all">
+   490→  1790→                  <Mail className="size-4 text-teal" />
+   491→  1791→                </span>
+   492→  1792→                <div>
+   493→  1793→                  <p className="text-xs text-[#718581] font-mono-accent">Email</p>
+   494→  1794→                  <p className="text-sm text-[#B8C8C4] group-hover:text-teal transition-colors">{settings?.contactEmail || 'info@nizarrahme.com'}</p>
+   495→  1795→                </div>
+   496→  1796→              </a>
+   497→  1797→              <a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group">
+   498→  1798→                <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#25D366]/10 border border-[#25D366]/10 group-hover:border-[#25D366]/30 group-hover:shadow-[0_0_16px_rgba(37,211,102,0.1)] transition-all">
+   499→  1799→                  <WhatsAppIcon className="size-4 text-[#25D366]" />
+   500→  1800→                </span>
+   501→
+   502→[showing lines 1301-1800 of 1920; use offset=1801 with limit to continue reading]

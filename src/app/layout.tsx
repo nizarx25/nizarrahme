@@ -20,7 +20,11 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
 });
 
+const SITE_URL = "https://nizarrahme.com";
+const ICON_URL = "https://z-cdn.chatglm.cn/z-ai/static/logo.svg";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Nizar Rahme — Brandable Domain Names",
   description:
     "Curated domain names for AI, SaaS, fintech, and technology businesses. Brandable, memorable, and available for acquisition.",
@@ -35,27 +39,93 @@ export const metadata: Metadata = {
     "Nizar Rahme",
     "domain marketplace",
   ],
+  category: "business",
   authors: [{ name: "Nizar Rahme" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: ICON_URL,
+  },
+  alternates: {
+    canonical: "/",
   },
   openGraph: {
     title: "Nizar Rahme — Brandable Domain Names",
     description:
       "Curated domain names for AI, SaaS, fintech, and technology businesses.",
     type: "website",
+    url: "/",
+    locale: "en_US",
     siteName: "Nizar Rahme",
+    images: [
+      {
+        url: ICON_URL,
+        width: 512,
+        height: 512,
+        alt: "Nizar Rahme — Brandable Domain Names",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Nizar Rahme — Brandable Domain Names",
     description:
       "Curated domain names for AI, SaaS, fintech, and technology businesses.",
+    image: ICON_URL,
   },
   robots: {
     index: true,
     follow: true,
   },
+  verification: {
+    google: "your-google-verification-code-here",
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": `${SITE_URL}/#person`,
+      name: "Nizar Rahme",
+      url: SITE_URL,
+      jobTitle: "Domain Investor & Digital Strategist",
+      description:
+        "Curates brandable domain names for AI, SaaS, fintech, and technology businesses.",
+      sameAs: [],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "Nizar Rahme — Brandable Domain Names",
+      description:
+        "Curated domain names for AI, SaaS, fintech, and technology businesses. Brandable, memorable, and available for acquisition.",
+      publisher: {
+        "@id": `${SITE_URL}/#organization`,
+      },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${SITE_URL}/?search={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "Nizar Rahme",
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: ICON_URL,
+      },
+      founder: {
+        "@id": `${SITE_URL}/#person`,
+      },
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -68,6 +138,10 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${geistMono.variable} ${spaceGrotesk.variable} antialiased bg-background text-foreground`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <QueryProvider>{children}</QueryProvider>
         <Toaster />
       </body>

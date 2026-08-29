@@ -1,0 +1,502 @@
+     1→  1001→                key={step.num}
+     2→  1002→                whileHover={{ y: -6 }}
+     3→  1003→                className="relative text-center px-6 py-4 group"
+     4→  1004→              >
+     5→  1005→                <motion.div
+     6→  1006→                  whileHover={{ scale: 1.12, rotate: 5 }}
+     7→  1007→                  className="relative z-10 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-elevated border border-surface-border text-teal mb-6 group-hover:border-teal/40 group-hover:shadow-[0_0_24px_rgba(0,229,176,0.15)] transition-all duration-300"
+     8→  1008→                >
+     9→  1009→                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${step.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+    10→  1010→                  <step.icon className="size-6 relative z-10" />
+    11→  1011→                </motion.div>
+    12→  1012→                <p className="text-xs font-mono-accent text-teal/70 uppercase tracking-[0.2em] mb-2 group-hover:text-teal transition-colors">
+    13→  1013→                  Step {step.num}
+    14→  1014→                </p>
+    15→  1015→                <h3 className="font-display text-xl font-bold text-white mb-3 group-hover:bg-gradient-to-r group-hover:from-teal group-hover:to-teal-soft group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">{step.title}</h3>
+    16→  1016→                <p className="text-sm text-[#718581] leading-relaxed max-w-xs mx-auto group-hover:text-[#B8C8C4] transition-colors">{step.desc}</p>
+    17→  1017→              </motion.div>
+    18→  1018→            ))}
+    19→  1019→          </div>
+    20→  1020→        </div>
+    21→  1021→      </section>
+    22→  1022→
+    23→  1023→      {/* SELECTED TRANSACTIONS */}
+    24→  1024→      {transactions && transactions.transactions.length > 0 && (
+    25→  1025→        <section className="py-16 sm:py-24">
+    26→  1026→          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    27→  1027→            <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">
+    28→  1028→              Track Record
+    29→  1029→            </p>
+    30→  1030→            <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-12">Selected Transactions</h2>
+    31→  1031→            <div className="grid sm:grid-cols-2 gap-4 max-w-3xl">
+    32→  1032→              {transactions.transactions.map((tx) => (
+    33→  1033→                <motion.div
+    34→  1034→                  key={tx.domain}
+    35→  1035→                  whileHover={{ y: -2 }}
+    36→  1036→                  className="surface-border rounded-[16px] bg-surface p-6 flex flex-col justify-between domain-card-hover"
+    37→  1037→                >
+    38→  1038→                  <div>
+    39→  1039→                    <p className="font-display text-xl font-bold text-white">{tx.domain}</p>
+    40→  1040→                    <Badge className="mt-2 bg-teal-muted text-teal border-teal/20 text-xs font-mono-accent rounded-full">
+    41→  1041→                      {tx.status}
+    42→  1042→                    </Badge>
+    43→  1043→                  </div>
+    44→  1044→                  <p className="font-display text-3xl font-bold text-teal mt-4">
+    45→  1045→                    ${tx.amount.toLocaleString()}
+    46→  1046→                  </p>
+    47→  1047→                </motion.div>
+    48→  1048→              ))}
+    49→  1049→            </div>
+    50→  1050→            <p className="text-xs text-[#718581] mt-6 max-w-2xl font-mono-accent">
+    51→  1051→              These are selected completed transactions and do not represent a guarantee of future
+    52→  1052→              sale prices or outcomes.
+    53→  1053→            </p>
+    54→  1054→          </div>
+    55→  1055→        </section>
+    56→  1056→      )}
+    57→  1057→
+    58→  1058→      {/* BEYOND THE NAME */}
+    59→  1059→      <section className="py-16 sm:py-24 relative overflow-hidden">
+    60→  1060→        <div className="absolute inset-0 bg-surface/80" />
+    61→  1061→        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-teal/5 rounded-full blur-[100px] pointer-events-none" />
+    62→  1062→        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    63→  1063→          <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">
+    64→  1064→            Additional Services
+    65→  1065→          </p>
+    66→  1066→          <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">Beyond the Name</h2>
+    67→  1067→          <p className="mt-4 text-[#B8C8C4] max-w-2xl mx-auto leading-relaxed">
+    68→  1068→            Alongside domain investing, I work on selected digital projects involving WordPress
+    69→  1069→            websites, content, social media, SEO, and AI-assisted workflows.
+    70→  1070→          </p>
+    71→  1071→          <Button
+    72→  1072→            onClick={() => nav.setSection('services')}
+    73→  1073→            variant="outline"
+    74→  1074→            className="mt-8 border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white hover:border-teal/20 rounded-[12px] transition-all"
+    75→  1075→          >
+    76→  1076→            Explore Services <ArrowRight className="size-4" />
+    77→  1077→          </Button>
+    78→  1078→        </div>
+    79→  1079→      </section>
+    80→  1080→
+    81→  1081→      {/* FINAL CTA */}
+    82→  1082→      <section className="py-20 sm:py-28 relative overflow-hidden">
+    83→  1083→        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-coral/5 rounded-full blur-[100px] pointer-events-none" />
+    84→  1084→        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    85→  1085→          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold">
+    86→  1086→            <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">Your next brand deserves the right domain.</span>
+    87→  1087→          </h2>
+    88→  1088→          <p className="mt-4 text-[#B8C8C4] max-w-2xl mx-auto leading-relaxed">
+    89→  1089→            If you are building an AI, SaaS, fintech, technology, or online business, browse the
+    90→  1090→            catalog or start a conversation.
+    91→  1091→          </p>
+    92→  1092→          <div className="mt-10 flex flex-wrap justify-center gap-4">
+    93→  1093→            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+    94→  1094→              <Button
+    95→  1095→                onClick={() => nav.setSection('domains')}
+    96→  1096→                className="bg-gradient-to-r from-coral to-coral-hover text-white rounded-[12px] h-12 px-8 font-medium transition-all hover:shadow-[0_0_36px_rgba(255,77,46,0.4)] hover:brightness-110"
+    97→  1097→              >
+    98→  1098→                <ShoppingCart className="size-4 mr-2" />
+    99→  1099→                Explore Premium Domains <ArrowRight className="size-4" />
+   100→  1100→              </Button>
+   101→  1101→            </motion.div>
+   102→  1102→            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+   103→  1103→              <Button onClick={() => nav.setSection('contact')} variant="outline" className="border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white hover:border-teal/20 hover:shadow-[0_0_16px_rgba(0,229,176,0.08)] rounded-[12px] h-12 px-8 transition-all">
+   104→  1104→                Contact Nizar
+   105→  1105→              </Button>
+   106→  1106→            </motion.div>
+   107→  1107→          </div>
+   108→  1108→        </div>
+   109→  1109→      </section>
+   110→  1110→    </div>
+   111→  1111→  )
+   112→  1112→}
+   113→  1113→
+   114→  1114→// ========================
+   115→  1115→// WHOLESALE PRICES SECTION
+   116→  1116→// ========================
+   117→  1117→
+   118→  1118→function WholesaleSection() {
+   119→  1119→  const nav = useNavigation()
+   120→  1120→
+   121→  1121→  return (
+   122→  1122→    <section className="py-20 sm:py-28 relative overflow-hidden">
+   123→  1123→      {/* Background effects */}
+   124→  1124→      <div className="absolute inset-0 bg-gradient-to-b from-[#061312] via-[#0B211E] to-[#061312]" />
+   125→  1125→      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-coral/5 rounded-full blur-[120px] pointer-events-none" />
+   126→  1126→      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-teal/3 rounded-full blur-[100px] pointer-events-none" />
+   127→  1127→
+   128→  1128→      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   129→  1129→        <div className="text-center mb-12">
+   130→  1130→          <motion.div
+   131→  1131→            initial={{ opacity: 0, y: 10 }}
+   132→  1132→            whileInView={{ opacity: 1, y: 0 }}
+   133→  1133→            viewport={{ once: true }}
+   134→  1134→            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-coral/10 border border-coral/20 text-xs font-mono-accent text-coral tracking-[0.2em] uppercase mb-6"
+   135→  1135→          >
+   136→  1136→            <Tag className="size-3" />
+   137→  1137→            Exclusive Deals
+   138→  1138→          </motion.div>
+   139→  1139→          <motion.h2
+   140→  1140→            initial={{ opacity: 0, y: 10 }}
+   141→  1141→            whileInView={{ opacity: 1, y: 0 }}
+   142→  1142→            viewport={{ once: true }}
+   143→  1143→            className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold"
+   144→  1144→          >
+   145→  1145→            <span className="bg-gradient-to-r from-coral via-[#FF8C42] to-coral bg-clip-text text-transparent animate-gradient-text">
+   146→  1146→              Wholesale Prices
+   147→  1147→            </span>
+   148→  1148→          </motion.h2>
+   149→  1149→          <motion.p
+   150→  1150→            initial={{ opacity: 0, y: 10 }}
+   151→  1151→            whileInView={{ opacity: 1, y: 0 }}
+   152→  1152→            viewport={{ once: true }}
+   153→  1153→            transition={{ delay: 0.1 }}
+   154→  1154→            className="mt-4 text-[#B8C8C4] max-w-2xl mx-auto leading-relaxed text-lg"
+   155→  1155→          >
+   156→  1156→            Premium domains at wholesale rates. First come, first served.
+   157→  1157→          </motion.p>
+   158→  1158→        </div>
+   159→  1159→
+   160→  1160→        {/* Stats row */}
+   161→  1161→        <motion.div
+   162→  1162→          initial={{ opacity: 0, y: 20 }}
+   163→  1163→          whileInView={{ opacity: 1, y: 0 }}
+   164→  1164→          viewport={{ once: true }}
+   165→  1165→          transition={{ delay: 0.2 }}
+   166→  1166→          className="flex flex-wrap justify-center gap-8 sm:gap-16 mb-12"
+   167→  1167→        >
+   168→  1168→          {[
+   169→  1169→            { icon: Zap, label: 'Below Market', color: 'text-coral', glow: 'group-hover:shadow-[0_0_16px_rgba(255,77,46,0.2)]' },
+   170→  1170→            { icon: Crown, label: 'Premium Quality', color: 'text-teal', glow: 'group-hover:shadow-[0_0_16px_rgba(0,229,176,0.2)]' },
+   171→  1171→            { icon: Shield, label: 'Secure Transfer', color: 'text-[#B8C8C4]', glow: 'group-hover:shadow-[0_0_16px_rgba(184,200,196,0.15)]' },
+   172→  1172→            { icon: TrendingUp, label: 'High ROI', color: 'text-coral', glow: 'group-hover:shadow-[0_0_16px_rgba(255,77,46,0.2)]' },
+   173→  1173→          ].map((item) => (
+   174→  1174→            <motion.div key={item.label} whileHover={{ y: -3 }} className={`text-center group cursor-default transition-all duration-300 ${item.glow}`}>
+   175→  1175→              <item.icon className={`size-6 ${item.color} mx-auto mb-2 transition-all duration-300 group-hover:scale-110`} />
+   176→  1176→              <p className="text-sm font-mono-accent text-[#718581] group-hover:text-[#B8C8C4] transition-colors">{item.label}</p>
+   177→  1177→            </motion.div>
+   178→  1178→          ))}
+   179→  1179→        </motion.div>
+   180→  1180→
+   181→  1181→        {/* Placeholder cards */}
+   182→  1182→        <motion.div
+   183→  1183→          initial={{ opacity: 0, y: 20 }}
+   184→  1184→          whileInView={{ opacity: 1, y: 0 }}
+   185→  1185→          viewport={{ once: true }}
+   186→  1186→          transition={{ delay: 0.3 }}
+   187→  1187→          className="max-w-4xl mx-auto surface-border rounded-2xl bg-surface/50 backdrop-blur-sm p-8 sm:p-12 text-center"
+   188→  1188→        >
+   189→  1189→          <div className="w-16 h-16 rounded-2xl bg-coral/10 border border-coral/20 flex items-center justify-center mx-auto mb-6">
+   190→  1190→            <Eye className="size-8 text-coral" />
+   191→  1191→          </div>
+   192→  1192→          <h3 className="font-display text-2xl font-bold text-white mb-3">Domains Coming Soon</h3>
+   193→  1193→          <p className="text-[#718581] max-w-md mx-auto leading-relaxed mb-8">
+   194→  1194→            We are curating a selection of premium domains at unbeatable wholesale prices.
+   195→  1195→            Stay tuned for exclusive listings.
+   196→  1196→          </p>
+   197→  1197→          <div className="flex flex-wrap justify-center gap-3">
+   198→  1198→            <Button
+   199→  1199→              onClick={() => nav.setSection('domains')}
+   200→  1200→              className="bg-coral hover:bg-coral-hover text-white rounded-[12px] h-11 px-6 font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]"
+   201→  1201→            >
+   202→  1202→              <ShoppingCart className="size-4 mr-2" />
+   203→  1203→              Browse Available Domains
+   204→  1204→            </Button>
+   205→  1205→            <Button
+   206→  1206→              onClick={() => nav.setSection('contact')}
+   207→  1207→              variant="outline"
+   208→  1208→              className="border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white rounded-[12px] h-11 px-6 transition-all"
+   209→  1209→            >
+   210→  1210→              Get Notified <Star className="size-4 ml-2" />
+   211→  1211→            </Button>
+   212→  1212→          </div>
+   213→  1213→        </motion.div>
+   214→  1214→      </div>
+   215→  1215→    </section>
+   216→  1216→  )
+   217→  1217→}
+   218→  1218→
+   219→  1219→// ========================
+   220→  1220→// DOMAIN CARD
+   221→  1221→// ========================
+   222→  1222→
+   223→  1223→function DomainCard({ domain }: { domain: PublicDomain }) {
+   224→  1224→  const nav = useNavigation()
+   225→  1225→
+   226→  1226→  return (
+   227→  1227→    <motion.div variants={fadeUp}>
+   228→  1228→      <div
+   229→  1229→        className="group cursor-pointer surface-border rounded-[16px] bg-surface p-5 sm:p-6 domain-card-hover relative overflow-hidden"
+   230→  1230→        onClick={() => nav.setSelectedDomain(domain.slug)}
+   231→  1231→        role="article"
+   232→  1232→        tabIndex={0}
+   233→  1233→        onKeyDown={(e) => { if (e.key === 'Enter') nav.setSelectedDomain(domain.slug) }}
+   234→  1234→      >
+   235→  1235→        {/* Animated gradient border glow on hover */}
+   236→  1236→        <div className="absolute -inset-[1px] rounded-[16px] bg-gradient-to-br from-teal/0 via-transparent to-coral/0 group-hover:from-teal/20 group-hover:via-transparent group-hover:to-coral/20 transition-all duration-500 -z-10 opacity-0 group-hover:opacity-100" />
+   237→  1237→        
+   238→  1238→        {/* Hover glow overlay */}
+   239→  1239→        <div className="absolute inset-0 bg-gradient-to-br from-teal/8 via-transparent to-coral/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+   240→  1240→
+   241→  1241→        {/* Shimmer line on top */}
+   242→  1242→        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal/0 to-transparent group-hover:via-teal/60 transition-all duration-700" />
+   243→  1243→
+   244→  1244→        <div className="relative">
+   245→  1245→          <div className="flex items-start justify-between gap-3">
+   246→  1246→            <div className="min-w-0 flex-1">
+   247→  1247→              <div className="flex items-center gap-2 mb-2">
+   248→  1248→                <Badge className="bg-elevated text-[#718581] border-surface-border text-xs font-mono-accent rounded-full px-2.5">
+   249→  1249→                  {domain.extension}
+   250→  1250→                </Badge>
+   251→  1251→                {domain.featured && (
+   252→  1252→                  <Badge className="bg-teal/10 text-teal border-teal/20 text-xs font-mono-accent rounded-full px-2.5">
+   253→  1253→                    Featured
+   254→  1254→                  </Badge>
+   255→  1255→                )}
+   256→  1256→                <Badge variant="outline" className="border-surface-border text-[#718581] text-xs font-mono-accent rounded-full px-2.5">
+   257→  1257→                  {domain.category}
+   258→  1258→                </Badge>
+   259→  1259→              </div>
+   260→  1260→              <h3 className="font-display text-lg sm:text-xl font-bold leading-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-teal group-hover:via-teal-soft group-hover:to-coral transition-all duration-300">
+   261→  1261→                {domain.name}
+   262→  1262→              </h3>
+   263→  1263→            </div>
+   264→  1264→            {domain.showPrice && domain.price && (
+   265→  1265→              <p className="font-display text-lg font-bold text-teal whitespace-nowrap">
+   266→  1266→                ${domain.price.toLocaleString()}
+   267→  1267→              </p>
+   268→  1268→            )}
+   269→  1269→          </div>
+   270→  1270→
+   271→  1271→          {domain.shortDescription && (
+   272→  1272→            <p className="mt-3 text-sm text-[#718581] line-clamp-2 leading-relaxed group-hover:text-[#B8C8C4] transition-colors">
+   273→  1273→              {domain.shortDescription}
+   274→  1274→            </p>
+   275→  1275→          )}
+   276→  1276→
+   277→  1277→          <div className="mt-4 pt-3 border-t border-surface-border/50 flex items-center justify-between">
+   278→  1278→            <span className="text-xs font-mono-accent text-[#718581]">{domain.saleType}</span>
+   279→  1279→            <motion.span
+   280→  1280→              whileHover={{ x: 2 }}
+   281→  1281→              className="text-xs text-coral font-medium flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+   282→  1282→            >
+   283→  1283→              Make an Offer <ArrowRight className="size-3" />
+   284→  1284→            </motion.span>
+   285→  1285→          </div>
+   286→  1286→        </div>
+   287→  1287→      </div>
+   288→  1288→    </motion.div>
+   289→  1289→  )
+   290→  1290→}
+   291→  1291→
+   292→  1292→// ========================
+   293→  1293→// DOMAINS SECTION (CATALOG)
+   294→  1294→// ========================
+   295→  1295→
+   296→  1296→function DomainsSection() {
+   297→  1297→  const [search, setSearch] = useState('')
+   298→  1298→  const [category, setCategory] = useState('')
+   299→  1299→  const [extension, setExtension] = useState('')
+   300→  1300→  const [status, setStatus] = useState('')
+   301→  1301→  const [featured, setFeatured] = useState(false)
+   302→  1302→  const [hasPrice, setHasPrice] = useState(false)
+   303→  1303→  const [sort, setSort] = useState('newest')
+   304→  1304→  const [page, setPage] = useState(1)
+   305→  1305→  const [showFilters, setShowFilters] = useState(false)
+   306→  1306→
+   307→  1307→  const { data, isLoading } = useDomains(
+   308→  1308→    search, category, extension, status, featured, hasPrice, sort, page
+   309→  1309→  )
+   310→  1310→
+   311→  1311→  const totalPages = data ? Math.ceil(data.total / data.limit) : 1
+   312→  1312→
+   313→  1313→  const resetFilters = () => {
+   314→  1314→    setSearch(''); setCategory(''); setExtension(''); setStatus('')
+   315→  1315→    setFeatured(false); setHasPrice(false); setSort('newest'); setPage(1)
+   316→  1316→  }
+   317→  1317→
+   318→  1318→  return (
+   319→  1319→    <div className="py-8 sm:py-12">
+   320→  1320→      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   321→  1321→        <div className="mb-8">
+   322→  1322→          <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Browse Catalog</p>
+   323→  1323→          <h1 className="font-display text-3xl sm:text-4xl font-bold text-white">Domain Catalog</h1>
+   324→  1324→          <p className="text-[#718581] mt-2">Browse available domain names. Click any domain to view details and make an offer.</p>
+   325→  1325→        </div>
+   326→  1326→
+   327→  1327→        <div className="relative mb-6">
+   328→  1328→          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[#718581]" />
+   329→  1329→          <Input
+   330→  1330→            placeholder="Search domains by name, category, or description..."
+   331→  1331→            value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+   332→  1332→            className="pl-12 h-12 bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20 transition-all"
+   333→  1333→            aria-label="Search domains"
+   334→  1334→          />
+   335→  1335→        </div>
+   336→  1336→
+   337→  1337→        <div className="flex items-center justify-between mb-4">
+   338→  1338→          <Button variant="outline" size="sm" className="lg:hidden border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]" onClick={() => setShowFilters(!showFilters)}>
+   339→  1339→            <SlidersHorizontal className="size-4 mr-2" /> Filters
+   340→  1340→          </Button>
+   341→  1341→          <div className="hidden lg:block text-sm font-mono-accent text-[#718581]">
+   342→  1342→            {data && <span>{data.total} domain{data.total !== 1 ? 's' : ''} found</span>}
+   343→  1343→          </div>
+   344→  1344→        </div>
+   345→  1345→
+   346→  1346→        <div className={`mb-6 ${showFilters ? 'block' : 'hidden'} lg:block`}>
+   347→  1347→          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+   348→  1348→            <Select value={category || '_all'} onValueChange={(v) => { setCategory(v === '_all' ? '' : v); setPage(1) }}>
+   349→  1349→              <SelectTrigger aria-label="Filter by category" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+   350→  1350→                <SelectValue placeholder="Category" />
+   351→  1351→              </SelectTrigger>
+   352→  1352→              <SelectContent>{data?.categories?.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+   353→  1353→            </Select>
+   354→  1354→            <Select value={extension || '_all'} onValueChange={(v) => { setExtension(v === '_all' ? '' : v); setPage(1) }}>
+   355→  1355→              <SelectTrigger aria-label="Filter by extension" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+   356→  1356→                <SelectValue placeholder="Extension" />
+   357→  1357→              </SelectTrigger>
+   358→  1358→              <SelectContent>{data?.extensions?.map((ext) => <SelectItem key={ext} value={ext}>{ext}</SelectItem>)}</SelectContent>
+   359→  1359→            </Select>
+   360→  1360→            <Select value={status || '_all'} onValueChange={(v) => { setStatus(v === '_all' ? '' : v); setPage(1) }}>
+   361→  1361→              <SelectTrigger aria-label="Filter by status" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+   362→  1362→                <SelectValue placeholder="Status" />
+   363→  1363→              </SelectTrigger>
+   364→  1364→              <SelectContent>
+   365→  1365→                <SelectItem value="Available">Available</SelectItem>
+   366→  1366→                <SelectItem value="Negotiating">Negotiating</SelectItem>
+   367→  1367→                <SelectItem value="Sold">Sold</SelectItem>
+   368→  1368→              </SelectContent>
+   369→  1369→            </Select>
+   370→  1370→            <Select value={sort} onValueChange={(v) => { setSort(v); setPage(1) }}>
+   371→  1371→              <SelectTrigger aria-label="Sort by" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+   372→  1372→                <SelectValue placeholder="Sort" />
+   373→  1373→              </SelectTrigger>
+   374→  1374→              <SelectContent>
+   375→  1375→                <SelectItem value="newest">Newest</SelectItem>
+   376→  1376→                <SelectItem value="name_asc">A → Z</SelectItem>
+   377→  1377→                <SelectItem value="name_desc">Z → A</SelectItem>
+   378→  1378→                <SelectItem value="featured">Featured First</SelectItem>
+   379→  1379→                <SelectItem value="price_asc">Price: Low → High</SelectItem>
+   380→  1380→                <SelectItem value="price_desc">Price: High → Low</SelectItem>
+   381→  1381→              </SelectContent>
+   382→  1382→            </Select>
+   383→  1383→            <div className="flex items-center gap-4">
+   384→  1384→              <div className="flex items-center gap-2">
+   385→  1385→                <Switch id="featured-toggle" checked={featured} onCheckedChange={(v) => { setFeatured(v); setPage(1) }} className="data-[state=checked]:bg-teal" />
+   386→  1386→                <Label htmlFor="featured-toggle" className="text-sm text-[#B8C8C4] cursor-pointer">Featured</Label>
+   387→  1387→              </div>
+   388→  1388→              <div className="flex items-center gap-2">
+   389→  1389→                <Switch id="price-toggle" checked={hasPrice} onCheckedChange={(v) => { setHasPrice(v); setPage(1) }} className="data-[state=checked]:bg-teal" />
+   390→  1390→                <Label htmlFor="price-toggle" className="text-sm text-[#B8C8C4] cursor-pointer">Has Price</Label>
+   391→  1391→              </div>
+   392→  1392→            </div>
+   393→  1393→          </div>
+   394→  1394→          {(category || extension || status || featured || hasPrice) && (
+   395→  1395→            <div className="mt-3 flex items-center gap-2 flex-wrap">
+   396→  1396→              <span className="text-xs font-mono-accent text-[#718581]">Active filters:</span>
+   397→  1397→              {category && <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">{category}<button onClick={() => { setCategory(''); setPage(1) }} className="ml-1 hover:text-white" aria-label={`Remove ${category} filter`}><X className="size-3" /></button></Badge>}
+   398→  1398→              {extension && <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">{extension}<button onClick={() => { setExtension(''); setPage(1) }} className="ml-1 hover:text-white" aria-label={`Remove ${extension} filter`}><X className="size-3" /></button></Badge>}
+   399→  1399→              {status && <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">{status}<button onClick={() => { setStatus(''); setPage(1) }} className="ml-1 hover:text-white" aria-label={`Remove ${status} filter`}><X className="size-3" /></button></Badge>}
+   400→  1400→              <button onClick={resetFilters} className="text-xs text-teal hover:underline ml-2 font-mono-accent">Clear all</button>
+   401→  1401→            </div>
+   402→  1402→          )}
+   403→  1403→        </div>
+   404→  1404→
+   405→  1405→        {isLoading ? (
+   406→  1406→          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-56 bg-surface rounded-[16px]" />)}</div>
+   407→  1407→        ) : data && data.domains.length > 0 ? (
+   408→  1408→          <>
+   409→  1409→            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{data.domains.map((domain) => <DomainCard key={domain.id} domain={domain} />)}</div>
+   410→  1410→            {totalPages > 1 && (
+   411→  1411→              <div className="mt-8 flex items-center justify-center gap-2">
+   412→  1412→                <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} aria-label="Previous page" className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]">
+   413→  1413→                  <ChevronLeft className="size-4" /><span className="sr-only">Previous</span>
+   414→  1414→                </Button>
+   415→  1415→                <div className="flex items-center gap-1">
+   416→  1416→                  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+   417→  1417→                    let pageNum: number
+   418→  1418→                    if (totalPages <= 7) pageNum = i + 1
+   419→  1419→                    else if (page <= 4) pageNum = i + 1
+   420→  1420→                    else if (page >= totalPages - 3) pageNum = totalPages - 6 + i
+   421→  1421→                    else pageNum = page - 3 + i
+   422→  1422→                    return (
+   423→  1423→                      <Button key={pageNum} variant={pageNum === page ? 'default' : 'outline'} size="sm"
+   424→  1424→                        className={`w-9 rounded-[10px] ${pageNum === page ? 'bg-teal text-[#061312] hover:bg-teal/90 border-0' : 'border-surface-border text-[#B8C8C4] hover:bg-elevated'}`}
+   425→  1425→                        onClick={() => setPage(pageNum)} aria-label={`Page ${pageNum}`} aria-current={pageNum === page ? 'page' : undefined}>{pageNum}</Button>
+   426→  1426→                    )
+   427→  1427→                  })}
+   428→  1428→                </div>
+   429→  1429→                <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} aria-label="Next page" className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]">
+   430→  1430→                  <ChevronRight className="size-4" /><span className="sr-only">Next</span>
+   431→  1431→                </Button>
+   432→  1432→              </div>
+   433→  1433→            )}
+   434→  1434→          </>
+   435→  1435→        ) : (
+   436→  1436→          <div className="text-center py-20">
+   437→  1437→            <Globe className="size-12 text-surface-border mx-auto mb-4" />
+   438→  1438→            <h3 className="font-display text-xl font-bold text-white mb-2">No domains found</h3>
+   439→  1439→            <p className="text-sm text-[#718581] mb-6">Try adjusting your search or filters.</p>
+   440→  1440→            <Button variant="outline" onClick={resetFilters} className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]">Clear Filters</Button>
+   441→  1441→          </div>
+   442→  1442→        )}
+   443→  1443→      </div>
+   444→  1444→    </div>
+   445→  1445→  )
+   446→  1446→}
+   447→  1447→
+   448→  1448→// ========================
+   449→  1449→// DOMAIN DETAIL MODAL
+   450→  1450→// ========================
+   451→  1451→
+   452→  1452→function DomainDetailModal() {
+   453→  1453→  const nav = useNavigation()
+   454→  1454→  const { data, isLoading } = useDomainDetail(nav.selectedDomain)
+   455→  1455→  const open = !!nav.selectedDomain
+   456→  1456→  const handleClose = useCallback(() => { nav.setSelectedDomain(null) }, [nav])
+   457→  1457→  const handleOffer = () => { if (data?.domain) { nav.setOfferDomainName(data.domain.name); nav.setSelectedDomain(null); nav.setShowOfferForm(true) } }
+   458→  1458→
+   459→  1459→  return (
+   460→  1460→    <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
+   461→  1461→      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+   462→  1462→        {isLoading ? (
+   463→  1463→          <div className="py-8 space-y-4"><Skeleton className="h-10 w-64 bg-surface-border/50" /><Skeleton className="h-4 w-40 bg-surface-border/30" /><Skeleton className="h-20 w-full bg-surface-border/30" /><Skeleton className="h-32 w-full bg-surface-border/30" /></div>
+   464→  1464→        ) : data?.domain ? (
+   465→  1465→          <>
+   466→  1466→            <DialogHeader>
+   467→  1467→              <div className="flex items-center gap-2 mb-3">
+   468→  1468→                <Badge className="bg-elevated text-[#718581] border-surface-border text-xs font-mono-accent rounded-full px-3">{data.domain.extension}</Badge>
+   469→  1469→                <Badge className="bg-coral/10 text-coral border-coral/20 text-xs font-mono-accent rounded-full px-3">{data.domain.category}</Badge>
+   470→  1470→                {data.domain.featured && <Badge className="bg-teal/10 text-teal border-teal/20 text-xs font-mono-accent rounded-full px-3">Featured</Badge>}
+   471→  1471→              </div>
+   472→  1472→              <DialogTitle className="font-display text-3xl sm:text-4xl font-bold text-white">{data.domain.name}</DialogTitle>
+   473→  1473→              <DialogDescription className="sr-only">Details for {data.domain.name}</DialogDescription>
+   474→  1474→            </DialogHeader>
+   475→  1475→            <div className="mt-6 space-y-6">
+   476→  1476→              <div className="flex items-center gap-4">
+   477→  1477→                {data.domain.showPrice && data.domain.price && <p className="font-display text-3xl font-bold text-teal">${data.domain.price.toLocaleString()}</p>}
+   478→  1478→                <Badge variant="outline" className="border-surface-border text-[#718581] text-sm font-mono-accent rounded-full">{data.domain.saleType}</Badge>
+   479→  1479→              </div>
+   480→  1480→              {data.domain.shortDescription && <p className="text-[#B8C8C4] leading-relaxed">{data.domain.shortDescription}</p>}
+   481→  1481→              {data.domain.tags.length > 0 && <div className="flex flex-wrap gap-2">{data.domain.tags.map((tag) => <Badge key={tag} variant="secondary" className="text-xs font-mono-accent bg-elevated text-[#B8C8C4] rounded-full px-3">{tag}</Badge>)}</div>}
+   482→  1482→              {data.domain.useCases.length > 0 && (
+   483→  1483→                <div>
+   484→  1484→                  <h4 className="text-sm font-medium text-white mb-3">Potential use cases</h4>
+   485→  1485→                  <ul className="space-y-2">{data.domain.useCases.map((uc) => <li key={uc} className="flex items-start gap-2 text-sm text-[#B8C8C4]"><CheckCircle2 className="size-4 text-teal mt-0.5 shrink-0" />{uc}</li>)}</ul>
+   486→  1486→                </div>
+   487→  1487→              )}
+   488→  1488→              {data.domain.publicNotes && <div className="p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-sm text-[#B8C8C4]">{data.domain.publicNotes}</p></div>}
+   489→  1489→              <Button onClick={handleOffer} className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]">
+   490→  1490→                <ShoppingCart className="size-4 mr-2" /> Make an Offer <ArrowRight className="size-4" />
+   491→  1491→              </Button>
+   492→  1492→              {data.relatedDomains.length > 0 && (
+   493→  1493→                <div>
+   494→  1494→                  <Separator className="bg-surface-border mb-6" />
+   495→  1495→                  <h4 className="text-sm font-medium text-white mb-4">Related domains</h4>
+   496→  1496→                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+   497→  1497→                    {data.relatedDomains.map((rd) => (
+   498→  1498→                      <button key={rd.id} onClick={() => nav.setSelectedDomain(rd.slug)} className="shrink-0 surface-border rounded-xl p-4 hover:border-teal/30 transition-colors text-left min-w-[180px] bg-surface">
+   499→  1499→                        <p className="font-display text-sm font-bold text-white truncate">{rd.name}</p>
+   500→  1500→                        <p className="text-xs font-mono-accent text-[#718581] mt-1">{rd.category}</p>
+   501→
+   502→[showing lines 1001-1500 of 1920; use offset=1501 with limit to continue reading]

@@ -1,0 +1,693 @@
+     1→  1228→      <div
+     2→  1229→        className="group cursor-pointer surface-border rounded-[16px] bg-surface p-5 sm:p-6 domain-card-hover relative overflow-hidden"
+     3→  1230→        onClick={() => nav.setSelectedDomain(domain.slug)}
+     4→  1231→        role="article"
+     5→  1232→        tabIndex={0}
+     6→  1233→        onKeyDown={(e) => { if (e.key === 'Enter') nav.setSelectedDomain(domain.slug) }}
+     7→  1234→      >
+     8→  1235→        {/* Animated gradient border glow on hover */}
+     9→  1236→        <div className="absolute -inset-[1px] rounded-[16px] bg-gradient-to-br from-teal/0 via-transparent to-coral/0 group-hover:from-teal/20 group-hover:via-transparent group-hover:to-coral/20 transition-all duration-500 -z-10 opacity-0 group-hover:opacity-100" />
+    10→  1237→        
+    11→  1238→        {/* Hover glow overlay */}
+    12→  1239→        <div className="absolute inset-0 bg-gradient-to-br from-teal/8 via-transparent to-coral/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+    13→  1240→
+    14→  1241→        {/* Shimmer line on top */}
+    15→  1242→        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal/0 to-transparent group-hover:via-teal/60 transition-all duration-700" />
+    16→  1243→
+    17→  1244→        <div className="relative">
+    18→  1245→          <div className="flex items-start justify-between gap-3">
+    19→  1246→            <div className="min-w-0 flex-1">
+    20→  1247→              <div className="flex items-center gap-2 mb-2">
+    21→  1248→                <Badge className="bg-elevated text-[#718581] border-surface-border text-xs font-mono-accent rounded-full px-2.5">
+    22→  1249→                  {domain.extension}
+    23→  1250→                </Badge>
+    24→  1251→                {domain.featured && (
+    25→  1252→                  <Badge className="bg-teal/10 text-teal border-teal/20 text-xs font-mono-accent rounded-full px-2.5">
+    26→  1253→                    Featured
+    27→  1254→                  </Badge>
+    28→  1255→                )}
+    29→  1256→                <Badge variant="outline" className="border-surface-border text-[#718581] text-xs font-mono-accent rounded-full px-2.5">
+    30→  1257→                  {domain.category}
+    31→  1258→                </Badge>
+    32→  1259→              </div>
+    33→  1260→              <h3 className="font-display text-lg sm:text-xl font-bold leading-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-teal group-hover:via-teal-soft group-hover:to-coral transition-all duration-300">
+    34→  1261→                {domain.name}
+    35→  1262→              </h3>
+    36→  1263→            </div>
+    37→  1264→            {domain.showPrice && domain.price && (
+    38→  1265→              <p className="font-display text-lg font-bold text-teal whitespace-nowrap">
+    39→  1266→                ${domain.price.toLocaleString()}
+    40→  1267→              </p>
+    41→  1268→            )}
+    42→  1269→          </div>
+    43→  1270→
+    44→  1271→          {domain.shortDescription && (
+    45→  1272→            <p className="mt-3 text-sm text-[#718581] line-clamp-2 leading-relaxed group-hover:text-[#B8C8C4] transition-colors">
+    46→  1273→              {domain.shortDescription}
+    47→  1274→            </p>
+    48→  1275→          )}
+    49→  1276→
+    50→  1277→          <div className="mt-4 pt-3 border-t border-surface-border/50 flex items-center justify-between">
+    51→  1278→            <span className="text-xs font-mono-accent text-[#718581]">{domain.saleType}</span>
+    52→  1279→            <motion.span
+    53→  1280→              whileHover={{ x: 2 }}
+    54→  1281→              className="text-xs text-coral font-medium flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+    55→  1282→            >
+    56→  1283→              Make an Offer <ArrowRight className="size-3" />
+    57→  1284→            </motion.span>
+    58→  1285→          </div>
+    59→  1286→        </div>
+    60→  1287→      </div>
+    61→  1288→    </motion.div>
+    62→  1289→  )
+    63→  1290→}
+    64→  1291→
+    65→  1292→// ========================
+    66→  1293→// DOMAINS SECTION (CATALOG)
+    67→  1294→// ========================
+    68→  1295→
+    69→  1296→function DomainsSection() {
+    70→  1297→  const [search, setSearch] = useState('')
+    71→  1298→  const [category, setCategory] = useState('')
+    72→  1299→  const [extension, setExtension] = useState('')
+    73→  1300→  const [status, setStatus] = useState('')
+    74→  1301→  const [featured, setFeatured] = useState(false)
+    75→  1302→  const [hasPrice, setHasPrice] = useState(false)
+    76→  1303→  const [sort, setSort] = useState('newest')
+    77→  1304→  const [page, setPage] = useState(1)
+    78→  1305→  const [showFilters, setShowFilters] = useState(false)
+    79→  1306→
+    80→  1307→  const { data, isLoading } = useDomains(
+    81→  1308→    search, category, extension, status, featured, hasPrice, sort, page
+    82→  1309→  )
+    83→  1310→
+    84→  1311→  const totalPages = data ? Math.ceil(data.total / data.limit) : 1
+    85→  1312→
+    86→  1313→  const resetFilters = () => {
+    87→  1314→    setSearch(''); setCategory(''); setExtension(''); setStatus('')
+    88→  1315→    setFeatured(false); setHasPrice(false); setSort('newest'); setPage(1)
+    89→  1316→  }
+    90→  1317→
+    91→  1318→  return (
+    92→  1319→    <div className="py-8 sm:py-12">
+    93→  1320→      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    94→  1321→        <div className="mb-8">
+    95→  1322→          <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Browse Catalog</p>
+    96→  1323→          <h1 className="font-display text-3xl sm:text-4xl font-bold text-white">Domain Catalog</h1>
+    97→  1324→          <p className="text-[#718581] mt-2">Browse available domain names. Click any domain to view details and make an offer.</p>
+    98→  1325→        </div>
+    99→  1326→
+   100→  1327→        <div className="relative mb-6">
+   101→  1328→          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[#718581]" />
+   102→  1329→          <Input
+   103→  1330→            placeholder="Search domains by name, category, or description..."
+   104→  1331→            value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+   105→  1332→            className="pl-12 h-12 bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20 transition-all"
+   106→  1333→            aria-label="Search domains"
+   107→  1334→          />
+   108→  1335→        </div>
+   109→  1336→
+   110→  1337→        <div className="flex items-center justify-between mb-4">
+   111→  1338→          <Button variant="outline" size="sm" className="lg:hidden border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]" onClick={() => setShowFilters(!showFilters)}>
+   112→  1339→            <SlidersHorizontal className="size-4 mr-2" /> Filters
+   113→  1340→          </Button>
+   114→  1341→          <div className="hidden lg:block text-sm font-mono-accent text-[#718581]">
+   115→  1342→            {data && <span>{data.total} domain{data.total !== 1 ? 's' : ''} found</span>}
+   116→  1343→          </div>
+   117→  1344→        </div>
+   118→  1345→
+   119→  1346→        <div className={`mb-6 ${showFilters ? 'block' : 'hidden'} lg:block`}>
+   120→  1347→          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+   121→  1348→            <Select value={category || '_all'} onValueChange={(v) => { setCategory(v === '_all' ? '' : v); setPage(1) }}>
+   122→  1349→              <SelectTrigger aria-label="Filter by category" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+   123→  1350→                <SelectValue placeholder="Category" />
+   124→  1351→              </SelectTrigger>
+   125→  1352→              <SelectContent>{data?.categories?.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+   126→  1353→            </Select>
+   127→  1354→            <Select value={extension || '_all'} onValueChange={(v) => { setExtension(v === '_all' ? '' : v); setPage(1) }}>
+   128→  1355→              <SelectTrigger aria-label="Filter by extension" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+   129→  1356→                <SelectValue placeholder="Extension" />
+   130→  1357→              </SelectTrigger>
+   131→  1358→              <SelectContent>{data?.extensions?.map((ext) => <SelectItem key={ext} value={ext}>{ext}</SelectItem>)}</SelectContent>
+   132→  1359→            </Select>
+   133→  1360→            <Select value={status || '_all'} onValueChange={(v) => { setStatus(v === '_all' ? '' : v); setPage(1) }}>
+   134→  1361→              <SelectTrigger aria-label="Filter by status" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+   135→  1362→                <SelectValue placeholder="Status" />
+   136→  1363→              </SelectTrigger>
+   137→  1364→              <SelectContent>
+   138→  1365→                <SelectItem value="Available">Available</SelectItem>
+   139→  1366→                <SelectItem value="Negotiating">Negotiating</SelectItem>
+   140→  1367→                <SelectItem value="Sold">Sold</SelectItem>
+   141→  1368→              </SelectContent>
+   142→  1369→            </Select>
+   143→  1370→            <Select value={sort} onValueChange={(v) => { setSort(v); setPage(1) }}>
+   144→  1371→              <SelectTrigger aria-label="Sort by" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+   145→  1372→                <SelectValue placeholder="Sort" />
+   146→  1373→              </SelectTrigger>
+   147→  1374→              <SelectContent>
+   148→  1375→                <SelectItem value="newest">Newest</SelectItem>
+   149→  1376→                <SelectItem value="name_asc">A → Z</SelectItem>
+   150→  1377→                <SelectItem value="name_desc">Z → A</SelectItem>
+   151→  1378→                <SelectItem value="featured">Featured First</SelectItem>
+   152→  1379→                <SelectItem value="price_asc">Price: Low → High</SelectItem>
+   153→  1380→                <SelectItem value="price_desc">Price: High → Low</SelectItem>
+   154→  1381→              </SelectContent>
+   155→  1382→            </Select>
+   156→  1383→            <div className="flex items-center gap-4">
+   157→  1384→              <div className="flex items-center gap-2">
+   158→  1385→                <Switch id="featured-toggle" checked={featured} onCheckedChange={(v) => { setFeatured(v); setPage(1) }} className="data-[state=checked]:bg-teal" />
+   159→  1386→                <Label htmlFor="featured-toggle" className="text-sm text-[#B8C8C4] cursor-pointer">Featured</Label>
+   160→  1387→              </div>
+   161→  1388→              <div className="flex items-center gap-2">
+   162→  1389→                <Switch id="price-toggle" checked={hasPrice} onCheckedChange={(v) => { setHasPrice(v); setPage(1) }} className="data-[state=checked]:bg-teal" />
+   163→  1390→                <Label htmlFor="price-toggle" className="text-sm text-[#B8C8C4] cursor-pointer">Has Price</Label>
+   164→  1391→              </div>
+   165→  1392→            </div>
+   166→  1393→          </div>
+   167→  1394→          {(category || extension || status || featured || hasPrice) && (
+   168→  1395→            <div className="mt-3 flex items-center gap-2 flex-wrap">
+   169→  1396→              <span className="text-xs font-mono-accent text-[#718581]">Active filters:</span>
+   170→  1397→              {category && <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">{category}<button onClick={() => { setCategory(''); setPage(1) }} className="ml-1 hover:text-white" aria-label={`Remove ${category} filter`}><X className="size-3" /></button></Badge>}
+   171→  1398→              {extension && <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">{extension}<button onClick={() => { setExtension(''); setPage(1) }} className="ml-1 hover:text-white" aria-label={`Remove ${extension} filter`}><X className="size-3" /></button></Badge>}
+   172→  1399→              {status && <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">{status}<button onClick={() => { setStatus(''); setPage(1) }} className="ml-1 hover:text-white" aria-label={`Remove ${status} filter`}><X className="size-3" /></button></Badge>}
+   173→  1400→              <button onClick={resetFilters} className="text-xs text-teal hover:underline ml-2 font-mono-accent">Clear all</button>
+   174→  1401→            </div>
+   175→  1402→          )}
+   176→  1403→        </div>
+   177→  1404→
+   178→  1405→        {isLoading ? (
+   179→  1406→          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-56 bg-surface rounded-[16px]" />)}</div>
+   180→  1407→        ) : data && data.domains.length > 0 ? (
+   181→  1408→          <>
+   182→  1409→            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{data.domains.map((domain) => <DomainCard key={domain.id} domain={domain} />)}</div>
+   183→  1410→            {totalPages > 1 && (
+   184→  1411→              <div className="mt-8 flex items-center justify-center gap-2">
+   185→  1412→                <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} aria-label="Previous page" className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]">
+   186→  1413→                  <ChevronLeft className="size-4" /><span className="sr-only">Previous</span>
+   187→  1414→                </Button>
+   188→  1415→                <div className="flex items-center gap-1">
+   189→  1416→                  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+   190→  1417→                    let pageNum: number
+   191→  1418→                    if (totalPages <= 7) pageNum = i + 1
+   192→  1419→                    else if (page <= 4) pageNum = i + 1
+   193→  1420→                    else if (page >= totalPages - 3) pageNum = totalPages - 6 + i
+   194→  1421→                    else pageNum = page - 3 + i
+   195→  1422→                    return (
+   196→  1423→                      <Button key={pageNum} variant={pageNum === page ? 'default' : 'outline'} size="sm"
+   197→  1424→                        className={`w-9 rounded-[10px] ${pageNum === page ? 'bg-teal text-[#061312] hover:bg-teal/90 border-0' : 'border-surface-border text-[#B8C8C4] hover:bg-elevated'}`}
+   198→  1425→                        onClick={() => setPage(pageNum)} aria-label={`Page ${pageNum}`} aria-current={pageNum === page ? 'page' : undefined}>{pageNum}</Button>
+   199→  1426→                    )
+   200→  1427→                  })}
+   201→  1428→                </div>
+   202→  1429→                <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} aria-label="Next page" className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]">
+   203→  1430→                  <ChevronRight className="size-4" /><span className="sr-only">Next</span>
+   204→  1431→                </Button>
+   205→  1432→              </div>
+   206→  1433→            )}
+   207→  1434→          </>
+   208→  1435→        ) : (
+   209→  1436→          <div className="text-center py-20">
+   210→  1437→            <Globe className="size-12 text-surface-border mx-auto mb-4" />
+   211→  1438→            <h3 className="font-display text-xl font-bold text-white mb-2">No domains found</h3>
+   212→  1439→            <p className="text-sm text-[#718581] mb-6">Try adjusting your search or filters.</p>
+   213→  1440→            <Button variant="outline" onClick={resetFilters} className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]">Clear Filters</Button>
+   214→  1441→          </div>
+   215→  1442→        )}
+   216→  1443→      </div>
+   217→  1444→    </div>
+   218→  1445→  )
+   219→  1446→}
+   220→  1447→
+   221→  1448→// ========================
+   222→  1449→// DOMAIN DETAIL MODAL
+   223→  1450→// ========================
+   224→  1451→
+   225→  1452→function DomainDetailModal() {
+   226→  1453→  const nav = useNavigation()
+   227→  1454→  const { data, isLoading } = useDomainDetail(nav.selectedDomain)
+   228→  1455→  const open = !!nav.selectedDomain
+   229→  1456→  const handleClose = useCallback(() => { nav.setSelectedDomain(null) }, [nav])
+   230→  1457→  const handleOffer = () => { if (data?.domain) { nav.setOfferDomainName(data.domain.name); nav.setSelectedDomain(null); nav.setShowOfferForm(true) } }
+   231→  1458→
+   232→  1459→  return (
+   233→  1460→    <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
+   234→  1461→      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+   235→  1462→        {isLoading ? (
+   236→  1463→          <div className="py-8 space-y-4"><Skeleton className="h-10 w-64 bg-surface-border/50" /><Skeleton className="h-4 w-40 bg-surface-border/30" /><Skeleton className="h-20 w-full bg-surface-border/30" /><Skeleton className="h-32 w-full bg-surface-border/30" /></div>
+   237→  1464→        ) : data?.domain ? (
+   238→  1465→          <>
+   239→  1466→            <DialogHeader>
+   240→  1467→              <div className="flex items-center gap-2 mb-3">
+   241→  1468→                <Badge className="bg-elevated text-[#718581] border-surface-border text-xs font-mono-accent rounded-full px-3">{data.domain.extension}</Badge>
+   242→  1469→                <Badge className="bg-coral/10 text-coral border-coral/20 text-xs font-mono-accent rounded-full px-3">{data.domain.category}</Badge>
+   243→  1470→                {data.domain.featured && <Badge className="bg-teal/10 text-teal border-teal/20 text-xs font-mono-accent rounded-full px-3">Featured</Badge>}
+   244→  1471→              </div>
+   245→  1472→              <DialogTitle className="font-display text-3xl sm:text-4xl font-bold text-white">{data.domain.name}</DialogTitle>
+   246→  1473→              <DialogDescription className="sr-only">Details for {data.domain.name}</DialogDescription>
+   247→  1474→            </DialogHeader>
+   248→  1475→            <div className="mt-6 space-y-6">
+   249→  1476→              <div className="flex items-center gap-4">
+   250→  1477→                {data.domain.showPrice && data.domain.price && <p className="font-display text-3xl font-bold text-teal">${data.domain.price.toLocaleString()}</p>}
+   251→  1478→                <Badge variant="outline" className="border-surface-border text-[#718581] text-sm font-mono-accent rounded-full">{data.domain.saleType}</Badge>
+   252→  1479→              </div>
+   253→  1480→              {data.domain.shortDescription && <p className="text-[#B8C8C4] leading-relaxed">{data.domain.shortDescription}</p>}
+   254→  1481→              {data.domain.tags.length > 0 && <div className="flex flex-wrap gap-2">{data.domain.tags.map((tag) => <Badge key={tag} variant="secondary" className="text-xs font-mono-accent bg-elevated text-[#B8C8C4] rounded-full px-3">{tag}</Badge>)}</div>}
+   255→  1482→              {data.domain.useCases.length > 0 && (
+   256→  1483→                <div>
+   257→  1484→                  <h4 className="text-sm font-medium text-white mb-3">Potential use cases</h4>
+   258→  1485→                  <ul className="space-y-2">{data.domain.useCases.map((uc) => <li key={uc} className="flex items-start gap-2 text-sm text-[#B8C8C4]"><CheckCircle2 className="size-4 text-teal mt-0.5 shrink-0" />{uc}</li>)}</ul>
+   259→  1486→                </div>
+   260→  1487→              )}
+   261→  1488→              {data.domain.publicNotes && <div className="p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-sm text-[#B8C8C4]">{data.domain.publicNotes}</p></div>}
+   262→  1489→              <Button onClick={handleOffer} className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]">
+   263→  1490→                <ShoppingCart className="size-4 mr-2" /> Make an Offer <ArrowRight className="size-4" />
+   264→  1491→              </Button>
+   265→  1492→              {data.relatedDomains.length > 0 && (
+   266→  1493→                <div>
+   267→  1494→                  <Separator className="bg-surface-border mb-6" />
+   268→  1495→                  <h4 className="text-sm font-medium text-white mb-4">Related domains</h4>
+   269→  1496→                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+   270→  1497→                    {data.relatedDomains.map((rd) => (
+   271→  1498→                      <button key={rd.id} onClick={() => nav.setSelectedDomain(rd.slug)} className="shrink-0 surface-border rounded-xl p-4 hover:border-teal/30 transition-colors text-left min-w-[180px] bg-surface">
+   272→  1499→                        <p className="font-display text-sm font-bold text-white truncate">{rd.name}</p>
+   273→  1500→                        <p className="text-xs font-mono-accent text-[#718581] mt-1">{rd.category}</p>
+   274→  1501→                      </button>
+   275→  1502→                    ))}
+   276→  1503→                  </div>
+   277→  1504→                </div>
+   278→  1505→              )}
+   279→  1506→            </div>
+   280→  1507→          </>
+   281→  1508→        ) : null}
+   282→  1509→      </DialogContent>
+   283→  1510→    </Dialog>
+   284→  1511→  )
+   285→  1512→}
+   286→  1513→
+   287→  1514→// ========================
+   288→  1515→// OFFER FORM DIALOG
+   289→  1516→// ========================
+   290→  1517→
+   291→  1518→const offerSchema = z.object({
+   292→  1519→  name: z.string().min(2, 'Name must be at least 2 characters'),
+   293→  1520→  email: z.email('Please enter a valid email address'),
+   294→  1521→  company: z.string().optional(),
+   295→  1522→  offerAmount: z.number().positive().optional(),
+   296→  1523→  intendedUse: z.string().optional(),
+   297→  1524→  message: z.string().min(10, 'Message must be at least 10 characters'),
+   298→  1525→  consent: z.literal(true, { errorMap: () => ({ message: 'You must consent to proceed' }) }),
+   299→  1526→})
+   300→  1527→
+   301→  1528→type FormErrors = Record<string, string>
+   302→  1529→
+   303→  1530→function OfferFormDialog() {
+   304→  1531→  const nav = useNavigation()
+   305→  1532→  const submitInquiry = useSubmitInquiry()
+   306→  1533→  const [form, setForm] = useState({ name: '', email: '', company: '', offerAmount: '', intendedUse: '', message: '', consent: false, honeypot: '' })
+   307→  1534→  const [errors, setErrors] = useState<FormErrors>({})
+   308→  1535→  const [submitted, setSubmitted] = useState(false)
+   309→  1536→  const resetForm = () => { setForm({ name: '', email: '', company: '', offerAmount: '', intendedUse: '', message: '', consent: false, honeypot: '' }); setErrors({}); setSubmitted(false) }
+   310→  1537→  const handleClose = (open: boolean) => { if (!open) { nav.setShowOfferForm(false); resetForm() } }
+   311→  1538→
+   312→  1539→  const handleSubmit = (e: FormEvent) => {
+   313→  1540→    e.preventDefault(); setErrors({})
+   314→  1541→    const result = offerSchema.safeParse({ name: form.name, email: form.email, company: form.company || undefined, offerAmount: form.offerAmount ? Number(form.offerAmount) : undefined, intendedUse: form.intendedUse || undefined, message: form.message, consent: form.consent })
+   315→  1542→    if (!result.success) { const fieldErrors: FormErrors = {}; for (const issue of result.error.issues) { const field = issue.path[0]; if (field) fieldErrors[String(field)] = issue.message } setErrors(fieldErrors); return }
+   316→  1543→    submitInquiry.mutate({ domainSlug: nav.offerDomainName ? nav.offerDomainName.toLowerCase().replace(/[^a-z0-9-]/g, '-') : undefined, ...result.data, honeypot: form.honeypot }, { onSuccess: () => setSubmitted(true) })
+   317→  1544→  }
+   318→  1545→
+   319→  1546→  if (submitted) return (
+   320→  1547→    <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
+   321→  1548→      <DialogContent className="max-w-lg bg-[#0B211E] border-surface-border rounded-2xl">
+   322→  1549→        <div className="text-center py-8"><CheckCircle2 className="size-12 text-teal mx-auto mb-4" /><h3 className="font-display text-2xl font-bold text-white mb-2">Thank you.</h3><p className="text-[#B8C8C4] leading-relaxed">Your inquiry has been received. Nizar will review it and get back to you.</p><Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => handleClose(false)}>Close</Button></div>
+   323→  1550→      </DialogContent>
+   324→  1551→    </Dialog>
+   325→  1552→  )
+   326→  1553→
+   327→  1554→  return (
+   328→  1555→    <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
+   329→  1556→      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+   330→  1557→        <DialogHeader>
+   331→  1558→          <DialogTitle className="font-display text-2xl font-bold text-white">Make an Offer</DialogTitle>
+   332→  1559→          <DialogDescription className="text-[#718581]">{nav.offerDomainName ? `Submit your offer for ${nav.offerDomainName}` : 'Submit an inquiry about a domain'}</DialogDescription>
+   333→  1560→        </DialogHeader>
+   334→  1561→        <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+   335→  1562→          {nav.offerDomainName && <div className="p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-xs font-mono-accent text-[#718581]">Domain</p><p className="font-display text-lg font-bold text-white mt-1">{nav.offerDomainName}</p></div>}
+   336→  1563→          <div className="absolute -left-[9999px]" aria-hidden="true"><label htmlFor="website">Website</label><input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" value={form.honeypot} onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))} /></div>
+   337→  1564→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   338→  1565→            <div className="space-y-2"><Label htmlFor="offer-name" className="text-[#B8C8C4]">Name *</Label><Input id="offer-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p className="text-xs text-error">{errors.name}</p>}</div>
+   339→  1566→            <div className="space-y-2"><Label htmlFor="offer-email" className="text-[#B8C8C4]">Email *</Label><Input id="offer-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p className="text-xs text-error">{errors.email}</p>}</div>
+   340→  1567→          </div>
+   341→  1568→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   342→  1569→            <div className="space-y-2"><Label htmlFor="offer-company" className="text-[#B8C8C4]">Company / Project</Label><Input id="offer-company" value={form.company} onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" /></div>
+   343→  1570→            <div className="space-y-2"><Label htmlFor="offer-amount" className="text-[#B8C8C4]">Offer Amount (USD)</Label><Input id="offer-amount" type="number" min="1" value={form.offerAmount} onChange={(e) => setForm((f) => ({ ...f, offerAmount: e.target.value }))} placeholder="e.g. 500" className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
+   344→  1571→          </div>
+   345→  1572→          <div className="space-y-2"><Label htmlFor="offer-use" className="text-[#B8C8C4]">Intended Use</Label><Input id="offer-use" value={form.intendedUse} onChange={(e) => setForm((f) => ({ ...f, intendedUse: e.target.value }))} placeholder="e.g. AI startup, SaaS platform" className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
+   346→  1573→          <div className="space-y-2"><Label htmlFor="offer-message" className="text-[#B8C8C4]">Message *</Label><Textarea id="offer-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={4} aria-invalid={!!errors.message} className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p className="text-xs text-error">{errors.message}</p>}</div>
+   347→  1574→          <div className="flex items-start gap-2"><Checkbox id="offer-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} className="data-[state=checked]:bg-teal data-[state=checked]:border-teal" /><Label htmlFor="offer-consent" className="text-sm text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
+   348→  1575→          {errors.consent && <p className="text-xs text-error">{errors.consent}</p>}
+   349→  1576→          <Button type="submit" className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]" disabled={submitInquiry.isPending}>{submitInquiry.isPending ? <><Loader2 className="size-4 animate-spin" /> Submitting...</> : <>Send Inquiry <Send className="size-4" /></>}</Button>
+   350→  1577→        </form>
+   351→  1578→      </DialogContent>
+   352→  1579→    </Dialog>
+   353→  1580→  )
+   354→  1581→}
+   355→  1582→
+   356→  1583→// ========================
+   357→  1584→// ABOUT SECTION
+   358→  1585→// ========================
+   359→  1586→
+   360→  1587→function AboutSection() {
+   361→  1588→  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+   362→  1589→
+   363→  1590→  return (
+   364→  1591→    <div className="py-12 sm:py-20">
+   365→  1592→      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+   366→  1593→        <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">About</p>
+   367→  1594→        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-8">About</h1>
+   368→  1595→        <div className="space-y-6 text-[#B8C8C4] leading-relaxed">
+   369→  1596→          <p>I&rsquo;m Nizar Rahme. I invest in and curate domain names for businesses operating in AI, SaaS, fintech, technology, and the broader digital economy.</p>
+   370→  1597→          <p>My approach to domain investing is straightforward: I look for names that are short, memorable, and genuinely brandable—names that could serve as the foundation for a real business. I don&rsquo;t register names at scale or flip domains for quick returns. Each name in the catalog has been selected with specific industries and use cases in mind.</p>
+   371→  1598→          <p>Beyond domain investing, I have hands-on experience building WordPress websites, creating digital content, and working with AI-assisted workflows. This practical background informs how I evaluate names—I think about how a domain will work in context, not just how it sounds.</p>
+   372→  1599→        </div>
+   373→  1600→
+   374→  1601→        <Separator className="my-12 bg-surface-border" />
+   375→  1602→
+   376→  1603→        <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-8">How I Evaluate a Domain</h2>
+   377→  1604→        <div className="space-y-0">
+   378→  1605→          {[
+   379→  1606→            { title: 'Brandability', desc: 'Does the name sound like a real company, not a keyword string?' },
+   380→  1607→            { title: 'Length', desc: 'Shorter is generally better. I prefer names under 12 characters when possible.' },
+   381→  1608→            { title: 'Memorability', desc: 'Can someone recall the name after hearing it once?' },
+   382→  1609→            { title: 'Pronounceability', desc: 'Can it be said out loud without confusion?' },
+   383→  1610→            { title: 'Industry fit', desc: 'Does it align with a growing sector like AI, SaaS, fintech, or digital services?' },
+   384→  1611→            { title: 'Extension quality', desc: '.com is preferred. Other extensions are selected only when the name is strong.' },
+   385→  1612→            { title: 'Search and confusion risk', desc: 'Does it avoid trademark conflicts and confusion with existing brands?' },
+   386→  1613→            { title: 'Practical value', desc: 'Would a real business benefit from owning this name?' },
+   387→  1614→          ].map((item, idx) => (
+   388→  1615→            <motion.div
+   389→  1616→              key={item.title}
+   390→  1617→              onMouseEnter={() => setHoveredIndex(idx)}
+   391→  1618→              onMouseLeave={() => setHoveredIndex(null)}
+   392→  1619→              className={`flex gap-4 py-4 px-3 -mx-3 rounded-xl surface-border-b last:border-b-0 transition-all duration-300 cursor-default relative overflow-hidden ${
+   393→  1620→                hoveredIndex === idx ? 'bg-gradient-to-r from-teal/8 via-elevated/50 to-transparent' : ''
+   394→  1621→              }`}
+   395→  1622→            >
+   396→  1623→              {hoveredIndex === idx && (
+   397→  1624→                <motion.div
+   398→  1625→                  layoutId="evalHighlight"
+   399→  1626→                  className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-teal to-teal-soft"
+   400→  1627→                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+   401→  1628→                />
+   402→  1629→              )}
+   403→  1630→              <motion.div
+   404→  1631→                animate={{
+   405→  1632→                  scale: hoveredIndex === idx ? 1.2 : 1,
+   406→  1633→                }}
+   407→  1634→                transition={{ duration: 0.2 }}
+   408→  1635→                className="shrink-0"
+   409→  1636→              >
+   410→  1637→                <div className={`w-8 h-8 rounded-lg bg-elevated border flex items-center justify-center text-xs font-mono-accent transition-all duration-300 ${
+   411→  1638→                  hoveredIndex === idx ? 'text-[#061312] border-teal/40 bg-gradient-to-br from-teal to-teal-soft shadow-[0_0_16px_rgba(0,229,176,0.25)]' : 'text-teal/70 border-surface-border'
+   412→  1639→                }`}>
+   413→  1640→                  {idx + 1}
+   414→  1641→                </div>
+   415→  1642→              </motion.div>
+   416→  1643→              <div className="min-w-0">
+   417→  1644→                <h3 className={`font-medium text-sm transition-all duration-300 ${hoveredIndex === idx ? 'bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent' : 'text-white'}`}>{item.title}</h3>
+   418→  1645→                <p className={`text-sm leading-relaxed transition-colors duration-300 ${hoveredIndex === idx ? 'text-[#B8C8C4]' : 'text-[#718581]'}`}>{item.desc}</p>
+   419→  1646→              </div>
+   420→  1647→              {hoveredIndex === idx && (
+   421→  1648→                <motion.div
+   422→  1649→                  initial={{ opacity: 0, x: -10 }}
+   423→  1650→                  animate={{ opacity: 1, x: 0 }}
+   424→  1651→                  className="shrink-0 self-center"
+   425→  1652→                >
+   426→  1653→                  <Sparkles className="size-4 text-teal" />
+   427→  1654→                </motion.div>
+   428→  1655→              )}
+   429→  1656→            </motion.div>
+   430→  1657→          ))}
+   431→  1658→        </div>
+   432→  1659→
+   433→  1660→        <Separator className="my-12 bg-surface-border" />
+   434→  1661→        <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-6">Supporting capabilities</h2>
+   435→  1662→        <ul className="space-y-3">{['WordPress website design and development', 'Content creation and copywriting', 'Social media strategy and management', 'SEO foundations and technical optimization', 'AI-assisted workflows and automation'].map((item) => (<li key={item} className="flex items-center gap-3 text-sm text-[#B8C8C4]"><CheckCircle2 className="size-4 text-teal shrink-0" />{item}</li>))}</ul>
+   436→  1663→        <Separator className="my-12 bg-surface-border" />
+   437→  1664→        <div className="flex items-center gap-4">
+   438→  1665→          <span className="text-sm text-[#718581] font-mono-accent">Connect:</span>
+   439→  1666→          <SocialLinks />
+   440→  1667→        </div>
+   441→  1668→      </div>
+   442→  1669→    </div>
+   443→  1670→  )
+   444→  1671→}
+   445→  1672→
+   446→  1673→// ========================
+   447→  1674→// SERVICES SECTION
+   448→  1675→// ========================
+   449→  1676→
+   450→  1677→function ServicesSection() {
+   451→  1678→  const nav = useNavigation()
+   452→  1679→  const services = [
+   453→  1680→    { icon: Globe, title: 'WordPress Websites', desc: 'Custom WordPress website design and development, from business sites to content platforms. Focused on clean design, fast performance, and ease of management.' },
+   454→  1681→    { icon: FileText, title: 'Digital Content', desc: 'Writing, editing, and content strategy for websites, blogs, and marketing materials. Content that communicates clearly and serves a purpose.' },
+   455→  1682→    { icon: BarChart3, title: 'SEO Foundations', desc: 'Technical SEO setup, keyword research, on-page optimization, and site structure to help websites become findable in search results.' },
+   456→  1683→    { icon: Sparkles, title: 'AI-Assisted Workflows', desc: 'Building and implementing AI-assisted processes for content generation, data analysis, and operational efficiency using modern tools.' },
+   457→  1684→    { icon: Layers, title: 'Digital Brand Foundations', desc: 'Naming, domain selection, visual identity basics, and online presence setup for new businesses and projects.' },
+   458→  1685→  ]
+   459→  1686→
+   460→  1687→  return (
+   461→  1688→    <div className="py-12 sm:py-20">
+   462→  1689→      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+   463→  1690→        <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">What I Offer</p>
+   464→  1691→        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Selected Digital Services</h1>
+   465→  1692→        <p className="text-[#718581] max-w-2xl mb-12 leading-relaxed">Alongside domain investing, I offer select digital services for businesses and projects that need a hands-on, thoughtful approach to their online presence.</p>
+   466→  1693→        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{services.map((service, idx) => (
+   467→  1694→          <motion.div key={service.title} whileHover={{ y: -6 }} className="surface-border rounded-[16px] bg-surface p-6 domain-card-hover relative overflow-hidden group">
+   468→  1695→            <div className="absolute inset-0 bg-gradient-to-br from-teal/5 via-transparent to-coral/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+   469→  1696→            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal/0 to-transparent group-hover:via-teal/50 transition-all duration-500" />
+   470→  1697→            <service.icon className="size-6 text-teal mb-4 group-hover:drop-shadow-[0_0_8px_rgba(0,229,176,0.4)] transition-all" />
+   471→  1698→            <h3 className="font-display text-lg font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-teal group-hover:to-teal-soft transition-all duration-300">{service.title}</h3>
+   472→  1699→            <p className="text-sm text-[#718581] leading-relaxed group-hover:text-[#B8C8C4] transition-colors">{service.desc}</p>
+   473→  1700→          </motion.div>
+   474→  1701→        ))}</div>
+   475→  1702→        <div className="mt-12 text-center">
+   476→  1703→          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+   477→  1704→            <Button onClick={() => nav.setSection('contact')} className="bg-gradient-to-r from-coral to-coral-hover text-white rounded-[12px] h-12 px-8 font-medium transition-all hover:shadow-[0_0_24px_rgba(255,77,46,0.4)] hover:brightness-110">
+   478→  1705→              Discuss a Project <ArrowRight className="size-4" />
+   479→  1706→            </Button>
+   480→  1707→          </motion.div>
+   481→  1708→        </div>
+   482→  1709→      </div>
+   483→  1710→    </div>
+   484→  1711→  )
+   485→  1712→}
+   486→  1713→
+   487→  1714→// ========================
+   488→  1715→// TRANSACTIONS SECTION
+   489→  1716→// ========================
+   490→  1717→
+   491→  1718→function TransactionsSection() {
+   492→  1719→  const { data, isLoading } = useTransactions()
+   493→  1720→  return (
+   494→  1721→    <div className="py-12 sm:py-20">
+   495→  1722→      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+   496→  1723→        <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Track Record</p>
+   497→  1724→        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Transactions</h1>
+   498→  1725→        <p className="text-[#718581] mb-10 leading-relaxed">A record of completed domain sales. These represent actual transactions, not appraisals or asking prices.</p>
+   499→  1726→        {isLoading ? <div className="space-y-4"><Skeleton className="h-32 bg-surface rounded-[16px]" /><Skeleton className="h-32 bg-surface rounded-[16px]" /></div> : data ? (
+   500→  1727→          <div className="space-y-4">{data.transactions.map((tx) => (
+   501→  1728→            <motion.div key={tx.domain} whileHover={{ y: -2 }} className="surface-border rounded-[16px] bg-surface p-6 sm:p-8 domain-card-hover">
+   502→  1729→              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+   503→  1730→                <div><h3 className="font-display text-xl sm:text-2xl font-bold text-white">{tx.domain}</h3><Badge className="mt-2 bg-teal-muted text-teal border-teal/20 text-xs font-mono-accent rounded-full">{tx.status}</Badge></div>
+   504→  1731→                <p className="font-display text-3xl font-bold text-teal">${tx.amount.toLocaleString()}</p>
+   505→  1732→              </div>
+   506→  1733→            </motion.div>
+   507→  1734→          ))}</div>
+   508→  1735→        ) : null}
+   509→  1736→        <div className="mt-8 p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-xs font-mono-accent text-[#718581] leading-relaxed">These are selected completed transactions and do not represent a guarantee of future sale prices or outcomes. Domain values depend on many factors including market demand, buyer need, and negotiation.</p></div>
+   510→  1737→      </div>
+   511→  1738→    </div>
+   512→  1739→  )
+   513→  1740→}
+   514→  1741→
+   515→  1742→// ========================
+   516→  1743→// CONTACT SECTION
+   517→  1744→// ========================
+   518→  1745→
+   519→  1746→const contactCategories = ['Acquire a Domain', 'Discuss a Partnership', 'Work With Nizar', 'Other']
+   520→  1747→const contactSchema = z.object({
+   521→  1748→  name: z.string().min(2, 'Name must be at least 2 characters'),
+   522→  1749→  email: z.email('Please enter a valid email address'),
+   523→  1750→  category: z.string().min(1, 'Please select a category'),
+   524→  1751→  message: z.string().min(10, 'Message must be at least 10 characters'),
+   525→  1752→  consent: z.literal(true, { errorMap: () => ({ message: 'You must consent to proceed' }) }),
+   526→  1753→})
+   527→  1754→
+   528→  1755→function ContactSection() {
+   529→  1756→  const { data: settings } = useSettings()
+   530→  1757→  const submitInquiry = useSubmitInquiry()
+   531→  1758→  const [form, setForm] = useState({ name: '', email: '', category: '', message: '', consent: false, honeypot: '' })
+   532→  1759→  const [errors, setErrors] = useState<FormErrors>({})
+   533→  1760→  const [submitted, setSubmitted] = useState(false)
+   534→  1761→
+   535→  1762→  const handleSubmit = (e: FormEvent) => {
+   536→  1763→    e.preventDefault(); setErrors({})
+   537→  1764→    const result = contactSchema.safeParse({ name: form.name, email: form.email, category: form.category, message: form.message, consent: form.consent })
+   538→  1765→    if (!result.success) { const fieldErrors: FormErrors = {}; for (const issue of result.error.issues) { const field = issue.path[0]; if (field) fieldErrors[String(field)] = issue.message } setErrors(fieldErrors); return }
+   539→  1766→    submitInquiry.mutate({ ...result.data, honeypot: form.honeypot, inquiryType: 'contact' }, { onSuccess: () => setSubmitted(true) })
+   540→  1767→  }
+   541→  1768→
+   542→  1769→  if (submitted) return (
+   543→  1770→    <div className="py-12 sm:py-20">
+   544→  1771→      <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
+   545→  1772→        <CheckCircle2 className="size-12 text-teal mx-auto mb-4" /><h1 className="font-display text-3xl font-bold text-white mb-4">Message sent</h1>
+   546→  1773→        <p className="text-[#B8C8C4] leading-relaxed">Thank you for reaching out. Nizar will review your message and respond as soon as possible.</p>
+   547→  1774→        <Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => { setSubmitted(false); setForm({ name: '', email: '', category: '', message: '', consent: false, honeypot: '' }) }}>Send another message</Button>
+   548→  1775→      </div>
+   549→  1776→    </div>
+   550→  1777→  )
+   551→  1778→
+   552→  1779→  return (
+   553→  1780→    <div className="py-12 sm:py-20">
+   554→  1781→      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+   555→  1782→        <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
+   556→  1783→          <div className="lg:col-span-2">
+   557→  1784→            <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Get in Touch</p>
+   558→  1785→            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Contact</h1>
+   559→  1786→            <p className="text-[#B8C8C4] leading-relaxed mb-8">Whether you&rsquo;re interested in acquiring a domain, discussing a partnership, or working together on a digital project, I&rsquo;d like to hear from you.</p>
+   560→  1787→            <div className="space-y-3 mb-8">
+   561→  1788→              <a href={`mailto:${settings?.contactEmail || ''}`} className="flex items-center gap-3 group">
+   562→  1789→                <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-teal-muted border border-teal/10 group-hover:border-teal/30 group-hover:shadow-[0_0_16px_rgba(0,229,176,0.1)] transition-all">
+   563→  1790→                  <Mail className="size-4 text-teal" />
+   564→  1791→                </span>
+   565→  1792→                <div>
+   566→  1793→                  <p className="text-xs text-[#718581] font-mono-accent">Email</p>
+   567→  1794→                  <p className="text-sm text-[#B8C8C4] group-hover:text-teal transition-colors">{settings?.contactEmail || 'info@nizarrahme.com'}</p>
+   568→  1795→                </div>
+   569→  1796→              </a>
+   570→  1797→              <a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group">
+   571→  1798→                <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#25D366]/10 border border-[#25D366]/10 group-hover:border-[#25D366]/30 group-hover:shadow-[0_0_16px_rgba(37,211,102,0.1)] transition-all">
+   572→  1799→                  <WhatsAppIcon className="size-4 text-[#25D366]" />
+   573→  1800→                </span>
+   574→  1801→                <div>
+   575→  1802→                  <p className="text-xs text-[#718581] font-mono-accent">WhatsApp</p>
+   576→  1803→                  <p className="text-sm text-[#B8C8C4] group-hover:text-[#25D366] transition-colors">Chat with Nizar</p>
+   577→  1804→                </div>
+   578→  1805→              </a>
+   579→  1806→            </div>
+   580→  1807→            <div className="mb-8"><p className="text-sm font-medium text-white mb-3">Follow</p><SocialLinks /></div>
+   581→  1808→          </div>
+   582→  1809→          <div className="lg:col-span-3">
+   583→  1810→            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+   584→  1811→              <div className="absolute -left-[9999px]" aria-hidden="true"><label htmlFor="contact-website">Website</label><input type="text" id="contact-website" name="website" tabIndex={-1} autoComplete="off" value={form.honeypot} onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))} /></div>
+   585→  1812→              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   586→  1813→                <div className="space-y-2"><Label htmlFor="contact-name" className="text-[#B8C8C4]">Name *</Label><Input id="contact-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p className="text-xs text-error">{errors.name}</p>}</div>
+   587→  1814→                <div className="space-y-2"><Label htmlFor="contact-email" className="text-[#B8C8C4]">Email *</Label><Input id="contact-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p className="text-xs text-error">{errors.email}</p>}</div>
+   588→  1815→              </div>
+   589→  1816→              <div className="space-y-2"><Label htmlFor="contact-category" className="text-[#B8C8C4]">Category *</Label><Select value={form.category} onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}><SelectTrigger id="contact-category" aria-invalid={!!errors.category} className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]"><SelectValue placeholder="Select a category" /></SelectTrigger><SelectContent>{contactCategories.map((cat) => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}</SelectContent></Select>{errors.category && <p className="text-xs text-error">{errors.category}</p>}</div>
+   590→  1817→              <div className="space-y-2"><Label htmlFor="contact-message" className="text-[#B8C8C4]">Message *</Label><Textarea id="contact-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={5} aria-invalid={!!errors.message} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p className="text-xs text-error">{errors.message}</p>}</div>
+   591→  1818→              <div className="flex items-start gap-2"><Checkbox id="contact-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} className="data-[state=checked]:bg-teal data-[state=checked]:border-teal" /><Label htmlFor="contact-consent" className="text-sm text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
+   592→  1819→              {errors.consent && <p className="text-xs text-error">{errors.consent}</p>}
+   593→  1820→              <Button type="submit" className="w-full sm:w-auto bg-coral hover:bg-coral-hover text-white h-12 px-8 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]" disabled={submitInquiry.isPending}>{submitInquiry.isPending ? <><Loader2 className="size-4 animate-spin" /> Sending...</> : <>Send Message <Send className="size-4" /></>}</Button>
+   594→  1821→            </form>
+   595→  1822→          </div>
+   596→  1823→        </div>
+   597→  1824→      </div>
+   598→  1825→    </div>
+   599→  1826→  )
+   600→  1827→}
+   601→  1828→
+   602→  1829→// ========================
+   603→  1830→// FOOTER
+   604→  1831→// ========================
+   605→  1832→
+   606→  1833→function Footer() {
+   607→  1834→  const nav = useNavigation()
+   608→  1835→  const { data: settings } = useSettings()
+   609→  1836→  return (
+   610→  1837→    <footer className="mt-auto surface-border-t bg-surface/50">
+   611→  1838→      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+   612→  1839→        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+   613→  1840→          <div>
+   614→  1841→            <p className="font-display text-xl font-bold text-white">Nizar Rahme</p>
+   615→  1842→            <p className="text-sm text-[#718581] mt-1 font-mono-accent">Domain Investor &amp; Digital Brand Builder</p>
+   616→  1843→          </div>
+   617→  1844→          <div>
+   618→  1845→            <p className="text-sm font-medium text-white mb-4">Navigation</p>
+   619→  1846→            <nav className="grid grid-cols-2 gap-x-8 gap-y-2" aria-label="Footer navigation">{NAV_ITEMS.map((item) => (<button key={item.section} onClick={() => nav.setSection(item.section)} className="text-sm text-[#718581] hover:text-teal transition-colors text-left">{item.label}</button>))}<button onClick={() => nav.setShowPrivacy(true)} className="text-sm text-[#718581] hover:text-teal transition-colors text-left">Privacy</button><button onClick={() => nav.setShowTerms(true)} className="text-sm text-[#718581] hover:text-teal transition-colors text-left">Terms</button></nav>
+   620→  1847→          </div>
+   621→  1848→          <div>
+   622→  1849→            <p className="text-sm font-medium text-white mb-4">Connect</p>
+   623→  1850→            <SocialLinks />
+   624→  1851→            {settings && (
+   625→  1852→              <a href={`mailto:${settings.contactEmail}`} className="flex items-center gap-2.5 text-sm text-[#718581] hover:text-teal transition-colors mt-4 group">
+   626→  1853→                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-muted border border-teal/10 group-hover:border-teal/25 transition-all">
+   627→  1854→                  <Mail className="size-3.5 text-teal" />
+   628→  1855→                </span>
+   629→  1856→                {settings.contactEmail}
+   630→  1857→              </a>
+   631→  1858→            )}
+   632→  1859→            <a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-sm text-[#718581] hover:text-[#25D366] transition-colors mt-2 group">
+   633→  1860→              <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#25D366]/10 border border-[#25D366]/10 group-hover:border-[#25D366]/25 transition-all">
+   634→  1861→                <WhatsAppIcon className="size-3.5 text-[#25D366]" />
+   635→  1862→              </span>
+   636→  1863→              WhatsApp
+   637→  1864→            </a>
+   638→  1865→          </div>
+   639→  1866→        </div>
+   640→  1867→        <Separator className="my-8 bg-surface-border" />
+   641→  1868→        <p className="text-xs text-[#718581] text-center font-mono-accent">&copy; 2026 Nizar Rahme. All rights reserved.</p>
+   642→  1869→      </div>
+   643→  1870→    </footer>
+   644→  1871→  )
+   645→  1872→}
+   646→  1873→
+   647→  1874→// ========================
+   648→  1875→// PRIVACY MODAL
+   649→  1876→// ========================
+   650→  1877→
+   651→  1878→function PrivacyModal() {
+   652→  1879→  const nav = useNavigation()
+   653→  1880→  return (
+   654→  1881→    <Dialog open={nav.showPrivacy} onOpenChange={(v) => nav.setShowPrivacy(v)}>
+   655→  1882→      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+   656→  1883→        <DialogHeader><DialogTitle className="font-display text-2xl font-bold text-white">Privacy Policy</DialogTitle><DialogDescription className="text-[#718581]">Last updated: 2026</DialogDescription></DialogHeader>
+   657→  1884→        <div className="mt-6 space-y-4 text-sm text-[#B8C8C4] leading-relaxed">
+   658→  1885→          <p>This website is operated by Nizar Rahme. This privacy policy explains how personal information is collected, used, and protected when you use this website.</p>
+   659→  1886→          <h3 className="font-medium text-white">Information collected</h3><p>When you submit an inquiry through the contact or offer forms, we collect your name, email address, and any additional information you choose to provide. This information is stored solely for the purpose of responding to your inquiry.</p>
+   660→  1887→          <h3 className="font-medium text-white">How information is used</h3><p>Your information is used only to respond to inquiries about domain acquisitions or services. It is not sold or shared with third parties for marketing purposes.</p>
+   661→  1888→          <h3 className="font-medium text-white">Data retention</h3><p>Inquiry data is retained for as long as necessary. You may request deletion of your data at any time by contacting us.</p>
+   662→  1889→          <h3 className="font-medium text-white">Analytics</h3><p>This website may use basic analytics to understand traffic patterns. No personally identifiable information is collected through analytics tools.</p>
+   663→  1890→          <h3 className="font-medium text-white">Contact</h3><p>For any questions about this privacy policy or to request data deletion, please use the contact form on this website.</p>
+   664→  1891→        </div>
+   665→  1892→      </DialogContent>
+   666→  1893→    </Dialog>
+   667→  1894→  )
+   668→  1895→}
+   669→  1896→
+   670→  1897→// ========================
+   671→  1898→// TERMS MODAL
+   672→  1899→// ========================
+   673→  1900→
+   674→  1901→function TermsModal() {
+   675→  1902→  const nav = useNavigation()
+   676→  1903→  return (
+   677→  1904→    <Dialog open={nav.showTerms} onOpenChange={(v) => nav.setShowTerms(v)}>
+   678→  1905→      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
+   679→  1906→        <DialogHeader><DialogTitle className="font-display text-2xl font-bold text-white">Terms of Use</DialogTitle><DialogDescription className="text-[#718581]">Last updated: 2026</DialogDescription></DialogHeader>
+   680→  1907→        <div className="mt-6 space-y-4 text-sm text-[#B8C8C4] leading-relaxed">
+   681→  1908→          <p>By using this website, you agree to the following terms and conditions.</p>
+   682→  1909→          <h3 className="font-medium text-white">Website purpose</h3><p>This website serves as a marketplace for domain names owned by Nizar Rahme. All domain listings, prices (where shown), and descriptions are subject to change without notice.</p>
+   683→  1910→          <h3 className="font-medium text-white">Inquiries and offers</h3><p>Submitting an inquiry or offer through this website does not constitute a binding agreement. All transactions are subject to negotiation and mutual agreement.</p>
+   684→  1911→          <h3 className="font-medium text-white">Domain availability</h3><p>Domain availability is updated regularly but may not be real-time. A domain shown as available may have been sold or reserved.</p>
+   685→  1912→          <h3 className="font-medium text-white">Intellectual property</h3><p>All content on this website, including text, design, and branding, is the property of Nizar Rahme unless otherwise stated.</p>
+   686→  1913→          <h3 className="font-medium text-white">Limitation of liability</h3><p>This website is provided &ldquo;as is&rdquo; without warranties of any kind. Nizar Rahme is not liable for any damages arising from the use of this website.</p>
+   687→  1914→          <h3 className="font-medium text-white">Contact</h3><p>For questions about these terms, please use the contact form.</p>
+   688→  1915→        </div>
+   689→  1916→      </DialogContent>
+   690→  1917→    </Dialog>
+   691→  1918→  )
+   692→  1919→}
+   693→  1920→

@@ -458,7 +458,8 @@ export default function HomePage() {
         Skip to content
       </a>
       <Header />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="flex-1" role="main">
+        <div aria-live="polite" className="sr-only">{nav.section === 'home' ? 'Home section' : nav.section === 'domains' ? 'Domain catalog' : nav.section.charAt(0).toUpperCase() + nav.section.slice(1) + ' section'} loaded</div>
         <AnimatePresence mode="wait">
           <motion.div
             key={nav.section}
@@ -521,7 +522,7 @@ function Header() {
             </span>
           </button>
 
-          <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
+          <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation" role="navigation">
             {NAV_ITEMS.map((item) => (
               <motion.button
                 key={item.section}
@@ -568,7 +569,7 @@ function Header() {
                 <SheetHeader>
                   <SheetTitle className="font-display text-xl text-white">Menu</SheetTitle>
                 </SheetHeader>
-                <nav className="mt-8 flex flex-col gap-1" aria-label="Mobile navigation">
+                <nav className="mt-8 flex flex-col gap-1" aria-label="Mobile navigation" role="navigation">
                   {NAV_ITEMS.map((item) => (
                     <motion.button
                       key={item.section}
@@ -618,8 +619,8 @@ function ClaimedTicker() {
   const doubled = [...items, ...items]
 
   return (
-    <div className="relative overflow-hidden py-4 bg-[#0B211E]/50 surface-border-y" aria-label="Recent domain activity">
-      <div className="animate-ticker flex gap-8 whitespace-nowrap w-max">
+    <div className="relative overflow-hidden py-4 bg-[#0B211E]/50 surface-border-y" aria-label="Recent domain activity" role="marquee" aria-roledescription="scrolling ticker">
+      <div className="animate-ticker flex gap-8 whitespace-nowrap w-max" aria-hidden="true">
         {doubled.map((item, i) => (
           <div key={i} className="flex items-center gap-3 shrink-0">
             <CircleDot className="size-3 text-teal" />
@@ -657,7 +658,10 @@ function FeaturedCarousel({ domains }: { domains: PublicDomain[] }) {
   const domain = domains[current]
 
   return (
-    <div className="relative max-w-2xl mx-auto">
+    <div className="relative max-w-2xl mx-auto" role="region" aria-roledescription="carousel" aria-label="Featured domain carousel">
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        Showing domain {current + 1} of {domains.length}: {domain.name}
+      </div>
       <AnimatePresence mode="wait">
         <motion.div
           key={domain.id}
@@ -669,7 +673,7 @@ function FeaturedCarousel({ domains }: { domains: PublicDomain[] }) {
           onClick={() => nav.setSelectedDomain(domain.slug)}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => { if (e.key === 'Enter') nav.setSelectedDomain(domain.slug) }}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); nav.setSelectedDomain(domain.slug) } }}
           aria-label={`View details for ${domain.name}`}
         >
           <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-teal/0 via-transparent to-coral/0 group-hover:from-teal/15 group-hover:via-transparent group-hover:to-coral/15 transition-all duration-500 -z-10 opacity-0 group-hover:opacity-100" />
@@ -802,6 +806,7 @@ function HomeSection() {
               Own the Name Behind{' '}
               <span className="bg-gradient-to-r from-teal via-teal-soft via-coral/80 to-teal bg-clip-text text-transparent teal-text-glow animate-gradient-text">What&rsquo;s Next.</span>
             </motion.h1>
+            <p className="sr-only">Nizar Rahme&rsquo;s curated marketplace of premium brandable domain names for AI, SaaS, fintech, and technology businesses.</p>
 
             <motion.p
               variants={fadeUp}
@@ -1228,9 +1233,10 @@ function DomainCard({ domain }: { domain: PublicDomain }) {
       <div
         className="group cursor-pointer surface-border rounded-[16px] bg-surface p-5 sm:p-6 domain-card-hover relative overflow-hidden"
         onClick={() => nav.setSelectedDomain(domain.slug)}
-        role="article"
+        role="button"
         tabIndex={0}
-        onKeyDown={(e) => { if (e.key === 'Enter') nav.setSelectedDomain(domain.slug) }}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); nav.setSelectedDomain(domain.slug) } }}
+        aria-label={`View ${domain.name} — ${domain.extension} — ${domain.category}${domain.showPrice && domain.price ? ` — $${domain.price.toLocaleString()}` : ''}`}
       >
         {/* Animated gradient border glow on hover */}
         <div className="absolute -inset-[1px] rounded-[16px] bg-gradient-to-br from-teal/0 via-transparent to-coral/0 group-hover:from-teal/20 group-hover:via-transparent group-hover:to-coral/20 transition-all duration-500 -z-10 opacity-0 group-hover:opacity-100" />
@@ -1316,11 +1322,11 @@ function DomainsSection() {
   }
 
   return (
-    <div className="py-8 sm:py-12">
+    <section className="py-8 sm:py-12" aria-labelledby="domains-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Browse Catalog</p>
-          <h1 className="font-display text-3xl sm:text-4xl font-bold text-white">Domain Catalog</h1>
+          <h1 id="domains-heading" className="font-display text-3xl sm:text-4xl font-bold text-white">Domain Catalog</h1>
           <p className="text-[#718581] mt-2">Browse available domain names. Click any domain to view details and make an offer.</p>
         </div>
 
@@ -1441,7 +1447,7 @@ function DomainsSection() {
           </div>
         )}
       </div>
-    </div>
+    </section>
   )
 }
 
@@ -1558,21 +1564,21 @@ function OfferFormDialog() {
           <DialogTitle className="font-display text-2xl font-bold text-white">Make an Offer</DialogTitle>
           <DialogDescription className="text-[#718581]">{nav.offerDomainName ? `Submit your offer for ${nav.offerDomainName}` : 'Submit an inquiry about a domain'}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate aria-label="Domain offer form">
           {nav.offerDomainName && <div className="p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-xs font-mono-accent text-[#718581]">Domain</p><p className="font-display text-lg font-bold text-white mt-1">{nav.offerDomainName}</p></div>}
           <div className="absolute -left-[9999px]" aria-hidden="true"><label htmlFor="website">Website</label><input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" value={form.honeypot} onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))} /></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2"><Label htmlFor="offer-name" className="text-[#B8C8C4]">Name *</Label><Input id="offer-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p className="text-xs text-error">{errors.name}</p>}</div>
-            <div className="space-y-2"><Label htmlFor="offer-email" className="text-[#B8C8C4]">Email *</Label><Input id="offer-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p className="text-xs text-error">{errors.email}</p>}</div>
+            <div className="space-y-2"><Label htmlFor="offer-name" className="text-[#B8C8C4]">Name *</Label><Input id="offer-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} aria-errormessage="offer-name-error" className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p id="offer-name-error" role="alert" className="text-xs text-error">{errors.name}</p>}</div>
+            <div className="space-y-2"><Label htmlFor="offer-email" className="text-[#B8C8C4]">Email *</Label><Input id="offer-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} aria-errormessage="offer-email-error" className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p id="offer-email-error" role="alert" className="text-xs text-error">{errors.email}</p>}</div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2"><Label htmlFor="offer-company" className="text-[#B8C8C4]">Company / Project</Label><Input id="offer-company" value={form.company} onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" /></div>
             <div className="space-y-2"><Label htmlFor="offer-amount" className="text-[#B8C8C4]">Offer Amount (USD)</Label><Input id="offer-amount" type="number" min="1" value={form.offerAmount} onChange={(e) => setForm((f) => ({ ...f, offerAmount: e.target.value }))} placeholder="e.g. 500" className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
           </div>
           <div className="space-y-2"><Label htmlFor="offer-use" className="text-[#B8C8C4]">Intended Use</Label><Input id="offer-use" value={form.intendedUse} onChange={(e) => setForm((f) => ({ ...f, intendedUse: e.target.value }))} placeholder="e.g. AI startup, SaaS platform" className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" /></div>
-          <div className="space-y-2"><Label htmlFor="offer-message" className="text-[#B8C8C4]">Message *</Label><Textarea id="offer-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={4} aria-invalid={!!errors.message} className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p className="text-xs text-error">{errors.message}</p>}</div>
-          <div className="flex items-start gap-2"><Checkbox id="offer-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} className="data-[state=checked]:bg-teal data-[state=checked]:border-teal" /><Label htmlFor="offer-consent" className="text-sm text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
-          {errors.consent && <p className="text-xs text-error">{errors.consent}</p>}
+          <div className="space-y-2"><Label htmlFor="offer-message" className="text-[#B8C8C4]">Message *</Label><Textarea id="offer-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={4} aria-invalid={!!errors.message} aria-errormessage="offer-message-error" className="bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p id="offer-message-error" role="alert" className="text-xs text-error">{errors.message}</p>}</div>
+          <div className="flex items-start gap-2"><Checkbox id="offer-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} aria-errormessage="offer-consent-error" className="data-[state=checked]:bg-teal data-[state=checked]:border-teal" /><Label htmlFor="offer-consent" className="text-sm text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
+          {errors.consent && <p id="offer-consent-error" role="alert" className="text-xs text-error">{errors.consent}</p>}
           <Button type="submit" className="w-full bg-coral hover:bg-coral-hover text-white h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]" disabled={submitInquiry.isPending}>{submitInquiry.isPending ? <><Loader2 className="size-4 animate-spin" /> Submitting...</> : <>Send Inquiry <Send className="size-4" /></>}</Button>
         </form>
       </DialogContent>
@@ -1588,10 +1594,10 @@ function AboutSection() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
-    <div className="py-12 sm:py-20">
+    <section className="py-12 sm:py-20" aria-labelledby="about-heading">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">About</p>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-8">About</h1>
+        <h1 id="about-heading" className="font-display text-3xl sm:text-4xl font-bold text-white mb-8">About Nizar Rahme</h1>
         <div className="space-y-6 text-[#B8C8C4] leading-relaxed">
           <p>I&rsquo;m Nizar Rahme. I invest in and curate domain names for businesses operating in AI, SaaS, fintech, technology, and the broader digital economy.</p>
           <p>My approach to domain investing is straightforward: I look for names that are short, memorable, and genuinely brandable—names that could serve as the foundation for a real business. I don&rsquo;t register names at scale or flip domains for quick returns. Each name in the catalog has been selected with specific industries and use cases in mind.</p>
@@ -1666,7 +1672,7 @@ function AboutSection() {
           <SocialLinks />
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 
@@ -1685,13 +1691,13 @@ function ServicesSection() {
   ]
 
   return (
-    <div className="py-12 sm:py-20">
+    <section className="py-12 sm:py-20" aria-labelledby="services-heading">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">What I Offer</p>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Selected Digital Services</h1>
+        <h1 id="services-heading" className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Selected Digital Services</h1>
         <p className="text-[#718581] max-w-2xl mb-12 leading-relaxed">Alongside domain investing, I offer select digital services for businesses and projects that need a hands-on, thoughtful approach to their online presence.</p>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{services.map((service, idx) => (
-          <motion.div key={service.title} whileHover={{ y: -6 }} className="surface-border rounded-[16px] bg-surface p-6 domain-card-hover relative overflow-hidden group">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" role="list">{services.map((service, idx) => (
+          <motion.div key={service.title} whileHover={{ y: -6 }} role="listitem" className="surface-border rounded-[16px] bg-surface p-6 domain-card-hover relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-teal/5 via-transparent to-coral/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal/0 to-transparent group-hover:via-teal/50 transition-all duration-500" />
             <service.icon className="size-6 text-teal mb-4 group-hover:drop-shadow-[0_0_8px_rgba(0,229,176,0.4)] transition-all" />
@@ -1707,7 +1713,7 @@ function ServicesSection() {
           </motion.div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 
@@ -1718,10 +1724,10 @@ function ServicesSection() {
 function TransactionsSection() {
   const { data, isLoading } = useTransactions()
   return (
-    <div className="py-12 sm:py-20">
+    <section className="py-12 sm:py-20" aria-labelledby="transactions-heading">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Track Record</p>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Transactions</h1>
+        <h1 id="transactions-heading" className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Transactions</h1>
         <p className="text-[#718581] mb-10 leading-relaxed">A record of completed domain sales. These represent actual transactions, not appraisals or asking prices.</p>
         {isLoading ? <div className="space-y-4"><Skeleton className="h-32 bg-surface rounded-[16px]" /><Skeleton className="h-32 bg-surface rounded-[16px]" /></div> : data ? (
           <div className="space-y-4">{data.transactions.map((tx) => (
@@ -1735,7 +1741,7 @@ function TransactionsSection() {
         ) : null}
         <div className="mt-8 p-4 bg-elevated rounded-xl border border-surface-border"><p className="text-xs font-mono-accent text-[#718581] leading-relaxed">These are selected completed transactions and do not represent a guarantee of future sale prices or outcomes. Domain values depend on many factors including market demand, buyer need, and negotiation.</p></div>
       </div>
-    </div>
+    </section>
   )
 }
 
@@ -1767,22 +1773,23 @@ function ContactSection() {
   }
 
   if (submitted) return (
-    <div className="py-12 sm:py-20">
+    <section className="py-12 sm:py-20" aria-labelledby="contact-success-heading">
       <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <CheckCircle2 className="size-12 text-teal mx-auto mb-4" /><h1 className="font-display text-3xl font-bold text-white mb-4">Message sent</h1>
+        <div aria-live="assertive"><CheckCircle2 className="size-12 text-teal mx-auto mb-4" /><h1 id="contact-success-heading" className="font-display text-3xl font-bold text-white mb-4">Message sent</h1>
         <p className="text-[#B8C8C4] leading-relaxed">Thank you for reaching out. Nizar will review your message and respond as soon as possible.</p>
         <Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => { setSubmitted(false); setForm({ name: '', email: '', category: '', message: '', consent: false, honeypot: '' }) }}>Send another message</Button>
+        </div>
       </div>
-    </div>
+    </section>
   )
 
   return (
-    <div className="py-12 sm:py-20">
+    <section className="py-12 sm:py-20" aria-labelledby="contact-heading">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
           <div className="lg:col-span-2">
             <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Get in Touch</p>
-            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Contact</h1>
+            <h1 id="contact-heading" className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Contact</h1>
             <p className="text-[#B8C8C4] leading-relaxed mb-8">Whether you&rsquo;re interested in acquiring a domain, discussing a partnership, or working together on a digital project, I&rsquo;d like to hear from you.</p>
             <div className="space-y-3 mb-8">
               <a href={`mailto:${settings?.contactEmail || ''}`} className="flex items-center gap-3 group">
@@ -1807,28 +1814,28 @@ function ContactSection() {
             <div className="mb-8"><p className="text-sm font-medium text-white mb-3">Follow</p><SocialLinks /></div>
           </div>
           <div className="lg:col-span-3">
-            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+            <form onSubmit={handleSubmit} className="space-y-5" noValidate aria-label="Contact form">
               <div className="absolute -left-[9999px]" aria-hidden="true"><label htmlFor="contact-website">Website</label><input type="text" id="contact-website" name="website" tabIndex={-1} autoComplete="off" value={form.honeypot} onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))} /></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2"><Label htmlFor="contact-name" className="text-[#B8C8C4]">Name *</Label><Input id="contact-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p className="text-xs text-error">{errors.name}</p>}</div>
-                <div className="space-y-2"><Label htmlFor="contact-email" className="text-[#B8C8C4]">Email *</Label><Input id="contact-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p className="text-xs text-error">{errors.email}</p>}</div>
+                <div className="space-y-2"><Label htmlFor="contact-name" className="text-[#B8C8C4]">Name *</Label><Input id="contact-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} aria-invalid={!!errors.name} aria-errormessage="contact-name-error" className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.name && <p id="contact-name-error" role="alert" className="text-xs text-error">{errors.name}</p>}</div>
+                <div className="space-y-2"><Label htmlFor="contact-email" className="text-[#B8C8C4]">Email *</Label><Input id="contact-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} aria-invalid={!!errors.email} aria-errormessage="contact-email-error" className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.email && <p id="contact-email-error" role="alert" className="text-xs text-error">{errors.email}</p>}</div>
               </div>
-              <div className="space-y-2"><Label htmlFor="contact-category" className="text-[#B8C8C4]">Category *</Label><Select value={form.category} onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}><SelectTrigger id="contact-category" aria-invalid={!!errors.category} className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]"><SelectValue placeholder="Select a category" /></SelectTrigger><SelectContent>{contactCategories.map((cat) => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}</SelectContent></Select>{errors.category && <p className="text-xs text-error">{errors.category}</p>}</div>
-              <div className="space-y-2"><Label htmlFor="contact-message" className="text-[#B8C8C4]">Message *</Label><Textarea id="contact-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={5} aria-invalid={!!errors.message} className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p className="text-xs text-error">{errors.message}</p>}</div>
-              <div className="flex items-start gap-2"><Checkbox id="contact-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} className="data-[state=checked]:bg-teal data-[state=checked]:border-teal" /><Label htmlFor="contact-consent" className="text-sm text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
-              {errors.consent && <p className="text-xs text-error">{errors.consent}</p>}
+              <div className="space-y-2"><Label htmlFor="contact-category" className="text-[#B8C8C4]">Category *</Label><Select value={form.category} onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}><SelectTrigger id="contact-category" aria-invalid={!!errors.category} aria-errormessage="contact-category-error" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]"><SelectValue placeholder="Select a category" /></SelectTrigger><SelectContent>{contactCategories.map((cat) => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}</SelectContent></Select>{errors.category && <p id="contact-category-error" role="alert" className="text-xs text-error">{errors.category}</p>}</div>
+              <div className="space-y-2"><Label htmlFor="contact-message" className="text-[#B8C8C4]">Message *</Label><Textarea id="contact-message" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} rows={5} aria-invalid={!!errors.message} aria-errormessage="contact-message-error" className="bg-surface border-surface-border rounded-[12px] text-white focus:border-teal/40 focus:ring-teal/20" />{errors.message && <p id="contact-message-error" role="alert" className="text-xs text-error">{errors.message}</p>}</div>
+              <div className="flex items-start gap-2"><Checkbox id="contact-consent" checked={form.consent} onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))} aria-errormessage="contact-consent-error" className="data-[state=checked]:bg-teal data-[state=checked]:border-teal" /><Label htmlFor="contact-consent" className="text-sm text-[#718581] leading-relaxed">I consent to having my information stored and used to respond to this inquiry. *</Label></div>
+              {errors.consent && <p id="contact-consent-error" role="alert" className="text-xs text-error">{errors.consent}</p>}
               <Button type="submit" className="w-full sm:w-auto bg-coral hover:bg-coral-hover text-white h-12 px-8 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]" disabled={submitInquiry.isPending}>{submitInquiry.isPending ? <><Loader2 className="size-4 animate-spin" /> Sending...</> : <>Send Message <Send className="size-4" /></>}</Button>
             </form>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 
 // ========================
 // FOOTER
-// ========================
+// =======================
 
 function Footer() {
   const nav = useNavigation()
@@ -1843,20 +1850,20 @@ function Footer() {
           </div>
           <div>
             <p className="text-sm font-medium text-white mb-4">Navigation</p>
-            <nav className="grid grid-cols-2 gap-x-8 gap-y-2" aria-label="Footer navigation">{NAV_ITEMS.map((item) => (<button key={item.section} onClick={() => nav.setSection(item.section)} className="text-sm text-[#718581] hover:text-teal transition-colors text-left">{item.label}</button>))}<button onClick={() => nav.setShowPrivacy(true)} className="text-sm text-[#718581] hover:text-teal transition-colors text-left">Privacy</button><button onClick={() => nav.setShowTerms(true)} className="text-sm text-[#718581] hover:text-teal transition-colors text-left">Terms</button></nav>
+            <nav className="grid grid-cols-2 gap-x-8 gap-y-2" aria-label="Footer navigation">{NAV_ITEMS.map((item) => (<button key={item.section} onClick={() => nav.setSection(item.section)} aria-label={`Go to ${item.label}`} className="text-sm text-[#718581] hover:text-teal transition-colors text-left">{item.label}</button>))}<button onClick={() => nav.setShowPrivacy(true)} aria-label="Open privacy policy" className="text-sm text-[#718581] hover:text-teal transition-colors text-left">Privacy</button><button onClick={() => nav.setShowTerms(true)} aria-label="Open terms of use" className="text-sm text-[#718581] hover:text-teal transition-colors text-left">Terms</button></nav>
           </div>
           <div>
             <p className="text-sm font-medium text-white mb-4">Connect</p>
             <SocialLinks />
             {settings && (
-              <a href={`mailto:${settings.contactEmail}`} className="flex items-center gap-2.5 text-sm text-[#718581] hover:text-teal transition-colors mt-4 group">
+              <a href={`mailto:${settings.contactEmail}`} className="flex items-center gap-2.5 text-sm text-[#718581] hover:text-teal transition-colors mt-4 group" aria-label={`Send email to ${settings.contactEmail}`}>
                 <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-muted border border-teal/10 group-hover:border-teal/25 transition-all">
                   <Mail className="size-3.5 text-teal" />
                 </span>
                 {settings.contactEmail}
               </a>
             )}
-            <a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-sm text-[#718581] hover:text-[#25D366] transition-colors mt-2 group">
+            <a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-sm text-[#718581] hover:text-[#25D366] transition-colors mt-2 group" aria-label="Chat on WhatsApp">
               <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#25D366]/10 border border-[#25D366]/10 group-hover:border-[#25D366]/25 transition-all">
                 <WhatsAppIcon className="size-3.5 text-[#25D366]" />
               </span>

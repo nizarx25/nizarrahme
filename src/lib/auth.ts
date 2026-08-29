@@ -93,10 +93,14 @@ export function requireAuth(request: NextRequest): { authenticated: boolean; err
   return { authenticated: true, token }
 }
 
-// Simple input sanitization
+// Robust input sanitization
 export function sanitizeString(input: string): string {
   return input
-    .replace(/[<>]/g, '') // Remove angle brackets
+    .replace(/[<>]/g, '')           // Remove angle brackets
+    .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters  
+    .replace(/javascript:/gi, '')     // Remove javascript: URIs
+    .replace(/data:\s*text\/html/gi, '') // Remove data: text/html
+    .replace(/vbscript:/gi, '')       // Remove vbscript: URIs
     .trim()
 }
 

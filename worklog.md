@@ -297,3 +297,73 @@ Stage Summary:
 - All effects use the existing teal/coral color system for consistency
 - ESLint passes cleanly, all API routes returning 200
 - Browser verification confirms: contact section, footer, social links, floating button all render correctly
+
+---
+Task ID: 2-a
+Agent: SEO & Security Fix Agent
+Task: SEO, security headers, sitemap, robots.txt, auth improvements
+
+Work Log:
+- Enhanced layout.tsx metadata with metadataBase, canonical URL, OG url/locale/images, twitter.image, verification placeholder, category
+- Added JSON-LD structured data in layout.tsx body (Person, WebSite with SearchAction, Organization schemas)
+- Created public/robots.txt with Allow /, Disallow /api/admin/, Sitemap reference
+- Created src/app/sitemap.ts with dynamic sitemap generation (homepage + all available domains from DB)
+- Added 7 security headers to next.config.ts (X-Frame-Options, HSTS, CSP, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, X-DNS-Prefetch-Control), enabled reactStrictMode
+- Improved sanitizeString in auth.ts: added control character removal, javascript:/data:/vbscript: URI stripping
+- Added ALLOWED_SORTS whitelist to /api/domains GET handler for sort parameter validation
+- ESLint: 0 errors, dev server compiles successfully, sitemap.xml returns 200, robots.txt served correctly
+
+Stage Summary:
+- SEO: Added JSON-LD (Person, WebSite, Organization), canonical URL, OG image, sitemap.xml, robots.txt
+- Security: Added X-Frame-Options, HSTS, CSP, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- Improved input sanitization and API parameter validation
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Comprehensive 6-dimension audit (Identity, UX/UI, SEO, Accessibility, Security, Performance)
+
+Work Log:
+- Performed full codebase audit across 1926-line page.tsx, globals.css, layout.tsx, navigation.ts, all API routes, auth.ts, next.config.ts, providers.tsx
+- SEO (delegated to subagent 2-a): JSON-LD, canonical, OG enhancements, sitemap.xml, robots.txt
+- Security (delegated to subagent 2-a): 7 security headers, improved sanitizeString, sort whitelist
+- Accessibility — page.tsx fixes:
+  - Added role="navigation" to desktop and mobile nav elements
+  - Changed DomainCard role from "article" to "button" with descriptive aria-label
+  - Added Space key handling to all role="button" elements (carousel, domain cards)
+  - Added aria-roledescription="carousel" and aria-live region to FeaturedCarousel
+  - Set aria-hidden="true" on ticker content (decorative animation)
+  - Added aria-label to Contact form and Offer form
+  - Added aria-errormessage + id + role="alert" to ALL form error messages (contact + offer forms)
+  - Added aria-label to footer nav buttons ("Go to {label}", "Open privacy policy", "Open terms of use")
+  - Added aria-label to footer email link and WhatsApp link
+  - Added role="main" to <main> element
+  - Added section-level aria-live="polite" for SPA navigation announcements
+  - Added screen-reader description for hero section (sr-only paragraph)
+  - Changed ALL sections from <div> to <section> with aria-labelledby pointing to their h1 IDs
+  - Added aria-labelledby="domains-heading" to DomainsSection
+  - Added aria-labelledby="about-heading" to AboutSection
+  - Added aria-labelledby="services-heading" to ServicesSection
+  - Added aria-labelledby="transactions-heading" to TransactionsSection
+  - Added aria-labelledby="contact-heading" to ContactSection
+  - Added aria-live="assertive" on contact success message
+  - Added role="list" and role="listitem" to Services grid
+  - Added minimum 44px touch target for [role="button"][tabindex] in CSS
+- UX/UI fixes:
+  - Fixed redundant "About" heading → "About Nizar Rahme"
+  - Added id attributes to all h1 headings for aria-labelledby
+  - Added descriptive aria-label to DomainDetailModal carousel navigation buttons
+- Performance fixes:
+  - Increased TanStack Query staleTime from 60s to 120s
+  - Added gcTime 10min for better cache management
+  - Disabled refetchOnWindowFocus to reduce unnecessary API calls
+
+Stage Summary:
+- 6-dimension audit completed with fixes applied across all dimensions
+- Accessibility: 25+ specific a11y fixes (aria-*, roles, semantic HTML, form error linking, keyboard support)
+- UX/UI: Semantic section elements, fixed redundant headings, proper heading hierarchy
+- Performance: Optimized TanStack Query configuration
+- Identity: JSON-LD Person/Organization/WebSite, consistent branding
+- Security: 7 response headers, improved input sanitization, parameter validation
+- SEO: Canonical URL, OG image, sitemap.xml, robots.txt, structured data
+- All fixes verified: ESLint 0 errors, dev server compiles, security headers confirmed via curl, browser a11y tree verified

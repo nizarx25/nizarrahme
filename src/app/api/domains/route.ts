@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { safeJsonParse, sanitizeString } from '@/lib/auth'
 
+const ALLOWED_SORTS = ['newest', 'name_asc', 'name_desc', 'featured', 'price_asc', 'price_desc'] as const
+
 type PublicDomain = {
   id: string
   name: string
@@ -53,7 +55,8 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status') ? sanitizeString(searchParams.get('status')!) : undefined
     const featured = searchParams.get('featured')
     const hasPrice = searchParams.get('hasPrice')
-    const sort = searchParams.get('sort') || 'newest'
+    const sortParam = searchParams.get('sort') || 'newest'
+    const sort = ALLOWED_SORTS.includes(sortParam as typeof ALLOWED_SORTS[number]) ? sortParam : 'newest'
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1)
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20', 10) || 20))
 
