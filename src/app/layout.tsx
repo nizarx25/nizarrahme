@@ -25,7 +25,7 @@ const ICON_URL = "https://z-cdn.chatglm.cn/z-ai/static/logo.svg";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Nizar Rahme — Brandable Domain Names",
+  title: "NIZAR RAHME | Brandable Domain Names",
   description:
     "Curated domain names for AI, SaaS, fintech, and technology businesses. Brandable, memorable, and available for acquisition.",
   keywords: [
@@ -36,11 +36,11 @@ export const metadata: Metadata = {
     "SaaS domains",
     "fintech domains",
     "technology domains",
-    "Nizar Rahme",
+    "NIZAR RAHME",
     "domain marketplace",
   ],
   category: "business",
-  authors: [{ name: "Nizar Rahme" }],
+  authors: [{ name: "NIZAR RAHME" }],
   icons: {
     icon: ICON_URL,
   },
@@ -48,25 +48,25 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Nizar Rahme — Brandable Domain Names",
+    title: "NIZAR RAHME | Brandable Domain Names",
     description:
       "Curated domain names for AI, SaaS, fintech, and technology businesses.",
     type: "website",
     url: "/",
     locale: "en_US",
-    siteName: "Nizar Rahme",
+    siteName: "NIZAR RAHME",
     images: [
       {
         url: ICON_URL,
         width: 512,
         height: 512,
-        alt: "Nizar Rahme — Brandable Domain Names",
+        alt: "NIZAR RAHME | Brandable Domain Names",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nizar Rahme — Brandable Domain Names",
+    title: "NIZAR RAHME | Brandable Domain Names",
     description:
       "Curated domain names for AI, SaaS, fintech, and technology businesses.",
     image: ICON_URL,
@@ -86,7 +86,7 @@ const jsonLd = {
     {
       "@type": "Person",
       "@id": `${SITE_URL}/#person`,
-      name: "Nizar Rahme",
+      name: "NIZAR RAHME",
       url: SITE_URL,
       jobTitle: "Domain Investor & Digital Strategist",
       description:
@@ -97,7 +97,7 @@ const jsonLd = {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
       url: SITE_URL,
-      name: "Nizar Rahme — Brandable Domain Names",
+      name: "NIZAR RAHME | Brandable Domain Names",
       description:
         "Curated domain names for AI, SaaS, fintech, and technology businesses. Brandable, memorable, and available for acquisition.",
       publisher: {
@@ -115,7 +115,7 @@ const jsonLd = {
     {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
-      name: "Nizar Rahme",
+      name: "NIZAR RAHME",
       url: SITE_URL,
       logo: {
         "@type": "ImageObject",

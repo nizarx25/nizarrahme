@@ -367,3 +367,35 @@ Stage Summary:
 - Security: 7 response headers, improved input sanitization, parameter validation
 - SEO: Canonical URL, OG image, sitemap.xml, robots.txt, structured data
 - All fixes verified: ESLint 0 errors, dev server compiles, security headers confirmed via curl, browser a11y tree verified
+---
+Task ID: 5
+Agent: Main Agent
+Task: Capitalize name, remove em dashes, remove WhatsApp, make service cards clickable with gradients
+
+Work Log:
+- Capitalized all 'Nizar Rahme' to 'NIZAR RAHME' in page.tsx (14 occurrences) and layout.tsx (10 occurrences)
+- Also updated 'Contact Nizar' → 'Contact NIZAR RAHME', 'Work With Nizar' → 'Work With NIZAR RAHME', 'Chat with Nizar' → removed (WhatsApp), 'Nizar will review...' → 'NIZAR RAHME will review...'
+- Replaced all em dash '—' characters (U+2014) with pipe '|' or colon ':': layout.tsx (5 in titles/alt), page.tsx (1 comment, 3 in aria-label, 2 in about text)
+- Removed all WhatsApp presence from the site:
+  - Deleted WhatsAppIcon SVG function
+  - Deleted WhatsAppFloat floating button component
+  - Removed WhatsApp link from SocialLinks (header)
+  - Removed WhatsApp entry from contact section sidebar
+  - Removed WhatsApp entry from footer 'Connect' section
+  - Removed <WhatsAppFloat /> render from page
+- Made Selected Digital Services cards clickable:
+  - Changed from motion.div to motion.a with click handler navigating to contact section
+  - Added gradient overlay (teal/10 → coral/5 → teal-soft/8) on hover
+  - Added top and bottom gradient border lines on hover
+  - Added outer gradient border glow (-inset-1px) on hover
+  - Added ArrowRight icon that animates on hover
+  - Applied gradient text to service titles (white→teal-soft default, teal→coral on hover)
+- Lint: 0 errors
+- Dev server: compiles successfully, 200 response confirmed
+
+Stage Summary:
+- Name fully capitalized to NIZAR RAHME everywhere
+- All em dashes removed
+- WhatsApp completely removed from the site
+- Service cards are now clickable with rich gradient hover effects
+- 2 files modified: page.tsx, layout.tsx

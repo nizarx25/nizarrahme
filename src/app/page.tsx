@@ -78,15 +78,6 @@ import {
   TrendingUp,
 } from 'lucide-react'
 
-// WhatsApp SVG Icon
-function WhatsAppIcon({ className = 'size-5' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-    </svg>
-  )
-}
-
 // ========================
 // TYPES
 // ========================
@@ -287,56 +278,6 @@ const NAV_ITEMS: {
 ]
 
 // ========================
-// WHATSAPP FLOATING BUTTON
-// ========================
-
-function WhatsAppFloat() {
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 2000)
-    return () => clearTimeout(timer)
-  }, [])
-
-  return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.a
-          href="https://wa.me/963932264918"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 z-50 group"
-          aria-label="Contact on WhatsApp"
-          initial={{ scale: 0, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0, opacity: 0, y: 20 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.1 }}
-        >
-          <motion.div
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative"
-          >
-            <span className="absolute inset-0 rounded-full bg-[#25D366]/20 animate-ping-slow" />
-            <span className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-[#25D366]/20 via-[#128C7E]/10 to-[#25D366]/20 blur-sm" />
-            <span className="relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] shadow-[0_4px_24px_rgba(37,211,102,0.35)] group-hover:shadow-[0_4px_32px_rgba(37,211,102,0.5)] transition-shadow duration-300">
-              <WhatsAppIcon className="size-7 text-white" />
-            </span>
-            <span className="absolute bottom-full right-0 mb-3 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
-              <span className="relative flex items-center gap-2 bg-elevated/95 backdrop-blur-md border border-[#25D366]/20 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] whitespace-nowrap">
-                <WhatsAppIcon className="size-4 text-[#25D366]" />
-                Chat with us
-                <span className="absolute -bottom-1.5 right-6 w-3 h-3 bg-elevated/95 border-r border-b border-[#25D366]/20 rotate-45" />
-              </span>
-            </span>
-          </motion.div>
-        </motion.a>
-      )}
-    </AnimatePresence>
-  )
-}
-
-// ========================
 // SOCIAL LINKS COMPONENT
 // ========================
 
@@ -390,15 +331,6 @@ function SocialLinks() {
           <Facebook className="size-4" />
         </a>
       )}
-      <a
-        href="https://wa.me/963932264918"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="p-2 rounded-[10px] hover:bg-elevated transition-all text-muted-foreground hover:text-[#25D366] hover:shadow-[0_0_12px_rgba(37,211,102,0.15)]"
-        aria-label="WhatsApp"
-      >
-        <WhatsAppIcon className="size-4" />
-      </a>
     </div>
   )
 }
@@ -483,7 +415,6 @@ export default function HomePage() {
       <OfferFormDialog />
       <PrivacyModal />
       <TermsModal />
-      <WhatsAppFloat />
     </div>
   )
 }
@@ -518,7 +449,7 @@ function Header() {
               NR
             </motion.span>
             <span className="hidden sm:inline text-sm font-medium text-[#B8C8C4] tracking-wide group-hover:text-white transition-colors">
-              Nizar Rahme
+              NIZAR RAHME
             </span>
           </button>
 
@@ -806,7 +737,7 @@ function HomeSection() {
               Own the Name Behind{' '}
               <span className="bg-gradient-to-r from-teal via-teal-soft via-coral/80 to-teal bg-clip-text text-transparent teal-text-glow animate-gradient-text">What&rsquo;s Next.</span>
             </motion.h1>
-            <p className="sr-only">Nizar Rahme&rsquo;s curated marketplace of premium brandable domain names for AI, SaaS, fintech, and technology businesses.</p>
+            <p className="sr-only">NIZAR RAHME&rsquo;s curated marketplace of premium brandable domain names for AI, SaaS, fintech, and technology businesses.</p>
 
             <motion.p
               variants={fadeUp}
@@ -918,7 +849,7 @@ function HomeSection() {
         </div>
       </section>
 
-      {/* FEATURED DOMAINS — PREMIUM */}
+      {/* FEATURED DOMAINS - PREMIUM */}
       <section className="py-16 sm:py-24 relative">
         <div className="absolute inset-0 grid-pattern-subtle pointer-events-none opacity-50" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1106,7 +1037,7 @@ function HomeSection() {
             </motion.div>
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Button onClick={() => nav.setSection('contact')} variant="outline" className="border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white hover:border-teal/20 hover:shadow-[0_0_16px_rgba(0,229,176,0.08)] rounded-[12px] h-12 px-8 transition-all">
-                Contact Nizar
+                Contact NIZAR RAHME
               </Button>
             </motion.div>
           </div>
@@ -1236,7 +1167,7 @@ function DomainCard({ domain }: { domain: PublicDomain }) {
         role="button"
         tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); nav.setSelectedDomain(domain.slug) } }}
-        aria-label={`View ${domain.name} — ${domain.extension} — ${domain.category}${domain.showPrice && domain.price ? ` — $${domain.price.toLocaleString()}` : ''}`}
+        aria-label={`View ${domain.name} | ${domain.extension} | ${domain.category}${domain.showPrice && domain.price ? ` | $${domain.price.toLocaleString()}` : ''}`}
       >
         {/* Animated gradient border glow on hover */}
         <div className="absolute -inset-[1px] rounded-[16px] bg-gradient-to-br from-teal/0 via-transparent to-coral/0 group-hover:from-teal/20 group-hover:via-transparent group-hover:to-coral/20 transition-all duration-500 -z-10 opacity-0 group-hover:opacity-100" />
@@ -1552,7 +1483,7 @@ function OfferFormDialog() {
   if (submitted) return (
     <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
       <DialogContent className="max-w-lg bg-[#0B211E] border-surface-border rounded-2xl">
-        <div className="text-center py-8"><CheckCircle2 className="size-12 text-teal mx-auto mb-4" /><h3 className="font-display text-2xl font-bold text-white mb-2">Thank you.</h3><p className="text-[#B8C8C4] leading-relaxed">Your inquiry has been received. Nizar will review it and get back to you.</p><Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => handleClose(false)}>Close</Button></div>
+        <div className="text-center py-8"><CheckCircle2 className="size-12 text-teal mx-auto mb-4" /><h3 className="font-display text-2xl font-bold text-white mb-2">Thank you.</h3><p className="text-[#B8C8C4] leading-relaxed">Your inquiry has been received. NIZAR RAHME will review it and get back to you.</p><Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => handleClose(false)}>Close</Button></div>
       </DialogContent>
     </Dialog>
   )
@@ -1597,11 +1528,11 @@ function AboutSection() {
     <section className="py-12 sm:py-20" aria-labelledby="about-heading">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">About</p>
-        <h1 id="about-heading" className="font-display text-3xl sm:text-4xl font-bold text-white mb-8">About Nizar Rahme</h1>
+        <h1 id="about-heading" className="font-display text-3xl sm:text-4xl font-bold text-white mb-8">About NIZAR RAHME</h1>
         <div className="space-y-6 text-[#B8C8C4] leading-relaxed">
-          <p>I&rsquo;m Nizar Rahme. I invest in and curate domain names for businesses operating in AI, SaaS, fintech, technology, and the broader digital economy.</p>
-          <p>My approach to domain investing is straightforward: I look for names that are short, memorable, and genuinely brandable—names that could serve as the foundation for a real business. I don&rsquo;t register names at scale or flip domains for quick returns. Each name in the catalog has been selected with specific industries and use cases in mind.</p>
-          <p>Beyond domain investing, I have hands-on experience building WordPress websites, creating digital content, and working with AI-assisted workflows. This practical background informs how I evaluate names—I think about how a domain will work in context, not just how it sounds.</p>
+          <p>I&rsquo;m NIZAR RAHME. I invest in and curate domain names for businesses operating in AI, SaaS, fintech, technology, and the broader digital economy.</p>
+          <p>My approach to domain investing is straightforward: I look for names that are short, memorable, and genuinely brandable: names that could serve as the foundation for a real business. I don&rsquo;t register names at scale or flip domains for quick returns. Each name in the catalog has been selected with specific industries and use cases in mind.</p>
+          <p>Beyond domain investing, I have hands-on experience building WordPress websites, creating digital content, and working with AI-assisted workflows. This practical background informs how I evaluate names: I think about how a domain will work in context, not just how it sounds.</p>
         </div>
 
         <Separator className="my-12 bg-surface-border" />
@@ -1697,13 +1628,28 @@ function ServicesSection() {
         <h1 id="services-heading" className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Selected Digital Services</h1>
         <p className="text-[#718581] max-w-2xl mb-12 leading-relaxed">Alongside domain investing, I offer select digital services for businesses and projects that need a hands-on, thoughtful approach to their online presence.</p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" role="list">{services.map((service, idx) => (
-          <motion.div key={service.title} whileHover={{ y: -6 }} role="listitem" className="surface-border rounded-[16px] bg-surface p-6 domain-card-hover relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-teal/5 via-transparent to-coral/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal/0 to-transparent group-hover:via-teal/50 transition-all duration-500" />
-            <service.icon className="size-6 text-teal mb-4 group-hover:drop-shadow-[0_0_8px_rgba(0,229,176,0.4)] transition-all" />
-            <h3 className="font-display text-lg font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-teal group-hover:to-teal-soft transition-all duration-300">{service.title}</h3>
-            <p className="text-sm text-[#718581] leading-relaxed group-hover:text-[#B8C8C4] transition-colors">{service.desc}</p>
-          </motion.div>
+          <motion.a
+            key={service.title}
+            href="#contact"
+            onClick={(e) => { e.preventDefault(); nav.setSection('contact') }}
+            whileHover={{ y: -6, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            role="listitem"
+            className="surface-border rounded-[16px] bg-surface p-6 relative overflow-hidden group cursor-pointer block no-underline"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-teal/10 via-coral/5 to-teal-soft/8 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-coral/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+            <div className="absolute -inset-[1px] rounded-[16px] bg-gradient-to-br from-teal/20 via-transparent to-coral/20 opacity-0 group-hover:opacity-100 transition-all duration-500 -z-10" />
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <service.icon className="size-6 text-teal group-hover:drop-shadow-[0_0_12px_rgba(0,229,176,0.5)] transition-all" />
+                <ArrowRight className="size-4 text-[#718581] group-hover:text-teal group-hover:translate-x-1 transition-all" />
+              </div>
+              <h3 className="font-display text-lg font-bold mb-2 bg-gradient-to-r from-white via-white to-teal-soft bg-clip-text text-transparent group-hover:from-teal group-hover:via-teal-soft group-hover:to-coral transition-all duration-300">{service.title}</h3>
+              <p className="text-sm text-[#718581] leading-relaxed group-hover:text-[#B8C8C4] transition-colors">{service.desc}</p>
+            </div>
+          </motion.a>
         ))}</div>
         <div className="mt-12 text-center">
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
@@ -1749,7 +1695,7 @@ function TransactionsSection() {
 // CONTACT SECTION
 // ========================
 
-const contactCategories = ['Acquire a Domain', 'Discuss a Partnership', 'Work With Nizar', 'Other']
+const contactCategories = ['Acquire a Domain', 'Discuss a Partnership', 'Work With NIZAR RAHME', 'Other']
 const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.email('Please enter a valid email address'),
@@ -1776,7 +1722,7 @@ function ContactSection() {
     <section className="py-12 sm:py-20" aria-labelledby="contact-success-heading">
       <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div aria-live="assertive"><CheckCircle2 className="size-12 text-teal mx-auto mb-4" /><h1 id="contact-success-heading" className="font-display text-3xl font-bold text-white mb-4">Message sent</h1>
-        <p className="text-[#B8C8C4] leading-relaxed">Thank you for reaching out. Nizar will review your message and respond as soon as possible.</p>
+        <p className="text-[#B8C8C4] leading-relaxed">Thank you for reaching out. NIZAR RAHME will review your message and respond as soon as possible.</p>
         <Button variant="outline" className="mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => { setSubmitted(false); setForm({ name: '', email: '', category: '', message: '', consent: false, honeypot: '' }) }}>Send another message</Button>
         </div>
       </div>
@@ -1799,15 +1745,6 @@ function ContactSection() {
                 <div>
                   <p className="text-xs text-[#718581] font-mono-accent">Email</p>
                   <p className="text-sm text-[#B8C8C4] group-hover:text-teal transition-colors">{settings?.contactEmail || 'info@nizarrahme.com'}</p>
-                </div>
-              </a>
-              <a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group">
-                <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#25D366]/10 border border-[#25D366]/10 group-hover:border-[#25D366]/30 group-hover:shadow-[0_0_16px_rgba(37,211,102,0.1)] transition-all">
-                  <WhatsAppIcon className="size-4 text-[#25D366]" />
-                </span>
-                <div>
-                  <p className="text-xs text-[#718581] font-mono-accent">WhatsApp</p>
-                  <p className="text-sm text-[#B8C8C4] group-hover:text-[#25D366] transition-colors">Chat with Nizar</p>
                 </div>
               </a>
             </div>
@@ -1845,7 +1782,7 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           <div>
-            <p className="font-display text-xl font-bold text-white">Nizar Rahme</p>
+            <p className="font-display text-xl font-bold text-white">NIZAR RAHME</p>
             <p className="text-sm text-[#718581] mt-1 font-mono-accent">Domain Investor &amp; Digital Brand Builder</p>
           </div>
           <div>
@@ -1863,16 +1800,10 @@ function Footer() {
                 {settings.contactEmail}
               </a>
             )}
-            <a href="https://wa.me/963932264918" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-sm text-[#718581] hover:text-[#25D366] transition-colors mt-2 group" aria-label="Chat on WhatsApp">
-              <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#25D366]/10 border border-[#25D366]/10 group-hover:border-[#25D366]/25 transition-all">
-                <WhatsAppIcon className="size-3.5 text-[#25D366]" />
-              </span>
-              WhatsApp
-            </a>
           </div>
         </div>
         <Separator className="my-8 bg-surface-border" />
-        <p className="text-xs text-[#718581] text-center font-mono-accent">&copy; 2026 Nizar Rahme. All rights reserved.</p>
+        <p className="text-xs text-[#718581] text-center font-mono-accent">&copy; 2026 NIZAR RAHME. All rights reserved.</p>
       </div>
     </footer>
   )
@@ -1889,7 +1820,7 @@ function PrivacyModal() {
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl">
         <DialogHeader><DialogTitle className="font-display text-2xl font-bold text-white">Privacy Policy</DialogTitle><DialogDescription className="text-[#718581]">Last updated: 2026</DialogDescription></DialogHeader>
         <div className="mt-6 space-y-4 text-sm text-[#B8C8C4] leading-relaxed">
-          <p>This website is operated by Nizar Rahme. This privacy policy explains how personal information is collected, used, and protected when you use this website.</p>
+          <p>This website is operated by NIZAR RAHME. This privacy policy explains how personal information is collected, used, and protected when you use this website.</p>
           <h3 className="font-medium text-white">Information collected</h3><p>When you submit an inquiry through the contact or offer forms, we collect your name, email address, and any additional information you choose to provide. This information is stored solely for the purpose of responding to your inquiry.</p>
           <h3 className="font-medium text-white">How information is used</h3><p>Your information is used only to respond to inquiries about domain acquisitions or services. It is not sold or shared with third parties for marketing purposes.</p>
           <h3 className="font-medium text-white">Data retention</h3><p>Inquiry data is retained for as long as necessary. You may request deletion of your data at any time by contacting us.</p>
@@ -1913,11 +1844,11 @@ function TermsModal() {
         <DialogHeader><DialogTitle className="font-display text-2xl font-bold text-white">Terms of Use</DialogTitle><DialogDescription className="text-[#718581]">Last updated: 2026</DialogDescription></DialogHeader>
         <div className="mt-6 space-y-4 text-sm text-[#B8C8C4] leading-relaxed">
           <p>By using this website, you agree to the following terms and conditions.</p>
-          <h3 className="font-medium text-white">Website purpose</h3><p>This website serves as a marketplace for domain names owned by Nizar Rahme. All domain listings, prices (where shown), and descriptions are subject to change without notice.</p>
+          <h3 className="font-medium text-white">Website purpose</h3><p>This website serves as a marketplace for domain names owned by NIZAR RAHME. All domain listings, prices (where shown), and descriptions are subject to change without notice.</p>
           <h3 className="font-medium text-white">Inquiries and offers</h3><p>Submitting an inquiry or offer through this website does not constitute a binding agreement. All transactions are subject to negotiation and mutual agreement.</p>
           <h3 className="font-medium text-white">Domain availability</h3><p>Domain availability is updated regularly but may not be real-time. A domain shown as available may have been sold or reserved.</p>
-          <h3 className="font-medium text-white">Intellectual property</h3><p>All content on this website, including text, design, and branding, is the property of Nizar Rahme unless otherwise stated.</p>
-          <h3 className="font-medium text-white">Limitation of liability</h3><p>This website is provided &ldquo;as is&rdquo; without warranties of any kind. Nizar Rahme is not liable for any damages arising from the use of this website.</p>
+          <h3 className="font-medium text-white">Intellectual property</h3><p>All content on this website, including text, design, and branding, is the property of NIZAR RAHME unless otherwise stated.</p>
+          <h3 className="font-medium text-white">Limitation of liability</h3><p>This website is provided &ldquo;as is&rdquo; without warranties of any kind. NIZAR RAHME is not liable for any damages arising from the use of this website.</p>
           <h3 className="font-medium text-white">Contact</h3><p>For questions about these terms, please use the contact form.</p>
         </div>
       </DialogContent>
