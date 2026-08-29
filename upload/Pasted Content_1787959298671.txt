@@ -1,0 +1,1698 @@
+You are GLM 5 acting as a senior full-stack engineer, product architect, UX/UI designer, creative director, brand strategist, copywriter, SEO specialist, accessibility engineer, security engineer, and QA lead.
+
+Your task is to build a complete, production-quality personal domain-investment marketplace for:
+
+Nizar Rahme
+Official domain: nizarrahme.com
+
+This is not a generic portfolio website, resume website, or ordinary freelancer landing page.
+
+It must feel like the digital headquarters of an independent domain investor and digital brand builder.
+
+The primary business objective is to help Nizar:
+
+1. Showcase and sell domain names.
+2. Receive Make an Offer inquiries.
+3. Attract founders, companies, agencies, domain investors, partners, and potential investors.
+4. Build credibility as a domain investor focused on AI, SaaS, fintech, technology, and digital businesses.
+5. Present digital marketing, WordPress, website creation, and AI-assisted work as secondary capabilities.
+6. Establish a memorable and professional personal brand.
+
+==================================================
+1. NON-NEGOTIABLE RULES
+==================================================
+
+Do not invent:
+
+- Clients.
+- Companies.
+- Revenue.
+- Testimonials.
+- Awards.
+- Certifications.
+- Partnerships.
+- Investment returns.
+- Domain sales that were not confirmed.
+- Website traffic.
+- Marketing results.
+- Business metrics.
+- Technical expertise that was not provided.
+- Customer reviews.
+- Escrow or transfer guarantees.
+- Claims that Nizar is an industry leader.
+
+Use only verified facts from this specification and the supplied files.
+
+If information is unavailable, omit it or present it as an optional editable field in the admin dashboard.
+
+Do not expose private or unconfirmed business information publicly.
+
+Do not mention any incomplete or undisclosed lease-to-own transaction in:
+
+- Public pages.
+- Domain listings.
+- Transaction history.
+- Metadata.
+- JSON-LD.
+- Sitemap.
+- Search results.
+- Seed content.
+- Source-code comments visible in the frontend.
+- Public API responses.
+- Open Graph data.
+
+Only the two following completed transactions may be shown publicly:
+
+- ScalableAIAgents.com — completed sale — USD 375.
+- RiyadhSalon.com — wholesale sale — USD 50.
+
+Do not display “3 successful sales” unless the owner later confirms the third completed transaction.
+
+The website must be English-only in version one.
+
+Do not create Arabic pages, RTL layouts, or language switching in this version.
+
+Do not use lorem ipsum.
+
+Do not leave unfinished sections, fake buttons, broken links, or placeholder copy in the final result.
+
+==================================================
+2. VERIFIED BRAND INFORMATION
+==================================================
+
+Name:
+Nizar Rahme
+
+Primary professional identity:
+Domain Investor & Digital Brand Builder
+
+Primary positioning:
+Nizar Rahme is an independent domain investor focused on brandable domain names for AI, SaaS, fintech, technology, and online businesses.
+
+Supporting capabilities:
+- Digital marketing.
+- Content creation.
+- Social media management.
+- SEO.
+- WordPress website creation.
+- HTML/CSS.
+- Meta Ads Manager.
+- AI-assisted research and content workflows.
+- Prompt writing.
+- Online research.
+- Business structuring with AI assistance.
+
+Domain investing:
+- Started in 2023.
+- Built the portfolio with limited capital.
+- Current portfolio contains 150+ domain names.
+- Current inventory must be imported from the provided domain list and CSV.
+- 27 domains are listed through Atom.
+- Domain selection criteria include:
+  - Age.
+  - Length.
+  - Market relevance.
+  - Brandability.
+  - Commercial value.
+  - Market size.
+  - Trend relevance.
+  - Similarity or proximity to existing brands.
+  - Potential for future growth.
+  - Suitability for AI, SaaS, fintech, technology, and digital businesses.
+
+Professional background:
+- Independent digital work since 2018.
+- Experience with content, social media management, SEO, WordPress, HTML/CSS, Meta Ads, and AI tools.
+- Available for remote work.
+- English website and global audience are the priority.
+
+Do not publish the physical address or phone number by default.
+
+Use this contact email only if configured through the environment variable:
+
+CONTACT_EMAIL=info@nizarrahme.com
+
+Social profiles:
+
+X:
+https://x.com/mr_nizarrahme
+
+Instagram:
+https://www.instagram.com/mr_nizarrahme/
+
+LinkedIn:
+https://www.linkedin.com/in/nizarrahme/
+
+Facebook:
+https://www.facebook.com/mr.nizarrahme
+
+Use LinkedIn and X as the primary professional social links.
+Use Instagram and Facebook only in a secondary location such as the footer or contact page.
+
+==================================================
+3. BRAND POSITIONING
+==================================================
+
+Primary message:
+
+Brandable domains for the next digital business.
+
+Recommended hero headline:
+
+Brandable domains for the next digital business.
+
+Recommended hero subheadline:
+
+I curate and invest in domain names for AI, SaaS, fintech, technology, and online businesses—with hands-on experience in websites, digital marketing, and AI-assisted workflows.
+
+Primary CTA:
+
+Browse Domains
+
+Secondary CTA:
+
+Make an Offer
+
+Additional CTA:
+
+Discuss a Partnership
+
+Short positioning statement:
+
+Independent domain investor focused on names that can become credible digital brands.
+
+Brand promise:
+
+I select domain names with the future business in mind.
+
+Professional philosophy:
+
+A domain is not just an address. It is the first decision a business makes about how it wants to be remembered.
+
+Mission:
+
+To build a focused portfolio of domain names that can give digital businesses a stronger starting point.
+
+Vision:
+
+To become a trusted independent domain investor and digital brand builder known for thoughtful name selection and practical execution.
+
+Brand personality:
+
+- Selective.
+- Analytical.
+- Practical.
+- Independent.
+- Calm.
+- Commercially aware.
+- Technology-aware.
+- Confident without exaggeration.
+- Editorial rather than flashy.
+
+Writing style:
+
+- Clear.
+- Concise.
+- Specific.
+- Evidence-based.
+- Human.
+- Professional.
+- Direct.
+- No corporate clichés.
+- No motivational filler.
+- No excessive buzzwords.
+- No phrases such as guru, ninja, rockstar, visionary, or industry leader.
+
+==================================================
+4. WEBSITE CONCEPT
+==================================================
+
+Build a curated personal domain marketplace with an editorial technology aesthetic.
+
+The design may take structural inspiration from curated domain marketplaces such as:
+
+[GodzillaDN reference](https://godzilladn.com/)
+
+Study the reference only for general ideas such as:
+
+- Curated domain inventory.
+- Featured names.
+- Search and discovery.
+- Clear domain acquisition flow.
+- Make an Offer behavior.
+- Separate services and about sections.
+- Trust-building through process and selected transactions.
+
+Do not copy:
+
+- Brand identity.
+- Logo.
+- Text.
+- Color system.
+- Layout pixel-for-pixel.
+- Images.
+- Icons.
+- Components.
+- Animations.
+- Proprietary content.
+
+The final website must unmistakably feel like Nizar Rahme.
+
+The site should not look like a generic AI startup template or a normal developer portfolio.
+
+==================================================
+5. SITE ARCHITECTURE
+==================================================
+
+Create the following routes:
+
+1. /
+Homepage.
+
+2. /domains
+Full domain catalog with search, filters, sorting, and pagination or infinite loading.
+
+3. /domains/[slug]
+Individual domain detail page.
+
+4. /about
+Personal story, domain-investing approach, experience, and current focus.
+
+5. /services
+Secondary digital services page.
+
+6. /transactions
+Selected completed transactions only.
+
+7. /contact
+Short contact and inquiry page.
+
+8. /privacy
+Privacy policy.
+
+9. /terms
+Basic terms for domain inquiries and contact submissions.
+
+10. /admin
+Protected admin dashboard.
+
+11. /admin/domains
+Domain management.
+
+12. /admin/inquiries
+Inquiry management.
+
+13. /admin/settings
+Site settings and contact configuration.
+
+Do not create a blog, newsletter, booking system, AI chatbot, GitHub integration, or knowledge graph in version one unless the codebase is already prepared for them.
+
+These features are not currently necessary for the core business goal.
+
+==================================================
+6. HOMEPAGE REQUIREMENTS
+==================================================
+
+The homepage must communicate within five seconds:
+
+- Who Nizar is.
+- What he offers.
+- Which industries he focuses on.
+- What the visitor should do next.
+
+Homepage structure:
+
+A. Header
+
+Navigation:
+
+- Domains.
+- About.
+- Services.
+- Transactions.
+- Contact.
+
+Header CTA:
+
+Make an Offer
+
+Use a clean sticky header on desktop.
+Use an accessible mobile menu on smaller screens.
+
+B. Hero section
+
+Hero headline:
+
+Brandable domains for the next digital business.
+
+Hero subheadline:
+
+I curate and invest in domain names for AI, SaaS, fintech, technology, and online businesses—with hands-on experience in websites, digital marketing, and AI-assisted workflows.
+
+Hero CTAs:
+
+- Browse Domains.
+- Make an Offer.
+
+Hero visual direction:
+
+- Editorial domain specimens.
+- A carefully typeset featured domain name.
+- Small metadata such as category, extension, and availability.
+- Subtle grid or catalog structure.
+- No meaningless 3D objects.
+- No neon glow.
+- No purple AI gradients.
+- No excessive glassmorphism.
+- No animated background noise.
+
+C. Trust strip
+
+Use only verified facts:
+
+- 150+ domains in the portfolio.
+- 27 domains currently listed through Atom.
+- Investing since 2023.
+- Two publicly confirmed completed transactions.
+
+Do not use a number if the database count is unavailable.
+The count must be computed dynamically after deduplication.
+
+D. Featured domains
+
+Display 15–20 carefully selected names on the homepage.
+
+Initial featured list:
+
+- FogEngine.com
+- FogInfra.com
+- AllocEngine.com
+- ContainerImage.com
+- ModelCompress.com
+- SnapInference.com
+- AshaBot.com
+- VectorSift.com
+- SyncRender.com
+- PriceAutomate.com
+- MagnifyLeads.com
+- CapVerve.com
+- NodFit.com
+- FinTriva.com
+- FinLyra.com
+- RevRit.com
+- MythosScale.com
+- ComfyUX.com
+
+This list must remain editable through the admin dashboard.
+
+Do not show every domain on the homepage.
+
+Each card must include:
+
+- Domain name.
+- Extension.
+- Category.
+- Short practical use case.
+- Availability.
+- Optional listing price if available and approved.
+- Make an Offer button.
+
+E. How it works
+
+Use a simple three-step process:
+
+1. Find a name.
+2. Send an offer.
+3. Discuss the acquisition.
+
+Do not promise escrow, 24-hour transfers, guaranteed delivery, or any external service unless the owner explicitly configures and verifies those services.
+
+F. Selected transactions
+
+Show only:
+
+ScalableAIAgents.com
+Completed sale
+USD 375
+
+RiyadhSalon.com
+Wholesale sale
+USD 50
+
+Do not create fictional case studies around these transactions.
+
+G. Secondary services preview
+
+Heading:
+
+Beyond the name
+
+Copy:
+
+Alongside domain investing, I work on selected digital projects involving WordPress websites, content, social media, SEO, and AI-assisted workflows.
+
+CTA:
+
+Explore Services
+
+Make it clear that domain investing is the primary focus.
+
+H. Final CTA
+
+Heading:
+
+Looking for the right name?
+
+Copy:
+
+If you are building an AI, SaaS, fintech, technology, or online business, send an offer for a domain or start a conversation about a potential partnership.
+
+Buttons:
+
+- Browse Domains.
+- Contact Nizar.
+
+==================================================
+7. DOMAIN CATALOG
+==================================================
+
+Create a professional catalog, not a generic card grid.
+
+Required features:
+
+- Search by domain name.
+- Filter by industry.
+- Filter by extension.
+- Filter by status.
+- Filter by featured.
+- Filter by price availability.
+- Sort alphabetically.
+- Sort by featured status.
+- Sort by newest imported.
+- Sort by price where a price exists.
+- Responsive layout.
+- Empty states.
+- Loading states.
+- Error states.
+- Accessible filter controls.
+- URL query parameters for filters.
+- Shareable filtered URLs.
+
+Suggested categories:
+
+- AI.
+- SaaS.
+- Technology.
+- Infrastructure.
+- Fintech.
+- Finance.
+- Payments.
+- Marketing.
+- E-commerce.
+- Health.
+- Local Services.
+- Brandable.
+- Other.
+
+Every domain must have:
+
+- Name.
+- Normalized lowercase value in the database.
+- Display name.
+- Slug.
+- Extension.
+- Category.
+- Tags.
+- Short description.
+- Use cases.
+- Status.
+- Featured flag.
+- Optional price.
+- Price visibility.
+- Source marketplace.
+- Marketplace URL if configured.
+- Registrar as an internal field.
+- Domain score as an internal field only unless explicitly enabled.
+- Expiration date as an internal field.
+- Created date.
+- Updated date.
+- Legal-review flag.
+- Notes as an internal field.
+
+Default public status:
+
+Available
+
+Default public CTA for every domain:
+
+Make an Offer
+
+For Atom domains, show the current listing price only when `showPrice=true`.
+
+Even when a price is shown, keep the CTA as:
+
+Make an Offer
+
+Do not expose internal registrar notes or private acquisition data.
+
+==================================================
+8. DOMAIN DETAIL PAGE
+==================================================
+
+Each domain detail page must include:
+
+- Large domain name.
+- Extension.
+- Availability.
+- Category.
+- Short brandability explanation.
+- Potential use cases.
+- Optional current listing price.
+- Make an Offer button.
+- Related domains.
+- Back to catalog link.
+- Share metadata.
+- Structured data where appropriate.
+
+Example structure:
+
+FogEngine.com
+
+A strong, technology-oriented name for infrastructure, cloud, AI systems, developer tools, or automation products.
+
+Potential directions:
+
+- AI infrastructure.
+- Cloud orchestration.
+- Developer tools.
+- Data processing.
+- Automation platforms.
+
+CTA:
+
+Make an Offer
+
+Do not claim that the domain is perfect, premium, highly demanded, or guaranteed to appreciate.
+
+All descriptions must be framed as potential use cases, not guaranteed business outcomes.
+
+==================================================
+9. MAKE AN OFFER EXPERIENCE
+==================================================
+
+Create a short, high-conversion form.
+
+For a domain inquiry, fields should be:
+
+- Domain name, prefilled and read-only.
+- Name.
+- Email.
+- Company or project name, optional.
+- Offer amount, optional.
+- Intended use, optional.
+- Message.
+- Consent checkbox.
+- Honeypot anti-spam field hidden from users.
+
+Do not ask for unnecessary information.
+
+Form behavior:
+
+- Validate with Zod.
+- Show accessible inline errors.
+- Preserve entered values after validation errors.
+- Show success state.
+- Store the inquiry in the database.
+- Send an email notification if an email provider is configured.
+- Gracefully work without external email credentials by saving the inquiry and showing a success message.
+- Never expose email provider secrets to the browser.
+- Rate-limit submissions.
+- Add server-side validation.
+- Sanitize all user input.
+- Do not send an inquiry automatically without the user pressing Submit.
+
+Success message:
+
+Thank you. Your inquiry has been received. Nizar will review it and get back to you.
+
+==================================================
+10. CONTACT PAGE
+==================================================
+
+Keep the page simple.
+
+Primary contact categories:
+
+- Acquire a Domain.
+- Discuss a Partnership.
+- Work With Nizar.
+- Other.
+
+Do not make “investment opportunities” sound like a regulated investment product.
+
+Use careful wording:
+
+For partnerships, domain acquisitions, and selected digital projects, send a short message and explain what you are building.
+
+Display:
+
+- Email.
+- LinkedIn.
+- X.
+- Optional Instagram and Facebook links.
+
+Do not display a home address by default.
+
+==================================================
+11. ABOUT PAGE
+==================================================
+
+Create a professional narrative, not a generic biography.
+
+Use this factual direction:
+
+Nizar Rahme is an independent domain investor and digital brand builder. He began building his domain portfolio in 2023 with a small capital base, focusing on names that could become useful digital brands in AI, SaaS, fintech, technology, and online business.
+
+Alongside domain investing, he has worked on digital projects involving content, social media, SEO, WordPress websites, and AI-assisted workflows. His interest is at the intersection of naming, digital presence, and commercial opportunity.
+
+The page must explain:
+
+- Who Nizar is.
+- Why domain names interest him.
+- How he evaluates names.
+- What he is currently focused on.
+- His supporting digital capabilities.
+- What types of opportunities he is open to.
+
+Do not claim that he has generated large profits or built major companies.
+
+Suggested section:
+
+How I evaluate a domain
+
+Use these principles:
+
+- Is the name clear?
+- Is it easy to remember?
+- Can it support a credible brand?
+- Does it fit a real market?
+- Is it relevant to a growing category?
+- Could a founder imagine building around it?
+- Does it have commercial clarity?
+- Does it avoid unnecessary complexity?
+
+==================================================
+12. SERVICES PAGE
+==================================================
+
+This is a secondary page.
+
+Title:
+
+Selected digital services
+
+Intro:
+
+Domain investing is my primary focus. I also work on selected digital projects where strategy, content, websites, and AI-assisted workflows come together.
+
+Services:
+
+1. WordPress websites
+Planning, structuring, and building practical websites for individuals and small businesses.
+
+2. Digital content
+Content creation, copywriting, post planning, and social media support.
+
+3. SEO foundations
+Basic on-page structure, content organization, and search-friendly website foundations.
+
+4. AI-assisted workflows
+Research, ideation, prompt development, content workflows, and business structuring with AI tools.
+
+5. Digital brand foundations
+Helping a project move from an idea or name toward a clear online presence.
+
+Do not present this as a large agency.
+Do not invent packages, clients, pricing, or guarantees.
+
+CTA:
+
+Discuss a Project
+
+==================================================
+13. TRANSACTIONS PAGE
+==================================================
+
+Publicly display only verified completed transactions:
+
+1. ScalableAIAgents.com
+Status: Completed sale
+Amount: USD 375
+
+2. RiyadhSalon.com
+Status: Wholesale sale
+Amount: USD 50
+
+Do not display dates unless supplied.
+Do not display buyer identities.
+Do not display private negotiation details.
+Do not display the undisclosed incomplete transaction.
+Do not use a fake testimonial or buyer quote.
+
+Add a short note:
+
+These are selected completed transactions and do not represent a guarantee of future sale prices or outcomes.
+
+==================================================
+14. VISUAL DESIGN SYSTEM
+==================================================
+
+Create a distinctive editorial marketplace identity.
+
+Visual direction:
+
+- Premium.
+- Restrained.
+- Intelligent.
+- Clear.
+- Technology-aware.
+- Editorial.
+- Trustworthy.
+- Personal.
+- Fast.
+- Memorable.
+
+Avoid:
+
+- Purple gradients.
+- Neon glow.
+- Excessive glassmorphism.
+- Generic SaaS layouts.
+- Random 3D objects.
+- Excessive animations.
+- Overly futuristic graphics.
+- Template-like portfolio cards.
+- Fake data dashboards.
+
+Color system:
+
+- Ink Navy: #101A33
+- Deep Navy: #182544
+- Warm Ivory: #F7F5EF
+- Muted Gold: #C9A227
+- Soft Gold: #E3C66B
+- Slate: #667085
+- Border: #D9D6CC
+- White: #FFFFFF
+- Success: #2E7D5B
+- Error: #B54747
+
+Use gold as a restrained accent, not as a dominant background color.
+
+Typography:
+
+Use a sophisticated editorial pairing:
+
+- Display font: a refined serif such as DM Serif Display or Source Serif 4.
+- Interface font: Inter, Geist, or Manrope.
+- Metadata font: a restrained monospace such as Geist Mono or IBM Plex Mono.
+
+Typography rules:
+
+- Strong domain names.
+- Clear hierarchy.
+- Comfortable line height.
+- No tiny body text.
+- Good readability on mobile.
+- Avoid excessive uppercase text.
+- Use uppercase only for small metadata labels.
+
+Layout:
+
+- Maximum content width around 1200–1280px.
+- Generous whitespace.
+- Strong alignment.
+- Editorial compositions.
+- Domain names should have visual authority.
+- Use subtle vertical rules, catalog labels, and metadata.
+- Make the catalog feel curated rather than crowded.
+
+Components:
+
+- Header.
+- Mobile navigation.
+- Hero.
+- Domain specimen card.
+- Featured domain card.
+- Domain catalog table/grid.
+- Search bar.
+- Filter controls.
+- Tag.
+- Price label.
+- Availability badge.
+- Make an Offer button.
+- Contact form.
+- Transaction item.
+- Footer.
+- Toast notifications.
+- Empty state.
+- Error state.
+- Modal only when it improves the flow.
+
+Buttons:
+
+Primary:
+Dark navy background, ivory text, clear hover state.
+
+Secondary:
+Transparent or ivory background with navy border.
+
+Accent:
+Muted gold used sparingly.
+
+Motion:
+
+- 160–240ms transitions.
+- Subtle hover states.
+- No distracting cursor effects.
+- No mandatory animation.
+- Respect `prefers-reduced-motion`.
+- Disable non-essential motion on mobile.
+- Use opacity, transform, and color transitions only where useful.
+
+==================================================
+15. FULL-STACK TECHNICAL ARCHITECTURE
+==================================================
+
+Before writing code:
+
+1. Inspect the existing repository.
+2. Identify the current framework.
+3. Do not destroy existing functionality.
+4. Reuse useful existing components only if they fit the design.
+5. If no project exists, initialize a production-ready application.
+
+Preferred stack:
+
+- Next.js with App Router.
+- TypeScript.
+- Tailwind CSS.
+- Accessible custom components.
+- Prisma ORM.
+- PostgreSQL for production.
+- SQLite fallback for local development if necessary.
+- Zod validation.
+- Server Actions or secure route handlers.
+- Auth.js, Better Auth, or another secure authentication solution for the admin area.
+- `next/image` for images.
+- `next/font` or optimized local/system font strategy.
+- Vitest or Jest for unit tests.
+- Playwright for end-to-end tests.
+- ESLint.
+- Prettier.
+- Strict TypeScript.
+
+Avoid unnecessary dependencies.
+
+Use a clean component architecture:
+
+- `app/`
+- `components/`
+- `components/ui/`
+- `lib/`
+- `lib/db/`
+- `lib/validation/`
+- `lib/email/`
+- `lib/seo/`
+- `data/`
+- `prisma/`
+- `public/`
+- `tests/`
+
+Create:
+
+- `.env.example`
+- `README.md`
+- Database migration.
+- Seed script.
+- Deployment instructions.
+- Production build scripts.
+- Error handling.
+- Loading states.
+- Not-found pages.
+
+Environment variables:
+
+```env
+DATABASE_URL=
+AUTH_SECRET=
+NEXT_PUBLIC_SITE_URL=https://nizarrahme.com
+CONTACT_EMAIL=info@nizarrahme.com
+RESEND_API_KEY=
+ADMIN_EMAIL=
+NEXT_PUBLIC_GA_ID=
+```
+
+No secrets may be hardcoded.
+
+==================================================
+16. DATABASE MODEL
+==================================================
+
+Create a robust schema.
+
+Domain:
+
+- id
+- name
+- normalizedName
+- slug
+- extension
+- category
+- tags
+- shortDescription
+- useCases
+- status
+- featured
+- price
+- showPrice
+- saleType
+- sourceMarketplace
+- sourceUrl
+- registrar
+- domainScore
+- tldsTaken
+- tldsDeveloped
+- expirationDate
+- legalReviewRequired
+- publicNotes
+- internalNotes
+- createdAt
+- updatedAt
+
+Inquiry:
+
+- id
+- domainId, optional
+- inquiryType
+- name
+- email
+- company
+- offerAmount
+- intendedUse
+- message
+- status
+- adminNotes
+- createdAt
+- updatedAt
+
+AdminUser:
+
+- id
+- email
+- role
+- createdAt
+- updatedAt
+
+SiteSettings:
+
+- id
+- contactEmail
+- socialLinks
+- featuredDomainIds
+- homepageText
+- updatedAt
+
+Inquiry statuses:
+
+- New.
+- Reviewing.
+- Replied.
+- Negotiating.
+- Closed.
+- Spam.
+
+Protect admin routes.
+Do not expose admin data through public APIs.
+
+==================================================
+17. ADMIN DASHBOARD
+==================================================
+
+Build a secure admin dashboard with:
+
+Domain management:
+
+- Add domain.
+- Edit domain.
+- Delete or archive domain.
+- Mark featured.
+- Mark available/unavailable.
+- Add category.
+- Add tags.
+- Add price.
+- Toggle price visibility.
+- Add source marketplace.
+- Add expiration date.
+- Add internal notes.
+- Mark legal review required.
+- Bulk import CSV.
+- Bulk export CSV.
+- Search and filter domains.
+
+Inquiry management:
+
+- View inquiries.
+- Filter by status.
+- View domain attached to inquiry.
+- Add admin notes.
+- Change inquiry status.
+- Archive inquiry.
+- Copy sender email.
+- Prevent unauthorized access.
+
+Settings:
+
+- Contact email.
+- Social URLs.
+- Homepage featured domains.
+- Public transaction records.
+- SEO defaults.
+
+Never use a hardcoded admin password.
+Provide setup instructions for creating the first admin account securely.
+
+==================================================
+18. INITIAL DOMAIN DATA
+==================================================
+
+Use the attached CSV as the source of truth for the 27 Atom-listed domains if the file is available.
+
+The Atom data includes names, current listing prices, BIN sale type, listing status, TLD count, domain scores, and expiration dates.
+
+Import the following Atom-listed records:
+
+```csv
+Domain Name,Selling Price,Sale Type,Listed,TLDs Taken,TLDs Developed,Domain Score,Expiration Date
+FogEngine.io,8888,BIN,Y,12,,5.90,2027-03-27
+FogEngine.ai,14888,BIN,Y,12,,5.00,2028-03-27
+DnaBite.com,4361,BIN,Y,1,,6.00,2027-04-14
+KernEngine.com,5297,BIN,Y,2,,5.30,2027-04-13
+MythosScale.com,3899,BIN,Y,3,,6.10,2027-04-07
+MythosSync.com,3899,BIN,Y,3,,5.80,2027-04-07
+ClawEmbed.com,3099,BIN,Y,3,,5.50,2027-04-02
+TrendDrill.com,4361,BIN,Y,1,,5.50,2027-04-06
+JuvOda.com,4361,BIN,Y,1,,5.50,2027-04-05
+MagnifyLeads.com,2199,BIN,Y,1,,5.30,2027-04-04
+VectorSift.com,3899,BIN,Y,4,,5.80,2027-04-02
+PriceAutomate.com,5297,BIN,Y,3,,5.20,2027-04-01
+AshaBot.com,2333,BIN,Y,5,,6.50,2027-03-30
+TapToWash.com,3899,BIN,Y,4,,5.80,2027-03-31
+Eleniz.com,3899,BIN,Y,4,,5.50,2027-03-25
+FogEngine.com,14888,BIN,Y,13,,7.80,2027-03-24
+AmbitCode.com,3399,BIN,Y,1,,5.50,2026-11-21
+ShiftLux.com,3899,BIN,Y,1,,6.30,2026-10-17
+ComfyUx.com,5297,BIN,Y,1,,6.00,2026-10-10
+SyncRender.com,4361,BIN,Y,4,,5.00,2027-04-09
+CapVerve.com,4873,BIN,Y,1,,7.60,2026-10-03
+FinTriva.com,3899,BIN,Y,2,,6.10,2026-10-03
+BulwarkPay.com,4999,BIN,Y,4,,5.00,2027-08-22
+RevRit.com,2199,BIN,Y,4,,6.50,2027-08-17
+FinLyra.com,3899,BIN,Y,2,,5.50,2026-10-03
+NodFit.com,4595,BIN,Y,3,,6.80,2027-08-22
+CozyUx.com,5297,BIN,Y,1,,5.50,2026-10-10
+```
+
+For the broader portfolio, seed the following names with:
+
+- status: Available
+- saleType: Make an Offer
+- showPrice: false
+- public price: null unless supplied by Atom data
+- featured: false by default
+
+NameBright:
+
+AllocEngine.com
+FogInfra.com
+LoreAGI.com
+RoboAlloc.com
+HumbleEngine.com
+ContainerImage.com
+DnaBite.com
+LiteGenAI.com
+ModelCompress.com
+SnapInference.com
+UltraKeryx.com
+
+Porkbun:
+
+RaBaLy.com
+FlitDo.com
+TopupChoice.com
+SortedLoans.com
+FatVox.com
+Intelligence.insure
+OnChain.voyage
+Intelligence.voyage
+
+Spaceship:
+
+1XMR.xyz
+ApexPoster.com
+AsianBeautySalon.com
+BasedFX.com
+CapitalGigs.xyz
+DogCo.xyz
+DAPEJO.com
+DinViz.com
+ELENIZ.xyz
+fogengine.io
+fogengine.co
+fogengine.net
+fogengine.one
+fogengine.online
+fogengine.org
+fogengine.site
+fogengine.space
+fogengine.store
+fogengine.xyz
+OracleGenAI.com
+GlowHairs.com
+SEOAutomationAI.com
+TokenizationFunds.com
+
+Unstoppable Domains account:
+
+agentarya.com
+ciberdomain.com
+cybrsystems.com
+odsnetwork.com
+vsplink.com
+webforg.com
+qserva.com
+biopendium.com
+labaiagents.com
+autorepairarizona.com
+kernengine.com
+hermescoreai.com
+logicfoxai.com
+syncrender.com
+mythoscale.com
+mythossync.com
+scopingtool.com
+gooseengine.com
+shoetees.com
+trenddrill.com
+agelookup.com
+callercrew.com
+juvoda.com
+fortbroker.com
+magnifyleads.com
+pandaspanel.com
+transactionfraud.com
+acierate.com
+augusthunt.com
+codelocate.com
+clawchunk.com
+clawembed.com
+logitclaw.com
+rangerdoc.com
+vectorsift.com
+berrywatch.com
+irmotors.com
+partnerpods.com
+priceautomate.com
+fogagents.com
+foginfrastructure.com
+fognodes.com
+fogorchestrator.com
+knitpie.com
+scalableaiagent.com
+similarengine.com
+taptowash.com
+testandplan.com
+ashabot.com
+bizarab.com
+cssbrain.com
+fogedgeai.com
+proxycluster.com
+scalableaiengine.com
+aitherapyapp.com
+1xmr.com
+eleniz.com
+sitewebai.com
+brightwavehub.com
+salesrobotlabs.com
+clickjs.com
+insightpayai.com
+nichedapp.com
+5damat-aldalil.com
+ambitcode.com
+baseopolis.com
+lolud.com
+vividforgeai.com
+urgenteyeglasses.com
+zurichgpt.com
+capitalgigs.com
+checkoutcircuit.com
+shiftlux.com
+topuparabia.com
+validomain.com
+bidnil.com
+comfyux.com
+cozyux.com
+nopips.com
+raphip.com
+softskilltrainers.com
+sparklepayments.com
+speedindicators.com
+vacace.com
+validatortest.com
+capverve.com
+casnex.com
+finlyra.com
+fintelva.com
+fintriva.com
+fintechxl.com
+healthsupplementscanada.com
+monkeypens.com
+ontariopetcare.com
+pamperpetcare.com
+petkik.com
+eatphoto.com
+dailytradingstrategy.com
+bulwarkpay.com
+neopaynow.com
+nodfit.com
+oilsilo.com
+upgradebots.com
+revrit.com
+torontogiftsdelivery.com
+
+Atom:
+
+fogengine.com
+fogengine.ai
+huhhi.com
+
+Turkticaret:
+
+easyposegypt.com
+posegypt.com
+smartposegypt.com
+egyptpos.com
+
+Atakdomain:
+
+sipup.com.tr
+sipup.tr
+
+Dynadot:
+
+fogengine.si
+
+Normalize domains internally but preserve their display capitalization where useful.
+
+Deduplicate the data before calculating the public portfolio count.
+
+Do not create duplicate public listings for the same domain.
+
+==================================================
+19. LEGAL AND QUALITY FLAGS
+==================================================
+
+Create an internal `legalReviewRequired` flag for domains that may require manual review because they include:
+
+- Possible third-party brand references.
+- Geographic names.
+- Industry-regulated terms.
+- Potentially confusing abbreviations.
+- Names that may be close to existing brands.
+
+Do not make legal conclusions.
+Do not automatically delete these domains.
+Simply flag them in the admin dashboard and avoid featuring them until manually reviewed.
+
+Potential examples for manual review include names containing terms such as:
+
+- Oracle.
+- Zurich.
+- GPT.
+- XMR.
+- Geographic city or country names.
+- Regulated financial terms.
+
+==================================================
+20. SEO
+==================================================
+
+Configure the site for nizarrahme.com.
+
+Global title:
+
+Nizar Rahme — Domain Investor & Digital Brand Builder
+
+Global meta description:
+
+Explore curated domain names for AI, SaaS, fintech, technology, and digital businesses from independent domain investor Nizar Rahme.
+
+Homepage title:
+
+Brandable Domains for Digital Businesses | Nizar Rahme
+
+Homepage description:
+
+Curated domain names for AI, SaaS, fintech, technology, and online businesses. Browse the portfolio or make an offer.
+
+Create:
+
+- Canonical URLs.
+- Open Graph metadata.
+- Twitter/X metadata.
+- Dynamic domain page metadata.
+- Dynamic sitemap.
+- robots.txt.
+- favicon.
+- Web manifest if useful.
+- Optimized OG image.
+- Semantic headings.
+- Descriptive alt text.
+- Internal links.
+- Breadcrumbs where useful.
+- JSON-LD.
+
+Structured data:
+
+- WebSite.
+- Person.
+- CollectionPage for the domain catalog.
+- ItemList for public domain listings.
+- ContactPage.
+- AboutPage.
+- WebPage.
+
+Do not add fake ratings, reviews, prices, availability, or business claims to structured data.
+
+Exclude private, archived, unavailable, and undisclosed records from the sitemap.
+
+Use clean URLs:
+
+- `/domains`
+- `/domains/fogengine-com`
+- `/about`
+- `/services`
+- `/transactions`
+- `/contact`
+
+==================================================
+21. ACCESSIBILITY
+==================================================
+
+Meet WCAG 2.2 AA targets where practical.
+
+Requirements:
+
+- Semantic HTML.
+- One clear H1 per page.
+- Logical heading hierarchy.
+- Keyboard navigation.
+- Visible focus states.
+- Skip-to-content link.
+- Sufficient color contrast.
+- Accessible buttons.
+- Accessible dialogs.
+- Labels for every form field.
+- Error messages associated with fields.
+- No color-only meaning.
+- Meaningful alt text.
+- Proper link names.
+- Mobile-friendly controls.
+- Reduced-motion support.
+- No auto-playing audio or video.
+- Minimum comfortable touch targets.
+- Accessible filter and search controls.
+- Screen-reader announcements for form success and errors.
+
+==================================================
+22. PERFORMANCE
+==================================================
+
+Optimize for fast loading.
+
+Requirements:
+
+- Server-render public pages where appropriate.
+- Static generation or ISR for public domain pages where useful.
+- Avoid unnecessary client components.
+- Lazy-load non-critical content.
+- Optimize images.
+- Use SVG or CSS for decorative elements.
+- Avoid large JavaScript libraries.
+- Avoid heavy animation libraries unless necessary.
+- Avoid third-party scripts by default.
+- Load analytics only if configured.
+- Use caching where appropriate.
+- Minimize layout shift.
+- Use responsive images.
+- Use proper font loading.
+- Test mobile performance.
+- Test with Lighthouse or equivalent.
+
+==================================================
+23. SECURITY
+==================================================
+
+Implement:
+
+- Secure admin authentication.
+- Server-side authorization.
+- Rate limiting for inquiry forms.
+- Input validation.
+- Output escaping.
+- SQL injection protection through Prisma.
+- Secure headers.
+- No exposed secrets.
+- No public admin endpoints.
+- Spam protection.
+- Email validation.
+- Safe error messages.
+- Logging without storing unnecessary personal data.
+- Privacy-conscious inquiry storage.
+
+==================================================
+24. ANALYTICS
+==================================================
+
+Do not add analytics unless an environment variable is configured.
+
+If analytics is configured:
+
+- Respect privacy.
+- Do not track form contents.
+- Do not store offer amounts in analytics events.
+- Track only useful anonymous events such as:
+  - Domain catalog view.
+  - Domain detail view.
+  - Make an Offer form start.
+  - Make an Offer form success.
+  - Contact form success.
+
+==================================================
+25. RESPONSIVE BEHAVIOR
+==================================================
+
+Design deliberately for:
+
+- Small mobile.
+- Large mobile.
+- Tablet.
+- Laptop.
+- Desktop.
+- Large screens.
+
+Mobile requirements:
+
+- No horizontal overflow.
+- Stacked hero composition.
+- Compact but usable navigation.
+- Search and filter controls remain easy to use.
+- Domain names wrap gracefully.
+- Cards do not become cramped.
+- Make an Offer CTA remains obvious.
+- Forms are comfortable to complete.
+- No hover-only interactions.
+- Touch targets are accessible.
+
+==================================================
+26. TESTING AND QA
+==================================================
+
+Before declaring completion, run:
+
+- TypeScript check.
+- ESLint.
+- Prettier check.
+- Unit tests.
+- Form validation tests.
+- Domain filtering tests.
+- Domain detail route tests.
+- Admin authorization tests.
+- Playwright end-to-end tests.
+- Production build.
+- Link validation.
+- Accessibility audit.
+- Lighthouse audit.
+- Mobile viewport tests.
+
+Test at minimum:
+
+1. Homepage loads.
+2. Domain catalog loads.
+3. Search works.
+4. Category filter works.
+5. Extension filter works.
+6. Domain detail page loads.
+7. Make an Offer form validates.
+8. Successful inquiry is stored.
+9. Invalid form is rejected.
+10. Spam honeypot works.
+11. Admin login works.
+12. Unauthorized admin access is blocked.
+13. Admin can edit a domain.
+14. Admin can change featured domains.
+15. Sitemap loads.
+16. Robots file loads.
+17. Metadata is correct.
+18. Undisclosed transaction is absent from all public output.
+19. No duplicate domain pages exist.
+20. No console errors exist.
+21. Mobile navigation works.
+22. Keyboard navigation works.
+23. Reduced-motion behavior works.
+
+==================================================
+27. IMPLEMENTATION WORKFLOW
+==================================================
+
+Follow this sequence:
+
+Phase 1:
+Inspect the repository and available files.
+
+Phase 2:
+Create or update the technical architecture.
+
+Phase 3:
+Create the database schema and seed data.
+
+Phase 4:
+Build the design system and layout.
+
+Phase 5:
+Build the homepage.
+
+Phase 6:
+Build the domain catalog and filters.
+
+Phase 7:
+Build domain detail pages.
+
+Phase 8:
+Build Make an Offer forms and inquiry storage.
+
+Phase 9:
+Build About, Services, Transactions, and Contact pages.
+
+Phase 10:
+Build the admin dashboard.
+
+Phase 11:
+Implement SEO, structured data, sitemap, and robots.
+
+Phase 12:
+Implement accessibility and performance improvements.
+
+Phase 13:
+Run tests and production build.
+
+Phase 14:
+Perform final visual and content audit.
+
+Do not stop after generating a plan.
+Actually write the code and implement the complete application.
+
+If an external service is unavailable:
+
+- Build a clean adapter.
+- Provide a local fallback.
+- Document the required environment variable.
+- Do not fake a successful external action.
+
+==================================================
+28. FINAL ACCEPTANCE CRITERIA
+==================================================
+
+The final product must:
+
+- Look custom-designed.
+- Feel like a serious domain marketplace.
+- Clearly communicate Nizar’s identity within seconds.
+- Prioritize domain acquisition.
+- Use Make an Offer as the primary interaction.
+- Keep digital services secondary.
+- Be English-only.
+- Be responsive.
+- Be accessible.
+- Be fast.
+- Be secure.
+- Be SEO-ready.
+- Use real information only.
+- Avoid fabricated claims.
+- Avoid exposing private information.
+- Avoid mentioning the undisclosed incomplete transaction.
+- Show only the two verified public transactions.
+- Have a functioning admin dashboard.
+- Have a functioning database-backed inquiry system.
+- Have a complete README.
+- Have an `.env.example`.
+- Have seed data.
+- Have tests.
+- Have no broken links.
+- Have no fake testimonials.
+- Have no placeholder text.
+- Have no unnecessary AI features.
+- Have no generic portfolio-template feeling.
+
+==================================================
+29. FINAL RESPONSE AFTER IMPLEMENTATION
+==================================================
+
+When finished, provide:
+
+1. Summary of what was built.
+2. Final route list.
+3. Technology stack.
+4. Database setup instructions.
+5. Environment variables.
+6. Admin setup instructions.
+7. Local development commands.
+8. Production deployment instructions.
+9. Tests performed.
+10. Accessibility checks.
+11. Performance checks.
+12. SEO checks.
+13. Known limitations.
+14. Any decisions that require Nizar’s approval.
+15. A final quality audit covering:
+   - Brand.
+   - UX.
+   - UI.
+   - Content.
+   - Technical quality.
+   - SEO.
+   - Accessibility.
+   - Performance.
+   - Security.
+
+Do not claim the website is production-ready unless the production build passes and the major flows have been tested.

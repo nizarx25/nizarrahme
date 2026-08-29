@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Domain {
+  id                String    @id @default(cuid())
+  name              String
+  normalizedName    String
+  slug              String    @unique
+  extension         String
+  category          String    @default("Brandable")
+  tags              String    @default("[]")
+  shortDescription  String    @default("")
+  useCases          String    @default("[]")
+  status            String    @default("Available")
+  featured          Boolean   @default(false)
+  price             Int?
+  showPrice         Boolean   @default(false)
+  saleType          String    @default("Make an Offer")
+  sourceMarketplace String?
+  sourceUrl         String?
+  registrar         String?
+  domainScore       Float?
+  tldsTaken         Int?
+  tldsDeveloped     Int?
+  expirationDate    DateTime?
+  legalReviewRequired Boolean  @default(false)
+  publicNotes       String    @default("")
+  internalNotes     String    @default("")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  inquiries Inquiry[]
+}
+
+model Inquiry {
+  id          String   @id @default(cuid())
+  domainId    String?
+  domain      Domain?  @relation(fields: [domainId], references: [id], onDelete: SetNull)
+  inquiryType String   @default("domain_offer")
+  name        String
+  email       String
+  company     String?
+  offerAmount Int?
+  intendedUse String?
+  message     String
+  status      String   @default("New")
+  adminNotes  String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSettings {
+  id              String   @id @default(cuid())
+  contactEmail    String   @default("info@nizarrahme.com")
+  socialLinks     String   @default("{}")
+  featuredDomainIds String  @default("[]")
+  updatedAt       DateTime @updatedAt
+}

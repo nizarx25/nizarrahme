@@ -1,0 +1,246 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-dm-serif);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-ivory: var(--ivory);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-slate: var(--slate);
+  --color-border-custom: var(--border-custom);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  /* Custom marketplace colors */
+  --navy: #101A33;
+  --navy-deep: #182544;
+  --ivory: #F7F5EF;
+  --gold: #C9A227;
+  --gold-soft: #E3C66B;
+  --slate: #667085;
+  --border-custom: #D9D6CC;
+  --success: #2E7D5B;
+  --error: #B54747;
+  /* Shadcn overrides */
+  --background: var(--ivory);
+  --foreground: var(--navy);
+  --card: #FFFFFF;
+  --card-foreground: var(--navy);
+  --popover: #FFFFFF;
+  --popover-foreground: var(--navy);
+  --primary: var(--navy);
+  --primary-foreground: #FFFFFF;
+  --secondary: #EEEDE7;
+  --secondary-foreground: var(--navy);
+  --muted: #EEEDE7;
+  --muted-foreground: var(--slate);
+  --accent: var(--gold);
+  --accent-foreground: var(--navy);
+  --destructive: var(--error);
+  --border: var(--border-custom);
+  --input: var(--border-custom);
+  --ring: var(--gold);
+  --chart-1: var(--navy);
+  --chart-2: var(--gold);
+  --chart-3: var(--slate);
+  --chart-4: var(--navy-deep);
+  --chart-5: var(--gold-soft);
+  --sidebar: var(--ivory);
+  --sidebar-foreground: var(--navy);
+  --sidebar-primary: var(--navy);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EEEDE7;
+  --sidebar-accent-foreground: var(--navy);
+  --sidebar-border: var(--border-custom);
+  --sidebar-ring: var(--gold);
+}
+
+.dark {
+  --background: var(--navy-deep);
+  --foreground: var(--ivory);
+  --card: #1E2D4A;
+  --card-foreground: var(--ivory);
+  --popover: #1E2D4A;
+  --popover-foreground: var(--ivory);
+  --primary: var(--ivory);
+  --primary-foreground: var(--navy);
+  --secondary: #243352;
+  --secondary-foreground: var(--ivory);
+  --muted: #243352;
+  --muted-foreground: #8B9AB5;
+  --accent: var(--gold);
+  --accent-foreground: var(--navy);
+  --destructive: #D45454;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: var(--gold);
+  --chart-1: var(--gold);
+  --chart-2: var(--ivory);
+  --chart-3: #8B9AB5;
+  --chart-4: var(--gold-soft);
+  --chart-5: #4A5E7A;
+  --sidebar: var(--navy-deep);
+  --sidebar-foreground: var(--ivory);
+  --sidebar-primary: var(--gold);
+  --sidebar-primary-foreground: var(--navy);
+  --sidebar-accent: #243352;
+  --sidebar-accent-foreground: var(--ivory);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: var(--gold);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-dm-serif), Georgia, 'Times New Roman', serif;
+  }
+
+  .domain-typography {
+    font-family: var(--font-dm-serif), Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.5rem, 4vw, 2.75rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--navy);
+  }
+
+  .editorial-border {
+    border: 1px solid var(--border-custom);
+  }
+
+  .editorial-border-b {
+    border-bottom: 1px solid var(--border-custom);
+  }
+
+  .gold-accent {
+    color: var(--gold);
+  }
+
+  .gold-bg {
+    background-color: var(--gold);
+  }
+
+  .navy-bg {
+    background-color: var(--navy);
+  }
+
+  .navy-deep-bg {
+    background-color: var(--navy-deep);
+  }
+
+  .ivory-bg {
+    background-color: var(--ivory);
+  }
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-custom);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--slate);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-custom) transparent;
+}
+
+/* Skip to content link */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 0.5rem;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background: var(--navy);
+  color: white;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+
+.skip-to-content:focus {
+  top: 0.5rem;
+}
+
+/* Focus visible styles for accessibility */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background-color: var(--gold-soft);
+  color: var(--navy);
+}
