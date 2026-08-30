@@ -54,7 +54,7 @@ async function sendEmailNotification(data: {
 
   try {
     await resend.emails.send({
-      from: 'Nizar Rahme Domains <onboarding@resend.dev>',
+      from: `Nizar Rahme Domains <${process.env.FROM_EMAIL || 'onboarding@resend.dev'}>`,
       to: [toEmail],
       replyTo: data.email,
       subject,
