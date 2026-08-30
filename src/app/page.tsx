@@ -1538,6 +1538,7 @@ function OfferFormDialog() {
   if (submitted) return (
     <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
       <DialogContent className="bg-[#0B211E] border-surface-border rounded-2xl p-4 sm:p-6">
+        <DialogHeader className="sr-only"><DialogTitle>Offer Submitted</DialogTitle><DialogDescription>Your domain offer has been submitted successfully.</DialogDescription></DialogHeader>
         <div className="text-center py-4 sm:py-8"><CheckCircle2 className="size-8 sm:size-12 text-teal mx-auto mb-3 sm:mb-4" /><h3 className="font-display text-lg sm:text-2xl font-bold text-white mb-2">Thank you.</h3><p className="text-xs sm:text-sm text-[#B8C8C4] leading-relaxed px-2">Your inquiry has been received. NIZAR RAHME will review it and get back to you.</p><Button variant="outline" className="mt-4 sm:mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => handleClose(false)}>Close</Button></div>
       </DialogContent>
     </Dialog>

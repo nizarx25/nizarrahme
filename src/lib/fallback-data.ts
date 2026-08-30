@@ -1,4 +1,5 @@
 import seedDomains from '@/data/domains.json'
+import { safeJsonParse } from '@/lib/auth'
 
 // Re-export seed data for API fallback when DB is empty (e.g., on Vercel)
 export const fallbackDomains = seedDomains as unknown as Array<{
@@ -30,15 +31,18 @@ export const fallbackDomains = seedDomains as unknown as Array<{
 }>
 
 function toPublicDomain(d: (typeof fallbackDomains)[number]) {
+  // tags/useCases may be JSON strings (from DB export) or arrays (from wholesale add)
+  const tags = Array.isArray(d.tags) ? d.tags : safeJsonParse<string[]>(d.tags, [])
+  const useCases = Array.isArray(d.useCases) ? d.useCases : safeJsonParse<string[]>(d.useCases, [])
   return {
     id: d.id,
     name: d.name,
     slug: d.slug,
     extension: d.extension,
     category: d.category,
-    tags: d.tags,
+    tags,
     shortDescription: d.shortDescription,
-    useCases: d.useCases,
+    useCases,
     status: d.status,
     featured: d.featured,
     price: d.price,
