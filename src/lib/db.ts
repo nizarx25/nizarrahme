@@ -5,11 +5,27 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 let _db: PrismaClient | null = null
-let _dbFailed = false
+let _dbAvailable = false
+let _dbChecked = false
 
-/** Check if a real database is configured (has DATABASE_URL env var). */
-function hasDbConfig(): boolean {
-  return Boolean(process.env.DATABASE_URL?.trim())
+/**
+ * On Vercel, there is no SQLite database.
+ * Detect Vercel by the VERCEL environment variable that Vercel always sets.
+ * Also check for SQLite file: URLs which won't work on serverless.
+ */
+function shouldUseDb(): boolean {
+  // On Vercel, never use DB (no SQLite filesystem available)
+  if (process.env.VERCEL) return false
+
+  // If no DATABASE_URL, can't use DB
+  if (!process.env.DATABASE_URL) return false
+
+  // SQLite file: URLs don't work on serverless platforms
+  if (process.env.DATABASE_URL.startsWith('file:') && process.env.NODE_ENV === 'production') {
+    return false
+  }
+
+  return true
 }
 
 function createDb(): PrismaClient | null {
@@ -23,35 +39,44 @@ function createDb(): PrismaClient | null {
     return client
   } catch (error) {
     console.error('[db] Failed to initialize PrismaClient:', error)
-    _dbFailed = true
+    _dbAvailable = false
+    _dbChecked = true
     return null
   }
 }
 
 /**
- * Lazy Prisma client that won't crash on import if prisma generate hasn't run.
- * Returns undefined for any property access if DB is not available.
+ * Lazy Prisma client proxy. Returns undefined for all property access
+ * when database is not available (Vercel, missing DATABASE_URL, etc.).
  */
 export const db: PrismaClient = new Proxy({} as PrismaClient, {
   get(_target, prop) {
-    const client = getDb()
-    return client ? (client as Record<string | symbol, unknown>)[prop] : undefined
+    if (!_dbChecked) {
+      _dbChecked = true
+      if (!shouldUseDb()) {
+        _dbAvailable = false
+        return undefined
+      }
+      _db = globalForPrisma.prisma ?? createDb()
+      _dbAvailable = _db !== null
+    }
+    if (!_dbAvailable) return undefined
+    return (_db as Record<string | symbol, unknown>)[prop]
   },
 })
 
-/** Return a usable Prisma client, or null when database access is not configured. */
-export function getDb(): PrismaClient | null {
-  if (_dbFailed || !hasDbConfig()) return null
-  if (!_db) {
-    _db = globalForPrisma.prisma ?? createDb()
-    if (!_db) _dbFailed = true
-  }
-  return _db
-}
-
 /**
- * Returns true only if DATABASE_URL is set AND Prisma client initialized successfully.
+ * Returns true only if we're in an environment with a working database.
  */
 export function isDbAvailable(): boolean {
-  return getDb() !== null
+  if (!_dbChecked) {
+    _dbChecked = true
+    if (!shouldUseDb()) {
+      _dbAvailable = false
+      return false
+    }
+    _db = globalForPrisma.prisma ?? createDb()
+    _dbAvailable = _db !== null
+  }
+  return _dbAvailable
 }

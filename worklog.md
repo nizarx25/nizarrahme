@@ -313,6 +313,44 @@ Work Log:
 - Added ALLOWED_SORTS whitelist to /api/domains GET handler for sort parameter validation
 - ESLint: 0 errors, dev server compiles successfully, sitemap.xml returns 200, robots.txt served correctly
 
+---
+Task ID: 3
+Agent: Main Agent
+Task: Diagnose and guard inquiry email flow against missing DATABASE_URL
+
+Problem reported in production:
+- POST /api/inquiries logged `[inquiry] DB save failed (non-critical)`.
+- Prisma failed at `prisma.domain.findUnique()` with `Environment variable not found: DATABASE_URL`.
+- The database is optional for the email flow; an inquiry should still return success and send email when SMTP is configured.
+
+Changes made:
+- `src/lib/db.ts`: the database configuration check now rejects missing and whitespace-only `DATABASE_URL` values.
+- `src/lib/db.ts`: added `getDb(): PrismaClient | null`, the single guarded path for obtaining Prisma. It returns `null` when the database is not configured or client initialization failed.
+- `src/lib/db.ts`: updated the existing `db` Proxy and `isDbAvailable()` to use `getDb()` so they share the same initialization state.
+- `src/app/api/inquiries/route.ts`: replaced the separate availability check plus `db` access with one `const database = getDb()` call. The endpoint calls `database.domain.findUnique()` and `database.inquiry.create()` only when that value is non-null.
+
+Validation performed:
+- ESLint passed for `src/lib/db.ts` and `src/app/api/inquiries/route.ts`.
+- Editor diagnostics reported no errors in either file.
+- `npx next build` completed successfully.
+- `bash tests/database-runtime-build.sh` passed.
+- Direct production test with `DATABASE_URL` unset and SMTP variables unset returned success from `/api/inquiries`; server output only said `[email] SMTP not configured, skipping email`, with no Prisma error.
+- Git state was clean at commit `9de11be (HEAD -> main, origin/main) fix:003`.
+
+Important unresolved deployment diagnosis:
+- The exact Prisma error still appearing after the above validation cannot be produced by the current local production build.
+- The deployed service is probably using an older deployment, a different project/repository/branch, or a stale build cache.
+- `vercel.json` uses `prisma generate && next build`; the source commit containing the fix is `9de11be` on `main` and `origin/main`.
+- Redeploy the correct Vercel project from commit `9de11be` with build cache cleared. Confirm the deployment commit SHA before testing.
+- If the error remains, inspect the deployed function source/build metadata and verify that the request reaches this repository's `/api/inquiries` route rather than another service or old domain deployment.
+- For actual email delivery, configure `SMTP_HOST`, `SMTP_PORT` (optional, defaults to 465), `SMTP_USER`, `SMTP_PASS`, and optionally `CONTACT_EMAIL`. SMTP configuration is separate from `DATABASE_URL`.
+
+Instructions for the next AI agent:
+1. Do not assume a new code fix is needed until the live deployment commit is verified against `9de11be`.
+2. Reproduce with a production build and no `DATABASE_URL`; expected result is success without any Prisma call.
+3. If live logs still show `findUnique()` missing `DATABASE_URL`, compare the live deployment SHA and route bundle with `src/app/api/inquiries/route.ts` at `9de11be`.
+4. Only add another code change if the live bundle is confirmed to include the guarded `getDb()` implementation.
+
 Stage Summary:
 - SEO: Added JSON-LD (Person, WebSite, Organization), canonical URL, OG image, sitemap.xml, robots.txt
 - Security: Added X-Frame-Options, HSTS, CSP, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
