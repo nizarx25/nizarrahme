@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { isDbAvailable, db } from '@/lib/db'
 import { requireAuth, sanitizeString } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
@@ -7,6 +7,10 @@ export async function GET(request: NextRequest) {
   const auth = requireAuth(request)
   if (!auth.authenticated) {
     return NextResponse.json({ error: auth.error }, { status: 401 })
+  }
+
+  if (!isDbAvailable()) {
+    return NextResponse.json({ error: 'Database not available in this environment' }, { status: 503 })
   }
 
   try {

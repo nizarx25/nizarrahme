@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { isDbAvailable, db } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 
 export async function PUT(
@@ -10,6 +10,10 @@ export async function PUT(
   const auth = requireAuth(request)
   if (!auth.authenticated) {
     return NextResponse.json({ error: auth.error }, { status: 401 })
+  }
+
+  if (!isDbAvailable()) {
+    return NextResponse.json({ error: 'Database not available in this environment' }, { status: 503 })
   }
 
   try {
