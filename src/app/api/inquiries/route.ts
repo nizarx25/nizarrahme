@@ -1,21 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { db } from '@/lib/db'
+import { isDbAvailable, db } from '@/lib/db'
 import { inquiryRateLimiter, sanitizeString } from '@/lib/auth'
 import nodemailer from 'nodemailer'
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.spaceship.com',
-  port: Number(process.env.SMTP_PORT) || 465,
-  secure: true,
-  auth: {
-    user: process.env.SMTP_USER || '',
-    pass: process.env.SMTP_PASS || '',
-  },
-})
-
 const inquirySchema = z.object({
   domainSlug: z.string().optional(),
+  domainName: z.string().optional(),
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
   company: z.string().optional(),
@@ -28,9 +19,94 @@ const inquirySchema = z.object({
   honeypot: z.string().optional(),
 })
 
+async function sendEmailNotification(data: {
+  name: string
+  email: string
+  company?: string
+  offerAmount?: number
+  intendedUse?: string
+  message: string
+  domainSlug?: string
+  domainName?: string
+}) {
+  const smtpHost = process.env.SMTP_HOST
+  const smtpUser = process.env.SMTP_USER
+  const smtpPass = process.env.SMTP_PASS
+  const toEmail = process.env.CONTACT_EMAIL || 'info@nizarrahme.com'
+
+  if (!smtpHost || !smtpUser || !smtpPass) {
+    console.warn('[email] SMTP not configured, skipping email')
+    return
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: smtpHost,
+    port: Number(process.env.SMTP_PORT) || 465,
+    secure: true,
+    auth: {
+      user: smtpUser,
+      pass: smtpPass,
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+  })
+
+  const domainInfo = data.domainName
+    ? `Domain: ${data.domainName}${data.domainSlug ? ` (${data.domainSlug})` : ''}`
+    : ''
+  const offerInfo = data.offerAmount ? `Offer Amount: $${data.offerAmount}` : ''
+  const companyInfo = data.company ? `Company: ${data.company}` : ''
+  const useInfo = data.intendedUse ? `Intended Use: ${data.intendedUse}` : ''
+
+  const htmlBody = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0B211E; border: 1px solid #173A35; border-radius: 8px; overflow: hidden;">
+      <div style="background: #0B211E; padding: 24px; border-bottom: 2px solid #FF4D2E;">
+        <h1 style="color: #00E5B0; margin: 0; font-size: 20px;">New Domain Inquiry</h1>
+      </div>
+      <div style="padding: 24px; background: #061312;">
+        ${domainInfo ? `<p style="color: #e0e0e0; margin: 8px 0;"><strong style="color: #00E5B0;">${domainInfo}</strong></p>` : ''}
+        ${offerInfo ? `<p style="color: #e0e0e0; margin: 8px 0;"><strong style="color: #FF4D2E;">${offerInfo}</strong></p>` : ''}
+        <p style="color: #e0e0e0; margin: 8px 0;"><strong style="color: #ccc;">Name:</strong> ${data.name}</p>
+        <p style="color: #e0e0e0; margin: 8px 0;"><strong style="color: #ccc;">Email:</strong> ${data.email}</p>
+        ${companyInfo ? `<p style="color: #e0e0e0; margin: 8px 0;"><strong style="color: #ccc;">${companyInfo}</strong></p>` : ''}
+        ${useInfo ? `<p style="color: #e0e0e0; margin: 8px 0;"><strong style="color: #ccc;">${useInfo}</strong></p>` : ''}
+        <div style="margin-top: 16px; padding: 16px; background: #102A26; border-radius: 6px; border-left: 3px solid #00E5B0;">
+          <p style="color: #ccc; margin: 0; white-space: pre-wrap;">${data.message}</p>
+        </div>
+      </div>
+      <div style="padding: 16px 24px; background: #0B211E; border-top: 1px solid #173A35;">
+        <p style="color: #4C6259; margin: 0; font-size: 12px;">Sent from nizarrahme.com</p>
+      </div>
+    </div>
+  `
+
+  const textBody = `New Domain Inquiry
+${domainInfo ? domainInfo + '\n' : ''}${offerInfo ? offerInfo + '\n' : ''}
+Name: ${data.name}
+Email: ${data.email}${companyInfo ? '\n' + companyInfo : ''}${useInfo ? '\n' + useInfo : ''}
+
+Message:\n${data.message}`
+
+  try {
+    await transporter.sendMail({
+      from: `"Nizar Rahme Domains" <${smtpUser}>`,
+      to: toEmail,
+      replyTo: data.email,
+      subject: `New Domain Inquiry${data.domainName ? ': ' + data.domainName : ''} from ${data.name}`,
+      text: textBody,
+      html: htmlBody,
+    })
+    console.log('[email] Notification sent successfully')
+  } catch (emailError) {
+    console.error('[email] Failed to send notification:', emailError)
+    // Don't throw - inquiry should still succeed even if email fails
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting
+    // Rate limiting: 5 submissions per IP per hour
     const ip =
       request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
       request.headers.get('x-real-ip') ||
@@ -44,6 +120,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Parse body
     let body: unknown
     try {
       body = await request.json()
@@ -51,6 +128,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
     }
 
+    // Honeypot check - silently reject bots
     const rawData = body as Record<string, unknown>
     if (rawData.honeypot && String(rawData.honeypot).trim().length > 0) {
       return NextResponse.json({
@@ -59,6 +137,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Validate with Zod
     const result = inquirySchema.safeParse(body)
     if (!result.success) {
       const errors = result.error.issues.map((issue) => ({
@@ -70,96 +149,52 @@ export async function POST(request: NextRequest) {
 
     const data = result.data
 
-    // Find domain name by slug
-    let domainName: string | null = null
-    if (data.domainSlug) {
+    // Save to database if available (local dev)
+    if (isDbAvailable()) {
       try {
-        const domain = await db.domain.findUnique({
-          where: { slug: sanitizeString(data.domainSlug) },
-          select: { id: true, name: true },
-        })
-        if (domain) {
-          domainName = domain.name
-          await db.inquiry.create({
-            data: {
-              domainId: domain.id,
-              name: sanitizeString(data.name),
-              email: sanitizeString(data.email).toLowerCase(),
-              company: data.company ? sanitizeString(data.company) : null,
-              offerAmount: data.offerAmount || null,
-              intendedUse: data.intendedUse ? sanitizeString(data.intendedUse) : null,
-              message: sanitizeString(data.message),
-            },
+        let domainId: string | null = null
+        if (data.domainSlug) {
+          const domain = await db.domain.findUnique({
+            where: { slug: sanitizeString(data.domainSlug) },
+            select: { id: true },
           })
+          domainId = domain?.id || null
         }
-      } catch {
-        // DB not available on Vercel — continue without saving
+
+        await db.inquiry.create({
+          data: {
+            domainId,
+            name: sanitizeString(data.name),
+            email: sanitizeString(data.email).toLowerCase(),
+            company: data.company ? sanitizeString(data.company) : null,
+            offerAmount: data.offerAmount || null,
+            intendedUse: data.intendedUse ? sanitizeString(data.intendedUse) : null,
+            message: sanitizeString(data.message),
+          },
+        })
+      } catch (dbError) {
+        console.error('[inquiry] DB save failed (non-critical):', dbError)
       }
     }
 
-    // Send email notification via SpaceMail SMTP
-    const toEmail = process.env.SMTP_USER || 'info@nizarrahme.com'
-
-    try {
-      await transporter.sendMail({
-        from: `"NIZAR RAHME" <${toEmail}>`,
-        to: toEmail,
-        subject: data.domainSlug
-          ? `New Offer: $${data.offerAmount || 'N/A'} for ${domainName || data.domainSlug}`
-          : 'New Contact Inquiry from nizarrahme.com',
-        html: `
-          <div style="font-family: system-ui, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: #0B211E; border-radius: 12px; padding: 32px; color: #B8C8C4;">
-              <h1 style="color: #00E5B0; margin: 0 0 24px 0; font-size: 20px;">
-                ${data.domainSlug ? '&#x1F52E; New Domain Offer' : '&#x1F4E8; New Contact Inquiry'}
-              </h1>
-              <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #173A35; color: #718581; width: 140px;">Name</td>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #173A35; color: #fff; font-weight: 600;">${sanitizeString(data.name)}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #173A35; color: #718581;">Email</td>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #173A35; color: #fff;"><a href="mailto:${sanitizeString(data.email)}" style="color: #00E5B0;">${sanitizeString(data.email)}</a></td>
-                </tr>
-                ${data.company ? `<tr>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #173A35; color: #718581;">Company</td>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #173A35; color: #fff;">${sanitizeString(data.company)}</td>
-                </tr>` : ''}
-                ${data.domainSlug ? `<tr>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #173A35; color: #718581;">Domain</td>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #173A35; color: #fff; font-weight: 600;">${domainName || data.domainSlug}</td>
-                </tr>` : ''}
-                ${data.offerAmount ? `<tr>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #173A35; color: #718581;">Offer Amount</td>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #173A35; color: #FF4D2E; font-weight: 700; font-size: 18px;">$${data.offerAmount.toLocaleString()}</td>
-                </tr>` : ''}
-                ${data.intendedUse ? `<tr>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #173A35; color: #718581;">Intended Use</td>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #173A35; color: #fff;">${sanitizeString(data.intendedUse)}</td>
-                </tr>` : ''}
-                <tr>
-                  <td style="padding: 12px 0; color: #718581; vertical-align: top;">Message</td>
-                  <td style="padding: 12px 0; color: #fff;">${sanitizeString(data.message)}</td>
-                </tr>
-              </table>
-              <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #173A35; color: #718581; font-size: 12px;">
-                Sent from nizarrahme.com
-              </div>
-            </div>
-          </div>
-        `,
-      })
-    } catch (emailError) {
-      console.error('Failed to send email:', emailError)
-    }
+    // Send email notification (works on Vercel without DB)
+    await sendEmailNotification({
+      name: data.name,
+      email: data.email,
+      company: data.company || undefined,
+      offerAmount: data.offerAmount || undefined,
+      intendedUse: data.intendedUse || undefined,
+      message: data.message,
+      domainSlug: data.domainSlug || undefined,
+      domainName: data.domainName || undefined,
+    })
 
     return NextResponse.json({
       success: true,
       message: 'Thank you for your inquiry. We will get back to you soon.',
     })
   } catch (error) {
-    console.error('Error creating inquiry:', error)
+    console.error('Error processing inquiry:', error)
     return NextResponse.json(
       { error: 'Failed to submit inquiry. Please try again.' },
       { status: 500 }
