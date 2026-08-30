@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { isDbAvailable, db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import { inquiryRateLimiter, sanitizeString } from '@/lib/auth'
 import nodemailer from 'nodemailer'
 
@@ -150,18 +150,19 @@ export async function POST(request: NextRequest) {
     const data = result.data
 
     // Save to database if available (local dev)
-    if (isDbAvailable()) {
+    const database = getDb()
+    if (database) {
       try {
         let domainId: string | null = null
         if (data.domainSlug) {
-          const domain = await db.domain.findUnique({
+          const domain = await database.domain.findUnique({
             where: { slug: sanitizeString(data.domainSlug) },
             select: { id: true },
           })
           domainId = domain?.id || null
         }
 
-        await db.inquiry.create({
+        await database.inquiry.create({
           data: {
             domainId,
             name: sanitizeString(data.name),

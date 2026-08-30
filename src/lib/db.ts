@@ -9,7 +9,7 @@ let _dbFailed = false
 
 /** Check if a real database is configured (has DATABASE_URL env var). */
 function hasDbConfig(): boolean {
-  return !!process.env.DATABASE_URL
+  return Boolean(process.env.DATABASE_URL?.trim())
 }
 
 function createDb(): PrismaClient | null {
@@ -34,26 +34,24 @@ function createDb(): PrismaClient | null {
  */
 export const db: PrismaClient = new Proxy({} as PrismaClient, {
   get(_target, prop) {
-    if (_dbFailed || !hasDbConfig()) return undefined
-    if (!_db) {
-      _db = globalForPrisma.prisma ?? createDb()
-      if (!_db) {
-        _dbFailed = true
-        return undefined
-      }
-    }
-    return (_db as Record<string | symbol, unknown>)[prop]
+    const client = getDb()
+    return client ? (client as Record<string | symbol, unknown>)[prop] : undefined
   },
 })
+
+/** Return a usable Prisma client, or null when database access is not configured. */
+export function getDb(): PrismaClient | null {
+  if (_dbFailed || !hasDbConfig()) return null
+  if (!_db) {
+    _db = globalForPrisma.prisma ?? createDb()
+    if (!_db) _dbFailed = true
+  }
+  return _db
+}
 
 /**
  * Returns true only if DATABASE_URL is set AND Prisma client initialized successfully.
  */
 export function isDbAvailable(): boolean {
-  if (_dbFailed) return false
-  if (!hasDbConfig()) return false
-  if (!_db) {
-    _db = globalForPrisma.prisma ?? createDb()
-  }
-  return _db !== null
+  return getDb() !== null
 }
