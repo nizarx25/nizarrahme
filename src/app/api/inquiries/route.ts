@@ -13,9 +13,7 @@ const inquirySchema = z.object({
   offerAmount: z.number().positive().optional(),
   intendedUse: z.string().optional(),
   message: z.string().min(10, 'Message must be at least 10 characters'),
-  consent: z.literal(true, {
-    errorMap: () => ({ message: 'You must consent to proceed' }),
-  }),
+  consent: z.literal(true, { message: 'You must consent to proceed' }),
   honeypot: z.string().optional(),
 })
 
@@ -77,7 +75,7 @@ async function sendEmailNotification(data: {
           </div>
         </div>`,
     })
-    console.log('[email] Notification sent via Resend')
+    console.info('[email] Notification sent via Resend')
   } catch (emailError) {
     console.error('[email] Failed to send notification:', emailError)
   }

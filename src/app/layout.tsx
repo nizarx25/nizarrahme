@@ -23,6 +23,7 @@ const spaceGrotesk = Space_Grotesk({
 
 const SITE_URL = "https://nizarrahme.com";
 const ICON_URL = "/favicon.png";
+const OG_IMAGE_URL = "/og.svg";
 
 const SOCIAL_URLS = {
   x: "https://x.com/mr_nizarrahme",
@@ -33,7 +34,7 @@ const SOCIAL_URLS = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "NIZAR RAHME | 💎Domain Investor · AI Intermediate · Security Trainee🔥",
+  title: "NIZAR RAHME — Premium Domain Investor & Digital Brand Builder",
   description:
     "NIZAR RAHME curates premium brandable domain names for AI startups, SaaS platforms, fintech companies, and technology businesses. Browse a hand-picked portfolio of memorable, short, and investment-grade .com domains available for immediate acquisition. Each domain is evaluated for brandability, memorability, and industry fit.",
   keywords: [
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "NIZAR RAHME | 💎Domain Investor · AI Intermediate · Security Trainee🔥",
+    title: "NIZAR RAHME — Premium Domain Investor & Digital Brand Builder",
     description:
       "Curated premium domain names for AI startups, SaaS platforms, fintech, and technology businesses. Brandable, memorable, and available for acquisition.",
     type: "website",
@@ -74,19 +75,20 @@ export const metadata: Metadata = {
     siteName: "NIZAR RAHME",
     images: [
       {
-        url: ICON_URL,
-        width: 512,
-        height: 512,
-        alt: "NIZAR RAHME | Brandable Domain Names",
+        url: OG_IMAGE_URL,
+        width: 1200,
+        height: 630,
+        alt: "NIZAR RAHME — Premium Brandable Domain Names",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "NIZAR RAHME | 💎Domain Investor · AI Intermediate · Security Trainee🔥",
+    title: "NIZAR RAHME — Premium Domain Investor & Digital Brand Builder",
     description:
       "Curated premium domain names for AI startups, SaaS platforms, fintech, and technology businesses.",
-    image: ICON_URL,
+    images: [OG_IMAGE_URL],
+    creator: "@mr_nizarrahme",
   },
   robots: {
     index: true,

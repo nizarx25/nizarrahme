@@ -1683,6 +1683,39 @@ async function main() {
     });
   }
 
+  // Mark wholesale domains: $99 BIN, showPrice=true, sourceMarketplace='Wholesale'
+  // These are the 18 fixed-price BIN names displayed on the homepage Wholesale section.
+  const WHOLESALE_NAMES = [
+    'healthsupplementscanada.com',
+    'checkoutcircuit.com',
+    'pamperpetcare.com',
+    'raphip.com',
+    'torontogiftsdelivery.com',
+    'urgenteyeglasses.com',
+    '5damat-aldalil.com',
+    'testandplan.com',
+    'sitewebai.com',
+    'monkeypens.com',
+    'eatphoto.com',
+    'validatortest.com',
+    'bizarab.com',
+    'brightwavehub.com',
+    'nichedapp.com',
+    'softskilltrainers.com',
+    'dailytradingstrategy.com',
+    'ciberdomain.com',
+  ];
+  await prisma.domain.updateMany({
+    where: { name: { in: WHOLESALE_NAMES } },
+    data: {
+      price: 99,
+      showPrice: true,
+      saleType: 'BIN',
+      sourceMarketplace: 'Wholesale',
+      publicNotes: 'Wholesale pricing — first come, first served.',
+    },
+  });
+
   // Create default site settings
   await prisma.siteSettings.create({
     data: {

@@ -5,10 +5,11 @@ import { getFallbackStats } from '@/lib/fallback-data'
 export async function GET() {
   try {
     try {
-      const [totalDomains, featuredCount, atomListed, categories, extensions] = await Promise.all([
+      const [totalDomains, featuredCount, atomListed, wholesaleCount, categories, extensions] = await Promise.all([
         db.domain.count(),
         db.domain.count({ where: { featured: true, status: 'Available' } }),
         db.domain.count({ where: { sourceMarketplace: 'Atom' } }),
+        db.domain.count({ where: { sourceMarketplace: 'Wholesale' } }),
         db.domain.findMany({
           distinct: ['category'],
           select: { category: true },
@@ -26,6 +27,7 @@ export async function GET() {
           totalDomains,
           featuredCount,
           atomListed,
+          wholesaleCount,
           categories: categories.map((c) => c.category),
           extensions: extensions.map((e) => e.extension),
         })

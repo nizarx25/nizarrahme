@@ -1,49 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { safeJsonParse, sanitizeString } from '@/lib/auth'
+import { sanitizeString } from '@/lib/auth'
 import { queryFallbackDomains } from '@/lib/fallback-data'
+import { toPublicDomain, type PublicDomain } from '@/lib/domain'
+
+export type { PublicDomain }
 
 const ALLOWED_SORTS = ['newest', 'name_asc', 'name_desc', 'featured', 'price_asc', 'price_desc'] as const
-
-type PublicDomain = {
-  id: string
-  name: string
-  slug: string
-  extension: string
-  category: string
-  tags: string[]
-  shortDescription: string
-  useCases: string[]
-  status: string
-  featured: boolean
-  price: number | null
-  showPrice: boolean
-  saleType: string
-  publicNotes: string
-  createdAt: string
-  updatedAt: string
-}
-
-function toPublicDomain(d: Record<string, unknown>): PublicDomain {
-  return {
-    id: d.id as string,
-    name: d.name as string,
-    slug: d.slug as string,
-    extension: d.extension as string,
-    category: d.category as string,
-    tags: safeJsonParse<string[]>(d.tags as string, []),
-    shortDescription: d.shortDescription as string,
-    useCases: safeJsonParse<string[]>(d.useCases as string, []),
-    status: d.status as string,
-    featured: d.featured as boolean,
-    price: d.price as number | null,
-    showPrice: d.showPrice as boolean,
-    saleType: d.saleType as string,
-    publicNotes: d.publicNotes as string,
-    createdAt: (d.createdAt as Date).toISOString(),
-    updatedAt: (d.updatedAt as Date).toISOString(),
-  }
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -54,8 +17,8 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category') ? sanitizeString(searchParams.get('category')!) : undefined
     const extension = searchParams.get('extension') ? sanitizeString(searchParams.get('extension')!) : undefined
     const status = searchParams.get('status') ? sanitizeString(searchParams.get('status')!) : undefined
-    const featured = searchParams.get('featured')
-    const hasPrice = searchParams.get('hasPrice')
+    const featured = searchParams.get('featured') ?? undefined
+    const hasPrice = searchParams.get('hasPrice') ?? undefined
     const sortParam = searchParams.get('sort') || 'newest'
     const sort = ALLOWED_SORTS.includes(sortParam as typeof ALLOWED_SORTS[number]) ? sortParam : 'newest'
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1)

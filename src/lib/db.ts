@@ -61,7 +61,7 @@ export const db: PrismaClient = new Proxy({} as PrismaClient, {
       _dbAvailable = _db !== null
     }
     if (!_dbAvailable) return undefined
-    return (_db as Record<string | symbol, unknown>)[prop]
+    return (_db as unknown as Record<string | symbol, unknown>)[prop]
   },
 })
 

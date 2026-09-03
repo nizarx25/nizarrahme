@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-type Section = 'home' | 'domains' | 'about' | 'services' | 'transactions' | 'contact'
+export type Section = 'home' | 'domains' | 'about' | 'services' | 'transactions' | 'contact'
 
 interface NavigationState {
   section: Section

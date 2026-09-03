@@ -1,5 +1,15 @@
 import seedDomains from '@/data/domains.json'
-import { safeJsonParse } from '@/lib/auth'
+import type { PublicDomain } from '@/lib/domain'
+
+function safeParseArr(value: string | string[]): string[] {
+  if (Array.isArray(value)) return value
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
 
 // Re-export seed data for API fallback when DB is empty (e.g., on Vercel)
 export const fallbackDomains = seedDomains as unknown as Array<{
@@ -9,17 +19,17 @@ export const fallbackDomains = seedDomains as unknown as Array<{
   slug: string
   extension: string
   category: string
-  tags: string[]
+  tags: string | string[]
   shortDescription: string
-  useCases: string[]
+  useCases: string | string[]
   status: string
   featured: boolean
   price: number | null
   showPrice: boolean
   saleType: string
-  sourceMarketplace: string
-  sourceUrl: string
-  registrar: string
+  sourceMarketplace: string | null
+  sourceUrl: string | null
+  registrar: string | null
   domainScore: number | null
   tldsTaken: number | null
   tldsDeveloped: number | null
@@ -30,10 +40,10 @@ export const fallbackDomains = seedDomains as unknown as Array<{
   updatedAt: string
 }>
 
-function toPublicDomain(d: (typeof fallbackDomains)[number]) {
-  // tags/useCases may be JSON strings (from DB export) or arrays (from wholesale add)
-  const tags = Array.isArray(d.tags) ? d.tags : safeJsonParse<string[]>(d.tags, [])
-  const useCases = Array.isArray(d.useCases) ? d.useCases : safeJsonParse<string[]>(d.useCases, [])
+function toFallbackPublic(d: (typeof fallbackDomains)[number]): PublicDomain {
+  // tags/useCases may be JSON strings (from DB export) or arrays (from seed files)
+  const tags = Array.isArray(d.tags) ? d.tags : safeParseArr(d.tags)
+  const useCases = Array.isArray(d.useCases) ? d.useCases : safeParseArr(d.useCases)
   return {
     id: d.id,
     name: d.name,
@@ -136,7 +146,7 @@ export function queryFallbackDomains(opts: {
   const extensions = [...new Set(fallbackDomains.map((d) => d.extension))].sort()
 
   return {
-    domains: paginated.map(toPublicDomain),
+    domains: paginated.map(toFallbackPublic),
     total,
     page,
     limit,
@@ -151,7 +161,7 @@ export function getFallbackFeatured() {
     .filter((d) => d.featured && d.status === 'Available' && !d.legalReviewRequired)
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 20)
-  return { domains: featured.map(toPublicDomain) }
+  return { domains: featured.map(toFallbackPublic) }
 }
 
 // Get single domain + related from fallback
@@ -165,8 +175,8 @@ export function getFallbackDomain(slug: string) {
     .slice(0, 5)
 
   return {
-    domain: toPublicDomain(domain),
-    relatedDomains: relatedDomains.map(toPublicDomain),
+    domain: toFallbackPublic(domain),
+    relatedDomains: relatedDomains.map(toFallbackPublic),
   }
 }
 
@@ -177,6 +187,7 @@ export function getFallbackStats() {
     totalDomains: available.length,
     featuredCount: available.filter((d) => d.featured).length,
     atomListed: available.filter((d) => d.sourceMarketplace === 'Atom').length,
+    wholesaleCount: available.filter((d) => d.sourceMarketplace === 'Wholesale').length,
     categories: [...new Set(available.map((d) => d.category))].sort(),
     extensions: [...new Set(available.map((d) => d.extension))].sort(),
   }
