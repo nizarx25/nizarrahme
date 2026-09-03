@@ -1,5 +1,8 @@
 /**
- * Middleware that guards /admin/* routes by checking for the session cookie.
+ * Edge proxy that guards /admin/* routes by checking for the session cookie.
+ *
+ * Next.js 16 deprecated `middleware` in favor of `proxy` — the file must
+ * export a function named `proxy` (or as default) and the same `config`.
  *
  * The actual token verification happens server-side in the layout (via
  * /api/admin/me), but we can short-circuit obvious unauthenticated visits
@@ -9,7 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const ADMIN_COOKIE = 'admin_session'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Only protect /admin/* — /admin/login must remain accessible
@@ -29,6 +32,9 @@ export function middleware(request: NextRequest) {
 
   return NextResponse.next()
 }
+
+// Legacy alias — some Next.js versions still scan for `middleware` exports
+export const middleware = proxy
 
 export const config = {
   matcher: ['/admin/:path*'],
