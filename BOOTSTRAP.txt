@@ -1,0 +1,8 @@
+	{
+ALLOW_ADMIN_BOOTSTRAP=true
+ADMIN_BOOTSTRAP_EMAIL=info@nizarrahme.com
+ADMIN_BOOTSTRAP_PASSWORD=<z]7hYjB'3sSqD',$wV>
+	}
+
+
+Nizar Rahme Domains <noreply@nizarrahme.com>

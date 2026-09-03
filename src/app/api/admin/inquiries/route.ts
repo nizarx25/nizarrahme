@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { isDbAvailable, db } from '@/lib/db'
 import { requireAuth, sanitizeString } from '@/lib/auth'
+import { listInquiries } from '@/lib/inquiry-store'
+import { isRedisAvailable } from '@/lib/redis'
 
 export async function GET(request: NextRequest) {
   // Auth check
-  const auth = requireAuth(request)
+  const auth = await requireAuth(request)
   if (!auth.authenticated) {
     return NextResponse.json({ error: auth.error }, { status: 401 })
-  }
-
-  if (!isDbAvailable()) {
-    return NextResponse.json({ error: 'Database not available in this environment' }, { status: 503 })
   }
 
   try {
@@ -19,6 +17,20 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status') ? sanitizeString(searchParams.get('status')!) : undefined
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1)
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '50', 10) || 50))
+
+    // Prefer Redis (works on Vercel), fall back to Prisma.
+    if (isRedisAvailable()) {
+      const result = await listInquiries({
+        status: status as 'New' | 'Read' | 'Replied' | 'Archived' | undefined,
+        page,
+        limit,
+      })
+      return NextResponse.json(result)
+    }
+
+    if (!isDbAvailable()) {
+      return NextResponse.json({ error: 'Database not available in this environment' }, { status: 503 })
+    }
 
     const where: Record<string, unknown> = {}
     if (status) where.status = status

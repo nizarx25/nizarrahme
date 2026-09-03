@@ -4,7 +4,7 @@ import { requireAuth, sanitizeString } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   // Auth check
-  const auth = requireAuth(request)
+  const auth = await requireAuth(request)
   if (!auth.authenticated) {
     return NextResponse.json({ error: auth.error }, { status: 401 })
   }

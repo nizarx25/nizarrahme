@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { isDbAvailable, db } from '@/lib/db'
-import { inquiryRateLimiter, sanitizeString } from '@/lib/auth'
+import { sanitizeString } from '@/lib/auth'
 import { Resend } from 'resend'
+import { redisRateLimit, RATE_LIMITS } from '@/lib/redis-rate-limiter'
+import { createInquiry, type Inquiry } from '@/lib/inquiry-store'
+import { isRedisAvailable } from '@/lib/redis'
 
 const inquirySchema = z.object({
   domainSlug: z.string().optional(),
@@ -83,13 +86,13 @@ async function sendEmailNotification(data: {
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting: 5 submissions per IP per hour
+    // Rate limiting: 5 submissions per IP per hour (distributed via Redis when available)
     const ip =
       request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
       request.headers.get('x-real-ip') ||
       'unknown'
 
-    const rateCheck = inquiryRateLimiter.check(ip)
+    const rateCheck = await redisRateLimit(`inquiry:${ip}`, RATE_LIMITS.inquirySubmit.max, RATE_LIMITS.inquirySubmit.windowMs)
     if (!rateCheck.allowed) {
       return NextResponse.json(
         { error: 'Too many submissions. Please try again later.', resetIn: rateCheck.resetIn },
@@ -126,13 +129,16 @@ export async function POST(request: NextRequest) {
 
     const data = result.data
 
-    // Save to database if available (local dev only)
+    // Save inquiry — Redis on Vercel, Prisma locally.
+    let domainId: string | null = null
+    let domainSlug: string | undefined = data.domainSlug ? sanitizeString(data.domainSlug) : undefined
+    let domainName: string | undefined = data.domainName ? sanitizeString(data.domainName) : undefined
+
     if (isDbAvailable()) {
       try {
-        let domainId: string | null = null
-        if (data.domainSlug) {
+        if (domainSlug) {
           const domain = await db.domain.findUnique({
-            where: { slug: sanitizeString(data.domainSlug) },
+            where: { slug: domainSlug },
             select: { id: true },
           })
           domainId = domain?.id || null
@@ -150,7 +156,25 @@ export async function POST(request: NextRequest) {
           },
         })
       } catch (dbError) {
-        console.error('[inquiry] DB save failed:', dbError)
+        console.error('[inquiry] Prisma save failed:', dbError)
+      }
+    }
+
+    if (isRedisAvailable()) {
+      try {
+        await createInquiry({
+          domainId,
+          domainSlug: domainSlug ?? null,
+          domainName: domainName ?? null,
+          name: sanitizeString(data.name),
+          email: sanitizeString(data.email).toLowerCase(),
+          company: data.company ? sanitizeString(data.company) : null,
+          offerAmount: data.offerAmount ?? null,
+          intendedUse: data.intendedUse ? sanitizeString(data.intendedUse) : null,
+          message: sanitizeString(data.message),
+        })
+      } catch (redisError) {
+        console.error('[inquiry] Redis save failed:', redisError)
       }
     }
 

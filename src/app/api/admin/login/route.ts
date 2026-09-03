@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import {
   authenticateAdmin,
-  adminLoginRateLimiter,
   bootstrapAdmin,
   sessionCookieOptions,
 } from '@/lib/auth'
 import { isDbAvailable } from '@/lib/db'
+import { redisRateLimit, RATE_LIMITS } from '@/lib/redis-rate-limiter'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -22,9 +22,9 @@ function clientIp(request: NextRequest): string {
 }
 
 export async function POST(request: NextRequest) {
-  // Per-IP rate limit before parsing the body
+  // Per-IP rate limit before parsing the body (distributed via Redis when available)
   const ip = clientIp(request)
-  const rate = adminLoginRateLimiter.check(`admin-login:${ip}`)
+  const rate = await redisRateLimit(`admin-login:${ip}`, RATE_LIMITS.adminLogin.max, RATE_LIMITS.adminLogin.windowMs)
   if (!rate.allowed) {
     return NextResponse.json(
       {
@@ -35,7 +35,10 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  if (!isDbAvailable()) {
+  // When Redis is the auth backend, the DB check is irrelevant.
+  // We still allow it for Prisma-backed local dev.
+  const authUsesRedis = !!process.env.UPSTASH_REDIS_REST_URL
+  if (!authUsesRedis && !isDbAvailable()) {
     return NextResponse.json(
       { error: 'Admin API not available in this environment' },
       { status: 503 },

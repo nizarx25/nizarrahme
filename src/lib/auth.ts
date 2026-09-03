@@ -1,10 +1,17 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { createHash, randomBytes } from 'crypto'
 import bcrypt from 'bcryptjs'
+import { isRedisAvailable } from './redis'
+import { RedisUnavailableError } from './auth-redis'
+import {
+  authenticateAdminRedis,
+  bootstrapAdminRedis,
+  requireAuthRedis,
+} from './auth-redis'
 
-// Server-side session store.
-// In production, replace with a persistent store (Redis/DB) so sessions
+// Server-side session store (Prisma mode — local dev only).
+// In production, sessions live in Redis (session-store.ts) so that they
 // survive serverless restarts and can be revoked across instances.
 type TokenEntry = { email: string; role: string; createdAt: number }
 const tokenStore = new Map<string, TokenEntry>()
@@ -16,6 +23,21 @@ const COOKIE_NAME = 'admin_session'
 // Legacy password hashing — kept to support a one-time transparent migration
 // of any rows stored under the old scheme.
 const LEGACY_SALT = 'nizar-domain-marketplace-salt-v1'
+
+// ---------------------------------------------------------------------------
+// Backend selection
+// ---------------------------------------------------------------------------
+
+/**
+ * Pick the auth backend.
+ *  - Vercel (or any env without a working Prisma DB) → Redis.
+ *  - Otherwise → Prisma (SQLite).
+ */
+function useRedis(): boolean {
+  if (process.env.VERCEL) return true
+  if (isRedisAvailable()) return true
+  return false
+}
 
 // ---------------------------------------------------------------------------
 // Password hashing
@@ -100,6 +122,17 @@ export async function authenticateAdmin(
   email: string,
   password: string,
 ): Promise<{ success: boolean; token?: string; error?: string }> {
+  if (useRedis()) {
+    try {
+      return await authenticateAdminRedis(email, password)
+    } catch (err) {
+      if (err instanceof RedisUnavailableError) {
+        return { success: false, error: 'Auth backend not configured' }
+      }
+      throw err
+    }
+  }
+
   const cleanEmail = email.trim().toLowerCase()
   const cleanPassword = password
 
@@ -133,6 +166,17 @@ export async function bootstrapAdmin(): Promise<{
   email?: string
   error?: string
 }> {
+  if (useRedis()) {
+    try {
+      return await bootstrapAdminRedis()
+    } catch (err) {
+      if (err instanceof RedisUnavailableError) {
+        return { created: false, error: 'Auth backend not configured' }
+      }
+      throw err
+    }
+  }
+
   const enabled = process.env.ALLOW_ADMIN_BOOTSTRAP === 'true'
   const email = process.env.ADMIN_BOOTSTRAP_EMAIL?.trim().toLowerCase()
   const password = process.env.ADMIN_BOOTSTRAP_PASSWORD
@@ -180,12 +224,23 @@ function readTokenFromRequest(request: NextRequest): string | null {
   return null
 }
 
-export function requireAuth(request: NextRequest): {
+export async function requireAuth(request: NextRequest): Promise<{
   authenticated: boolean
   error?: string
   token?: string
   email?: string
-} {
+}> {
+  if (useRedis()) {
+    try {
+      return await requireAuthRedis(request)
+    } catch (err) {
+      if (err instanceof RedisUnavailableError) {
+        return { authenticated: false, error: 'Auth backend not configured' }
+      }
+      throw err
+    }
+  }
+
   const token = readTokenFromRequest(request)
   if (!token) {
     return { authenticated: false, error: 'Missing or invalid session' }
@@ -302,6 +357,3 @@ export function safeJsonParse<T>(str: string, fallback: T): T {
 
 // Silence "NextRequest is unused" when only types are needed
 export type { NextRequest }
-
-// Re-export for convenience
-import { NextResponse } from 'next/server'
