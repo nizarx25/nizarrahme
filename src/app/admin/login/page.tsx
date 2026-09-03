@@ -14,10 +14,15 @@ export const metadata: Metadata = {
   },
 }
 
-export default function AdminLoginPage({
+export default async function AdminLoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ redirect?: string; error?: string }>
 }) {
-  return <LoginForm searchParams={searchParams} />
+  // Resolve the searchParams promise on the server so we can pass plain,
+  // serializable values down to the client component. (Passing a Promise
+  // from a server component to a client component is not allowed — it
+  // breaks RSC hydration and shows "This page couldn't load".)
+  const sp = await searchParams
+  return <LoginForm redirect={sp.redirect} errorParam={sp.error} />
 }

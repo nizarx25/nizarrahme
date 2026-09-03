@@ -11,30 +11,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export function LoginForm({
-  searchParams,
+  redirect,
+  errorParam,
 }: {
-  searchParams: Promise<{ redirect?: string; error?: string }>
+  redirect?: string
+  errorParam?: string
 }) {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
-  const [redirectTo, setRedirectTo] = useState<string>('/admin')
-
-  // Resolve searchParams promise once on mount
-  useState(() => {
-    searchParams.then((sp) => {
-      if (sp.redirect && sp.redirect.startsWith('/admin')) {
-        setRedirectTo(sp.redirect)
-      }
-      if (sp.error === 'session_expired') {
-        setError('Your session has expired. Please sign in again.')
-      } else if (sp.error === 'unauthorized') {
-        setError('Please sign in to access the admin dashboard.')
-      }
-    })
+  const [error, setError] = useState<string | null>(() => {
+    if (errorParam === 'session_expired') return 'Your session has expired. Please sign in again.'
+    if (errorParam === 'unauthorized') return 'Please sign in to access the admin dashboard.'
+    return null
   })
+  const [isPending, startTransition] = useTransition()
+  const [redirectTo] = useState<string>(() =>
+    redirect && redirect.startsWith('/admin') ? redirect : '/admin',
+  )
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
