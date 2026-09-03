@@ -45,7 +45,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-4">Company</h4>
+            <h4 className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-4">Hot Links</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <button onClick={() => nav.setSection('transactions')} className="text-[#718581] hover:text-white transition-colors">
@@ -78,7 +78,7 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-surface-border flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-[#718581]">
           <p>© {year} NIZAR RAHME. All rights reserved.</p>
-          <p className="font-mono-accent">Built with Next.js · Powered by curiosity</p>
+          <p className="font-mono-accent">Built by NIZAR RAHME</p>
         </div>
       </div>
     </footer>

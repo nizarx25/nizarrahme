@@ -92,7 +92,7 @@ NAVIGATION:
 FOOTER:
 - Dual-layer triangular mountain SVG (dark base + mint glow overlay at 25%)
 - Trust section: Escrow.com, GoDaddy, Spaceship
-- 3 columns: Marketplace (5 links), Sell (3 links), Company (6 links)
+- 3 columns: Marketplace (5 links), Sell (3 links), Hot Links (6 links)
 - Legal: Terms, Privacy, Refund, Cookie Policy
 - Copyright: 2026 Godzilla DN, language toggle EN
 

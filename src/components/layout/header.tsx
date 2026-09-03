@@ -14,6 +14,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { useNavigation } from '@/store/navigation'
 import { NAV_ITEMS } from './navigation'
+import { AdminAuthButton } from './admin-auth-button'
 
 export function Header() {
   const nav = useNavigation()
@@ -71,6 +72,8 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <AdminAuthButton variant="header" />
+
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <Button
                 onClick={() => handleNav('domains')}
@@ -115,6 +118,8 @@ export function Header() {
                     <ShoppingCart className="size-4" />
                     Buy a Domain
                   </Button>
+                  <Separator className="my-4 bg-surface-border" />
+                  <AdminAuthButton variant="mobile" />
                 </nav>
               </SheetContent>
             </Sheet>
