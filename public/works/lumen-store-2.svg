@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Lumen Store secondary image">
+  <defs>
+    <linearGradient id="bg4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#102A26"/>
+      <stop offset="100%" stop-color="#061312"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg4)"/>
+  <g fill="#173A35" stroke="#0B211E">
+    <rect x="100" y="180" width="220" height="320" rx="14"/>
+    <rect x="340" y="180" width="220" height="320" rx="14"/>
+    <rect x="580" y="180" width="220" height="320" rx="14"/>
+    <rect x="820" y="180" width="220" height="320" rx="14"/>
+  </g>
+  <g fill="#102A26">
+    <rect x="120" y="200" width="180" height="200" rx="8"/>
+    <rect x="360" y="200" width="180" height="200" rx="8"/>
+    <rect x="600" y="200" width="180" height="200" rx="8"/>
+    <rect x="840" y="200" width="180" height="200" rx="8"/>
+  </g>
+  <g fill="#7AFFD9" opacity="0.7">
+    <circle cx="210" cy="300" r="40"/>
+    <circle cx="450" cy="300" r="40"/>
+    <circle cx="690" cy="300" r="40"/>
+    <circle cx="930" cy="300" r="40"/>
+  </g>
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="14" fill="#718581" letter-spacing="2">
+    <text x="100" y="120">PRODUCT GRID</text>
+    <text x="100" y="720">FILTER · SORT · WISHLIST · CART</text>
+  </g>
+</svg>

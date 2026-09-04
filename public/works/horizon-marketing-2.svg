@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Horizon Marketing secondary image">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B211E"/>
+      <stop offset="100%" stop-color="#061312"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg2)"/>
+  <g fill="none" stroke="#00E5B0" stroke-opacity="0.45" stroke-width="1.5">
+    <path d="M100 600 Q400 200 700 400 T1100 250"/>
+    <path d="M100 650 Q450 280 720 470 T1100 320"/>
+    <path d="M100 700 Q480 340 740 540 T1100 390"/>
+  </g>
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="14" fill="#718581" letter-spacing="2">
+    <text x="80" y="120">CAMPAIGN TIMELINE</text>
+  </g>
+  <g font-family="'Space Grotesk', system-ui, sans-serif" font-weight="600" fill="#FFFFFF" font-size="48">
+    <text x="80" y="220">+38%</text>
+    <text x="80" y="270" fill="#00E5B0" font-size="20" letter-spacing="2">CONVERSION LIFT</text>
+  </g>
+  <g font-family="'Inter', system-ui, sans-serif" fill="#B8C8C4" font-size="16">
+    <text x="800" y="700" text-anchor="end">Quarterly performance — Q1–Q4</text>
+  </g>
+  <g fill="#FF4D2E">
+    <circle cx="320" cy="350" r="6"/>
+    <circle cx="560" cy="430" r="6"/>
+    <circle cx="780" cy="380" r="6"/>
+    <circle cx="980" cy="320" r="6"/>
+  </g>
+</svg>

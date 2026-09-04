@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Atlas Clinic secondary image">
+  <defs>
+    <linearGradient id="bg6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0B211E"/>
+      <stop offset="100%" stop-color="#102A26"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg6)"/>
+  <g fill="none" stroke="#00E5B0" stroke-opacity="0.4" stroke-width="1.5">
+    <rect x="200" y="160" width="800" height="480" rx="16"/>
+    <line x1="200" y1="320" x2="1000" y2="320"/>
+    <line x1="200" y1="480" x2="1000" y2="480"/>
+    <line x1="466" y1="160" x2="466" y2="640"/>
+    <line x1="733" y1="160" x2="733" y2="640"/>
+  </g>
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="14" fill="#7AFFD9" letter-spacing="2">
+    <text x="220" y="200">MON</text>
+    <text x="486" y="200">TUE</text>
+    <text x="753" y="200">WED</text>
+  </g>
+  <g fill="#00E5B0" fill-opacity="0.35">
+    <rect x="220" y="240" width="220" height="40" rx="6"/>
+    <rect x="486" y="360" width="220" height="40" rx="6"/>
+    <rect x="753" y="240" width="220" height="40" rx="6"/>
+    <rect x="220" y="500" width="220" height="40" rx="6"/>
+    <rect x="753" y="500" width="220" height="40" rx="6"/>
+  </g>
+  <g font-family="'Inter', system-ui, sans-serif" font-size="14" fill="#FFFFFF">
+    <text x="240" y="265">Dr. Rahal — 09:00</text>
+    <text x="506" y="385">Dr. Khelif — 11:00</text>
+    <text x="773" y="265">Dr. Rahal — 14:00</text>
+    <text x="240" y="525">Dr. Khelif — 16:00</text>
+    <text x="773" y="525">Dr. Bouzid — 10:00</text>
+  </g>
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="14" fill="#718581" letter-spacing="2">
+    <text x="200" y="700">BOOKING FLOW — 3 STEPS</text>
+  </g>
+</svg>

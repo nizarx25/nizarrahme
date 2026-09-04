@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Khayal Studio secondary image">
+  <defs>
+    <linearGradient id="bg8" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#102A26"/>
+      <stop offset="100%" stop-color="#061312"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg8)"/>
+  <g>
+    <rect x="100" y="200" width="320" height="200" rx="12" fill="#FF4D2E" fill-opacity="0.85"/>
+    <rect x="440" y="200" width="320" height="200" rx="12" fill="#00E5B0" fill-opacity="0.85"/>
+    <rect x="780" y="200" width="320" height="200" rx="12" fill="#7AFFD9" fill-opacity="0.85"/>
+    <rect x="100" y="420" width="1000" height="60" rx="12" fill="#173A35"/>
+  </g>
+  <g font-family="'Inter', system-ui, sans-serif" font-size="14" fill="#061312" font-weight="600">
+    <text x="260" y="310" text-anchor="middle">Identity</text>
+    <text x="600" y="310" text-anchor="middle">Editorial</text>
+    <text x="940" y="310" text-anchor="middle">Motion</text>
+  </g>
+  <g font-family="'Inter', system-ui, sans-serif" font-size="18" fill="#FFFFFF">
+    <text x="130" y="458">A unified system that scales across campaigns and platforms.</text>
+  </g>
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="14" fill="#718581" letter-spacing="2">
+    <text x="100" y="120">CASE STUDIES</text>
+  </g>
+</svg>

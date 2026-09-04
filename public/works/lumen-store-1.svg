@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Lumen Store hero image">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B211E"/>
+      <stop offset="100%" stop-color="#102A26"/>
+    </linearGradient>
+    <radialGradient id="coralGlow" cx="0.3" cy="0.6" r="0.5">
+      <stop offset="0%" stop-color="#FF4D2E" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#FF4D2E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg3)"/>
+  <rect width="1200" height="800" fill="url(#coralGlow)"/>
+  <rect x="120" y="160" width="480" height="540" rx="24" fill="#061312" stroke="#173A35"/>
+  <rect x="160" y="200" width="400" height="320" rx="12" fill="#102A26"/>
+  <circle cx="360" cy="360" r="80" fill="#173A35"/>
+  <rect x="160" y="550" width="240" height="16" rx="8" fill="#173A35"/>
+  <rect x="160" y="580" width="160" height="16" rx="8" fill="#102A26"/>
+  <g font-family="'Space Grotesk', system-ui, sans-serif" font-weight="700" fill="#FFFFFF">
+    <text x="640" y="320" font-size="92" letter-spacing="-3">Lumen</text>
+    <text x="640" y="410" font-size="92" letter-spacing="-3" fill="#FF4D2E">Store</text>
+  </g>
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="14" fill="#718581" letter-spacing="2">
+    <text x="640" y="460">E-COMMERCE · WORDPRESS · WOOCOMMERCE</text>
+  </g>
+  <g font-family="'Inter', system-ui, sans-serif" fill="#B8C8C4" font-size="16">
+    <text x="640" y="510">Premium home lighting for designers</text>
+    <text x="640" y="532">and boutique retailers.</text>
+  </g>
+  <rect x="640" y="580" width="160" height="48" rx="12" fill="#FF4D2E"/>
+  <text x="720" y="610" text-anchor="middle" font-family="'Inter', system-ui, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF">Shop now</text>
+</svg>
