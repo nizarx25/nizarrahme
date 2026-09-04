@@ -44,12 +44,14 @@ export function DomainsTable({
   page,
   limit,
   filters,
+  readOnlyMode = false,
 }: {
   domains: Domain[]
   total: number
   page: number
   limit: number
   filters: { search: string; status: string; featured: string }
+  readOnlyMode?: boolean
 }) {
   const router = useRouter()
   const params = useSearchParams()
@@ -121,6 +123,12 @@ export function DomainsTable({
 
   return (
     <div className="space-y-4">
+      {readOnlyMode && (
+        <div className="rounded-md border border-amber-500/30 bg-amber-500/5 p-3 text-sm text-amber-700 dark:text-amber-300">
+          Read-only snapshot mode: the catalog is coming from the bundled Vercel JSON data. Changes are disabled until a live database is configured.
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <form
@@ -209,7 +217,7 @@ export function DomainsTable({
                     <Select
                       value={String(getValue(d, 'status'))}
                       onValueChange={(v) => setField(d.id, 'status', v)}
-                      disabled={isSaving}
+                      disabled={isSaving || readOnlyMode}
                     >
                       <SelectTrigger className="w-32 h-8">
                         <SelectValue />
@@ -233,14 +241,14 @@ export function DomainsTable({
                         const v = e.target.value
                         setField(d.id, 'price', v === '' ? null : Number(v))
                       }}
-                      disabled={isSaving}
+                      disabled={isSaving || readOnlyMode}
                     />
                   </TableCell>
                   <TableCell>
                     <Select
                       value={String(getValue(d, 'showPrice'))}
                       onValueChange={(v) => setField(d.id, 'showPrice', v === 'true')}
-                      disabled={isSaving}
+                      disabled={isSaving || readOnlyMode}
                     >
                       <SelectTrigger className="w-24 h-8">
                         <SelectValue />
@@ -257,7 +265,7 @@ export function DomainsTable({
                       size="icon"
                       className="h-8 w-8"
                       onClick={() => setField(d.id, 'featured', !getValue(d, 'featured'))}
-                      disabled={isSaving}
+                      disabled={isSaving || readOnlyMode}
                       aria-label="Toggle featured"
                     >
                       {getValue(d, 'featured') ? (
@@ -271,7 +279,7 @@ export function DomainsTable({
                     <Button
                       size="sm"
                       variant={dirty ? 'default' : 'outline'}
-                      disabled={!dirty || isSaving}
+                      disabled={!dirty || isSaving || readOnlyMode}
                       onClick={() => save(d)}
                       className={cn(!dirty && 'opacity-50')}
                     >

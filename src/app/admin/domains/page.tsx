@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { db } from '@/lib/db'
+import { queryFallbackDomains } from '@/lib/fallback-data'
 import { DomainsTable } from './domains-table'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -72,7 +73,7 @@ async function DomainsLoader({
     saleType: string
   }> = []
   let total = 0
-  let dbError: string | null = null
+  let readOnlyMode = false
 
   try {
     const [rows, count] = await Promise.all([
@@ -97,21 +98,27 @@ async function DomainsLoader({
     ])
     domains = rows
     total = count
-  } catch (error) {
-    dbError = error instanceof Error ? error.message : 'Unknown error'
-  }
-
-  if (dbError) {
-    return (
-      <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-6 text-sm text-destructive">
-        Database unavailable: {dbError}
-        <p className="text-xs text-muted-foreground mt-2">
-          On Vercel, the domain catalog is served from a bundled JSON snapshot
-          and is read-only from this UI. Use the seed script and a redeploy to
-          update the catalog.
-        </p>
-      </div>
-    )
+  } catch {
+    readOnlyMode = true
+    const fallback = queryFallbackDomains({
+      search: searchParams.search,
+      status: searchParams.status,
+      featured: searchParams.featured,
+      page,
+      limit,
+    })
+    domains = fallback.domains.map((domain) => ({
+      id: domain.id,
+      name: domain.name,
+      slug: domain.slug,
+      category: domain.category,
+      status: domain.status,
+      featured: domain.featured,
+      price: domain.price,
+      showPrice: domain.showPrice,
+      saleType: domain.saleType,
+    }))
+    total = fallback.total
   }
 
   return (
@@ -120,6 +127,7 @@ async function DomainsLoader({
       total={total}
       page={page}
       limit={limit}
+      readOnlyMode={readOnlyMode}
       filters={{
         search: searchParams.search ?? '',
         status: searchParams.status ?? '',
