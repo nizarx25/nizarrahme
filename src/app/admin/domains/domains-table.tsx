@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Search, Star, StarOff, Save, Loader2 } from 'lucide-react'
+import { Search, Star, StarOff, Save, Loader2, Plus, Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -21,6 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 
@@ -61,6 +71,37 @@ export function DomainsTable({
   const [search, setSearch] = useState(filters.search)
   const [editing, setEditing] = useState<Record<string, Partial<Domain>>>({})
   const [saving, setSaving] = useState<Record<string, boolean>>({})
+  const [adding, setAdding] = useState(false)
+  const [createOpen, setCreateOpen] = useState(false)
+  const [deleting, setDeleting] = useState<Record<string, boolean>>({})
+
+  type NewDomainForm = {
+    name: string
+    category: string
+    extension: string
+    status: string
+    saleType: string
+    price: string
+    showPrice: boolean
+    featured: boolean
+    shortDescription: string
+  }
+  const emptyForm: NewDomainForm = {
+    name: '',
+    category: 'Brandable',
+    extension: '',
+    status: 'Available',
+    saleType: 'Make an Offer',
+    price: '',
+    showPrice: false,
+    featured: false,
+    shortDescription: '',
+  }
+  const [form, setForm] = useState<NewDomainForm>(emptyForm)
+
+  function resetForm() {
+    setForm(emptyForm)
+  }
 
   function applyFilters(next: { search?: string; status?: string; featured?: string }) {
     const sp = new URLSearchParams(params.toString())
@@ -116,6 +157,71 @@ export function DomainsTable({
       toast({ variant: 'destructive', title: 'Save failed', description: 'Network error.' })
     } finally {
       setSaving((s) => ({ ...s, [d.id]: false }))
+    }
+  }
+
+  async function createDomain() {
+    if (readOnlyMode) return
+    const name = form.name.trim()
+    if (!name) {
+      toast({ variant: 'destructive', title: 'Name is required' })
+      return
+    }
+    setAdding(true)
+    try {
+      const res = await fetch('/api/admin/domains', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          category: form.category,
+          extension: form.extension || undefined,
+          status: form.status,
+          saleType: form.saleType,
+          price: form.price === '' ? null : Number(form.price),
+          showPrice: form.showPrice,
+          featured: form.featured,
+          shortDescription: form.shortDescription,
+        }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        toast({ variant: 'destructive', title: 'Create failed', description: data.error ?? 'Unknown error' })
+        return
+      }
+      toast({ title: 'Domain added', description: `${name} was created.` })
+      setCreateOpen(false)
+      resetForm()
+      router.refresh()
+    } catch {
+      toast({ variant: 'destructive', title: 'Create failed', description: 'Network error.' })
+    } finally {
+      setAdding(false)
+    }
+  }
+
+  async function deleteDomain(d: Domain) {
+    if (readOnlyMode) return
+    const confirmed = typeof window !== 'undefined'
+      ? window.confirm(`Delete ${d.name}? This cannot be undone.`)
+      : true
+    if (!confirmed) return
+    setDeleting((s) => ({ ...s, [d.id]: true }))
+    try {
+      const res = await fetch(`/api/admin/domains?id=${encodeURIComponent(d.id)}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        toast({ variant: 'destructive', title: 'Delete failed', description: data.error ?? 'Unknown error' })
+        return
+      }
+      toast({ title: 'Domain deleted', description: `${d.name} was removed.` })
+      router.refresh()
+    } catch {
+      toast({ variant: 'destructive', title: 'Delete failed', description: 'Network error.' })
+    } finally {
+      setDeleting((s) => ({ ...s, [d.id]: false }))
     }
   }
 
@@ -184,8 +290,133 @@ export function DomainsTable({
         </Select>
       </div>
 
-      <div className="text-xs text-muted-foreground">
-        Showing {domains.length} of {total} domains · page {page} of {totalPages}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="text-xs text-muted-foreground">
+          Showing {domains.length} of {total} domains · page {page} of {totalPages}
+        </div>
+        <Dialog open={createOpen} onOpenChange={(open) => {
+          setCreateOpen(open)
+          if (open) resetForm()
+        }}>
+          <DialogTrigger asChild>
+            <Button size="sm" disabled={readOnlyMode}>
+              <Plus className="h-3.5 w-3.5 mr-1" />
+              Add domain
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add domain</DialogTitle>
+              <DialogDescription>
+                Create a new domain entry. Slug is generated automatically.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-3">
+              <div className="grid gap-1.5">
+                <Label htmlFor="d-name">Name</Label>
+                <Input
+                  id="d-name"
+                  placeholder="example.com"
+                  value={form.name}
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-1.5">
+                  <Label htmlFor="d-category">Category</Label>
+                  <Input
+                    id="d-category"
+                    value={form.category}
+                    onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
+                  />
+                </div>
+                <div className="grid gap-1.5">
+                  <Label htmlFor="d-extension">Extension</Label>
+                  <Input
+                    id="d-extension"
+                    placeholder=".com"
+                    value={form.extension}
+                    onChange={(e) => setForm((f) => ({ ...f, extension: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-1.5">
+                  <Label>Status</Label>
+                  <Select
+                    value={form.status}
+                    onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {STATUSES.map((s) => (
+                        <SelectItem key={s} value={s}>{s}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-1.5">
+                  <Label>Sale type</Label>
+                  <Input
+                    value={form.saleType}
+                    onChange={(e) => setForm((f) => ({ ...f, saleType: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="grid gap-1.5 col-span-2">
+                  <Label htmlFor="d-price">Price (USD)</Label>
+                  <Input
+                    id="d-price"
+                    type="number"
+                    min={0}
+                    value={form.price}
+                    onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
+                  />
+                </div>
+                <div className="grid gap-1.5">
+                  <Label>Show price</Label>
+                  <Select
+                    value={form.showPrice ? 'true' : 'false'}
+                    onValueChange={(v) => setForm((f) => ({ ...f, showPrice: v === 'true' }))}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="false">Hide</SelectItem>
+                      <SelectItem value="true">Show</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="d-desc">Short description</Label>
+                <Input
+                  id="d-desc"
+                  value={form.shortDescription}
+                  onChange={(e) => setForm((f) => ({ ...f, shortDescription: e.target.value }))}
+                />
+              </div>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={form.featured}
+                  onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
+                  className="h-4 w-4"
+                />
+                Mark as featured
+              </label>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setCreateOpen(false)} disabled={adding}>
+                Cancel
+              </Button>
+              <Button onClick={createDomain} disabled={adding}>
+                {adding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+                <span className="ml-1">{adding ? 'Creating…' : 'Create'}</span>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Table */}
@@ -276,20 +507,36 @@ export function DomainsTable({
                     </Button>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      size="sm"
-                      variant={dirty ? 'default' : 'outline'}
-                      disabled={!dirty || isSaving || readOnlyMode}
-                      onClick={() => save(d)}
-                      className={cn(!dirty && 'opacity-50')}
-                    >
-                      {isSaving ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Save className="h-3.5 w-3.5" />
-                      )}
-                      <span className="ml-1">Save</span>
-                    </Button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant={dirty ? 'default' : 'outline'}
+                        disabled={!dirty || isSaving || readOnlyMode}
+                        onClick={() => save(d)}
+                        className={cn(!dirty && 'opacity-50')}
+                      >
+                        {isSaving ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Save className="h-3.5 w-3.5" />
+                        )}
+                        <span className="ml-1">Save</span>
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        disabled={readOnlyMode || !!saving[d.id]}
+                        onClick={() => deleteDomain(d)}
+                        aria-label={`Delete ${d.name}`}
+                      >
+                        {deleting[d.id] ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               )
