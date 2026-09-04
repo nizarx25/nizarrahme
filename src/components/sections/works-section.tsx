@@ -30,7 +30,7 @@ function ProjectCard({
       onClick={() => onOpen(project)}
       whileHover={reduce ? undefined : { y: -6 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[20px]"
+      className="group relative w-full max-w-[420px] mx-auto text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[20px]"
       aria-label={`View ${project.title} case study`}
     >
       <div className="relative aspect-[16/10] w-full">
@@ -81,24 +81,24 @@ function ProjectCard({
         </div>
       </div>
 
-      <div className="mt-6 flex items-start justify-between gap-3">
+      <div className="mt-5 flex items-start justify-between gap-3">
         <div>
           <p className="text-[10px] font-mono-accent uppercase tracking-[0.25em] text-teal/80">
             {project.category} · {project.year}
           </p>
-          <h3 className="mt-1 font-display text-xl sm:text-2xl font-bold text-white">
+          <h3 className="mt-1 font-display text-base sm:text-lg font-bold text-white">
             {project.title}
           </h3>
-          <p className="mt-1 flex items-center gap-1.5 text-sm text-[#718581]">
-            <MapPin className="h-3.5 w-3.5" />
+          <p className="mt-1 flex items-center gap-1.5 text-xs text-[#718581]">
+            <MapPin className="h-3 w-3" />
             {project.region}, {project.country}
           </p>
         </div>
         <span
           aria-hidden
-          className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-full border border-surface-border surface-bg text-[#B8C8C4] transition-all duration-500 group-hover:text-teal group-hover:border-teal/40 group-hover:rotate-[-15deg]"
+          className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-surface-border surface-bg text-[#B8C8C4] transition-all duration-500 group-hover:text-teal group-hover:border-teal/40 group-hover:rotate-[-15deg]"
         >
-          <ArrowUpRight className="h-4 w-4" />
+          <ArrowUpRight className="h-3.5 w-3.5" />
         </span>
       </div>
     </motion.button>
@@ -298,7 +298,7 @@ export function WorksSection() {
           </p>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {PROJECTS.map((p, idx) => (
             <Reveal key={p.slug} delay={idx * 0.05}>
               <ProjectCard
