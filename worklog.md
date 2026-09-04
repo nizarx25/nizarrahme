@@ -501,3 +501,21 @@ Stage Summary:
 - Social links work even without database settings
 - Local dev still uses SQLite (no behavior change)
 - Pattern: try DB â†’ if empty/error â†’ use bundled JSON data
+
+---
+
+## 2026-09-04 — Admin dashboard + Upstash Redis integration
+
+Added /admin dashboard with login, domains, and inquiries management. Auth is dual-backend: Prisma (local dev) and Upstash Redis (Vercel).
+
+Key files:
+- src/lib/redis.ts, src/lib/admin-store.ts, src/lib/session-store.ts, src/lib/inquiry-store.ts, src/lib/redis-rate-limiter.ts, src/lib/auth-redis.ts
+- src/app/admin/ (layout, admin-shell, page, domains, inquiries)
+- src/app/admin-login/ (page, login-form, layout)
+- src/proxy.ts (Next.js 16 — renamed from middleware.ts)
+- src/components/layout/admin-auth-button.tsx (Sign-in button in public header)
+
+Critical fix: src/app/admin/login/ was failing on Vercel with "This page couldn't load" because the parent /admin/layout.tsx wraps all children, including nested login layouts. Next.js App Router does not allow a child layout to bypass its parent's cookie check. Moved login to src/app/admin-login/ so it sits outside the protected tree entirely.
+
+Verification: 
+pm run build clean, typecheck clean. Login round-trip tested on production at https://nizarrahme.com/admin-login.
