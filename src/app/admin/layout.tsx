@@ -9,10 +9,13 @@ export const metadata: Metadata = {
 }
 
 /**
- * Layout for /admin/* — but NOT for /admin/login. The login page has its
- * own root layout (./login/layout.tsx) so this component never runs for
- * it. We keep the cookie check here as a defense-in-depth guard for any
- * future sub-routes.
+ * Layout for /admin/* — but NOT for /admin/login (it has its own root
+ * layout at ./login/layout.tsx) or /admin/ping (diagnostic).
+ *
+ * The middleware/proxy already redirects unauthenticated visitors to
+ * /admin/login. The check here is defense-in-depth: if a request reaches
+ * this layout without a session, we treat it as a soft redirect rather
+ * than throwing an internal error.
  */
 export default async function AdminLayout({
   children,
@@ -23,6 +26,8 @@ export default async function AdminLayout({
   const token = cookieStore.get('admin_session')?.value
 
   if (!token) {
+    // Use Next's redirect() which throws an internal signal caught by
+    // the framework — never a "page couldn't load" error.
     redirect('/admin/login?error=unauthorized')
   }
 
