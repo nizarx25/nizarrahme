@@ -15,9 +15,9 @@ const ADMIN_COOKIE = 'admin_session'
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Only protect /admin/* — /admin/login must remain accessible.
+  // Only protect /admin/* — /admin-login must remain accessible.
   // Also exempt /admin/ping (diagnostic).
-  const PUBLIC_ADMIN_PATHS = new Set(['/admin/login', '/admin/ping'])
+  const PUBLIC_ADMIN_PATHS = new Set(['/admin-login', '/admin/ping'])
   if (!pathname.startsWith('/admin') || PUBLIC_ADMIN_PATHS.has(pathname)) {
     return NextResponse.next()
   }
@@ -26,7 +26,7 @@ export function proxy(request: NextRequest) {
 
   if (!hasSession) {
     const url = request.nextUrl.clone()
-    url.pathname = '/admin/login'
+    url.pathname = '/admin-login'
     url.searchParams.set('redirect', pathname)
     url.searchParams.set('error', 'unauthorized')
     return NextResponse.redirect(url)

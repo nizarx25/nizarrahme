@@ -37,7 +37,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       .then(async (res) => {
         if (cancelled) return
         if (res.status === 401) {
-          router.replace('/admin/login?error=session_expired')
+          router.replace('/admin-login?error=session_expired')
           return
         }
         const data = await res.json().catch(() => ({}))
@@ -58,7 +58,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     try {
       await fetch('/api/admin/logout', { method: 'POST' })
     } finally {
-      router.replace('/admin/login')
+      router.replace('/admin-login')
       router.refresh()
     }
   }

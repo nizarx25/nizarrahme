@@ -99,7 +99,7 @@ export function AdminAuthButton({ variant = 'header' }: { variant?: Variant }) {
             )}
             aria-label="Admin sign in"
           >
-            <Link href="/admin/login">
+            <Link href="/admin-login">
               <LogIn className="size-3.5" />
               <span>Sign in</span>
             </Link>
@@ -115,7 +115,7 @@ export function AdminAuthButton({ variant = 'header' }: { variant?: Variant }) {
         variant="outline"
         className="border-surface-border bg-elevated/40 text-[#B8C8C4] hover:text-white hover:bg-elevated rounded-[10px] gap-2"
       >
-        <Link href="/admin/login">
+        <Link href="/admin-login">
           <LogIn className="size-4" />
           Admin Sign in
         </Link>

@@ -28,7 +28,7 @@ export default async function AdminLayout({
   if (!token) {
     // Use Next's redirect() which throws an internal signal caught by
     // the framework — never a "page couldn't load" error.
-    redirect('/admin/login?error=unauthorized')
+    redirect('/admin-login?error=unauthorized')
   }
 
   return <AdminShell>{children}</AdminShell>
