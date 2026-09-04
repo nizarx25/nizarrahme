@@ -8,12 +8,11 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { PROJECTS, type Project } from '@/data/works'
 
-/** A single project card built as a fanned stack of three images:
- *  - the front "primary" card sits centered
- *  - the second project image fans out to the left with a -15° tilt
- *  - a third (decorative) image or repeat of the second fans out to the right with a +15° tilt
- *  On hover, the front card comes forward and the side cards straighten, revealing the imagery.
- *  Inside the detail dialog, all images are shown straight (no tilt). */
+/** A single project card with exactly two images:
+ *  - the first is upright and carries the alt text
+ *  - the second is tilted 15° and slightly offset to the side
+ *  On hover, the tilted card straightens, the lift grows, and a teal shadow
+ *  appears. Inside the detail dialog, all images are shown straight. */
 function ProjectCard({
   project,
   onOpen,
@@ -24,9 +23,6 @@ function ProjectCard({
   const reduce = useReducedMotion()
   const primary = project.images[0]
   const secondary = project.images[1] ?? project.images[0]
-  // The third slot reuses the secondary so the layout still feels like a
-  // fanned stack even when a project has only two images.
-  const tertiary = project.images[2] ?? project.images[1] ?? project.images[0]
 
   return (
     <motion.button
@@ -37,63 +33,37 @@ function ProjectCard({
       className="group relative w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[20px]"
       aria-label={`View ${project.title} case study`}
     >
-      {/* Fanned card stack */}
       <div className="relative aspect-[16/10] w-full">
-        {/* Back-left card (fanned out, -15°) */}
+        {/* Upright primary card */}
         <div
-          className="absolute inset-0 rounded-[18px] overflow-hidden border border-surface-border surface-bg shadow-[0_18px_44px_-22px_rgba(0,0,0,0.6)] transition-all duration-500 ease-out group-hover:shadow-[0_30px_70px_-30px_rgba(0,229,176,0.3)] group-hover:border-teal/30"
-          style={{
-            transform: 'rotate(-15deg) translate(-30%, 4%)',
-            transformOrigin: 'center',
-          }}
+          className="absolute inset-0 rounded-[18px] overflow-hidden border border-surface-border surface-bg shadow-[0_18px_48px_-20px_rgba(0,0,0,0.55)] transition-all duration-500 ease-out group-hover:shadow-[0_30px_80px_-30px_rgba(0,229,176,0.35)] group-hover:border-teal/30"
+          style={{ transform: 'translate(-6%, 2%)' }}
         >
-          <div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:rotate-[15deg] group-hover:scale-[1.02]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+          {primary && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={tertiary}
-              alt=""
-              aria-hidden
+              src={primary}
+              alt={`${project.title} — primary view`}
               loading="lazy"
-              className="h-full w-full object-cover opacity-80"
+              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
             />
-          </div>
+          )}
         </div>
 
-        {/* Back-right card (fanned out, +15°) */}
+        {/* Tilted secondary card (15° to the right) */}
         <div
-          className="absolute inset-0 rounded-[18px] overflow-hidden border border-surface-border surface-bg shadow-[0_18px_44px_-22px_rgba(0,0,0,0.6)] transition-all duration-500 ease-out group-hover:shadow-[0_30px_70px_-30px_rgba(0,229,176,0.3)] group-hover:border-teal/30"
+          className="absolute inset-0 rounded-[18px] overflow-hidden border border-surface-border surface-bg shadow-[0_22px_60px_-22px_rgba(0,0,0,0.65)] transition-all duration-500 ease-out group-hover:shadow-[0_36px_90px_-30px_rgba(0,229,176,0.4)] group-hover:border-teal/40"
           style={{
-            transform: 'rotate(15deg) translate(30%, 4%)',
+            transform: 'rotate(15deg) translate(8%, -3%)',
             transformOrigin: 'center',
           }}
         >
-          <div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:rotate-[-15deg] group-hover:scale-[1.02]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={secondary}
-              alt=""
-              aria-hidden
-              loading="lazy"
-              className="h-full w-full object-cover opacity-80"
-            />
-          </div>
-        </div>
-
-        {/* Front card (the one that becomes the "main" image and is described by the alt text) */}
-        <div
-          className="absolute inset-0 rounded-[18px] overflow-hidden border border-surface-border surface-bg shadow-[0_22px_60px_-22px_rgba(0,0,0,0.65)] transition-all duration-500 ease-out group-hover:shadow-[0_36px_90px_-30px_rgba(0,229,176,0.45)] group-hover:border-teal/40"
-          style={{
-            transform: 'rotate(0deg) translate(0%, 0%) scale(0.92)',
-            transformOrigin: 'center',
-            zIndex: 2,
-          }}
-        >
-          <div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.05]">
-            {primary && (
+          <div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:rotate-[-15deg] group-hover:scale-[1.04]">
+            {secondary && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={primary}
-                alt={`${project.title} — primary view`}
+                src={secondary}
+                alt={`${project.title} — secondary view`}
                 loading="lazy"
                 className="h-full w-full object-cover"
               />
@@ -102,10 +72,10 @@ function ProjectCard({
         </div>
 
         {/* Subtle hover overlay */}
-        <div className="pointer-events-none absolute inset-0 rounded-[20px] bg-gradient-to-t from-background/50 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="pointer-events-none absolute inset-0 rounded-[20px] bg-gradient-to-t from-background/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
         {/* "Tap to view" affordance */}
-        <div className="pointer-events-none absolute bottom-4 right-4 z-10 flex items-center gap-1.5 rounded-full border border-surface-border surface-bg/90 px-3 py-1.5 text-xs font-mono-accent text-teal opacity-0 translate-y-1 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+        <div className="pointer-events-none absolute bottom-4 right-4 flex items-center gap-1.5 rounded-full border border-surface-border surface-bg/90 px-3 py-1.5 text-xs font-mono-accent text-teal opacity-0 translate-y-1 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
           <span>View project</span>
           <ArrowUpRight className="h-3 w-3" />
         </div>
