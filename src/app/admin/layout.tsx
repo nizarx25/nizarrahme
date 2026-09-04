@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { AdminShell } from './admin-shell'
 
 export const metadata: Metadata = {
@@ -7,15 +8,17 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
+/**
+ * Layout for /admin/* — but NOT for /admin/login. The login page has its
+ * own root layout (./login/layout.tsx) so this component never runs for
+ * it. We keep the cookie check here as a defense-in-depth guard for any
+ * future sub-routes.
+ */
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  // Layout-level SSR auth check: confirm the cookie maps to a live session.
-  // This runs on every /admin/* request. The middleware redirects to
-  // /admin/login when the cookie is missing; here we handle expired sessions.
-  const { cookies } = await import('next/headers')
   const cookieStore = await cookies()
   const token = cookieStore.get('admin_session')?.value
 
@@ -23,7 +26,5 @@ export default async function AdminLayout({
     redirect('/admin/login?error=unauthorized')
   }
 
-  // Render the shell with children; the shell performs its own client-side
-  // confirmation via /api/admin/me so we don't block render on Redis latency.
   return <AdminShell>{children}</AdminShell>
 }
