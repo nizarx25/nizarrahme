@@ -5,8 +5,13 @@
 // This lets the admin dashboard edit the same data that the public site shows,
 // even though Vercel can't use a SQLite file.
 
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { PrismaClient } from '@prisma/client'
-import seedDomains from '../src/data/domains.json' assert { type: 'json' }
+
+const seedDomains = JSON.parse(
+  readFileSync(resolve(process.cwd(), 'src/data/domains.json'), 'utf8')
+) as SeedRow[]
 
 type SeedRow = {
   id: string

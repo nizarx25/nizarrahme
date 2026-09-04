@@ -21,7 +21,7 @@
     "db:deploy:postgres": "prisma migrate deploy --schema prisma/schema.postgres.prisma",
     "db:reset": "prisma migrate reset",
     "db:seed": "node --import tsx/esm prisma/seed.ts",
-    "db:seed:json": "node --import tsx/esm prisma/seed-from-json.ts"
+    "db:seed:json": "node scripts/seed-json.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
