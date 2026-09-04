@@ -148,4 +148,32 @@ export const PROJECTS: Project[] = [
       'واجهة فاخرة بألوان charcoal/ivory/champagne',
     ],
   },
+  {
+    slug: 'afandie-pharm',
+    title: 'صيدلية الأفندي المركزية',
+    category: 'Healthcare / Pharmacy',
+    country: 'Palestine',
+    region: 'Khan Younis - Abasan Al-Kabira',
+    year: '2026',
+    images: ['/works/afandie-pharm-1.png', '/works/afandie-pharm-2.png'],
+    facebook: 'https://www.facebook.com/afandiepharm',
+    instagram: 'https://instagram.com/afandie_pharmacy',
+    website: 'https://afandiepharm.vercel.app/',
+    summary:
+      'موقع تعريفي لصيدلية الأفندي المركزية، يعرض الخدمات الصيدلانية ومعلومات التواصل للزوار في عبسان الكبيرة وخان يونس.',
+    about:
+      'صيدلية الأفندي المركزية هي صيدلية مجتمعية رائدة تقع في قلب عبسان الكبيرة بمحافظة خان يونس. تقدم خدمات صيدلانية شاملة تشمل صرف الأدوية، الاستشارات الصيدلانية، مستحضرات الأطفال والفيتامينات، إضافة إلى التثقيف الصحي عبر صفحات التواصل الاجتماعي. يستهدف الموقع أهل المنطقة الباحثين عن دواء موثوق واستشارة صيدلانية سريعة.',
+    designMethod:
+      'صُمم الموقع بأسلوب RTL عربي حديث باستخدام Next.js 16 وReact 19 مع مكتبة Tailwind CSS 4 لمظهر أنيق متجاوب. اعتمدنا على نظام بطاقات Cards ومسارات تنقل واضحة (Hero → About → Services → Why Us → Contact) مع تدرجات لونية هادئة باللونين الأخضر الزمردي والعنبر لإيصال إحساس الرعاية الصحية والثقة. تم استخدام خطوط Noto Sans Arabic لضمان قراءة مريحة، مع توافق كامل مع جميع أحجام الشاشات وإمكانية الوصول WCAG AA.',
+    highlights: [
+      'Next.js 16 + React 19',
+      'Tailwind CSS 4 RTL',
+      'Arabic Typography (Noto Sans Arabic)',
+      'Responsive design (mobile-first)',
+      'WhatsApp floating CTA',
+      'Google Maps integration',
+      'WCAG AA accessibility',
+      'SEO optimized metadata',
+    ],
+  },
 ]
