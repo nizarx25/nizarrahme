@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
-    "vercel-build": "prisma generate --schema prisma/schema.postgres.prisma && prisma migrate deploy --schema prisma/schema.postgres.prisma && next build",
+    "vercel-build": "prisma generate --schema prisma/schema.postgres.prisma && prisma db push --accept-data-loss --schema prisma/schema.postgres.prisma && next build",
     "build": "prisma generate && prisma migrate deploy && next build",
-    "build:postgres": "prisma generate --schema prisma/schema.postgres.prisma && prisma migrate deploy --schema prisma/schema.postgres.prisma && next build",
+    "build:postgres": "prisma generate --schema prisma/schema.postgres.prisma && prisma db push --accept-data-loss --schema prisma/schema.postgres.prisma && next build",
     "build:sqlite": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint .",
