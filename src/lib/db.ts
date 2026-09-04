@@ -9,19 +9,15 @@ let _dbAvailable = false
 let _dbChecked = false
 
 /**
- * On Vercel, there is no SQLite database.
- * Detect Vercel by the VERCEL environment variable that Vercel always sets.
- * Also check for SQLite file: URLs which won't work on serverless.
+ * Database availability check.
+ * - Vercel: only enabled if a Postgres-style DATABASE_URL is provided.
+ * - Local: enabled for any DATABASE_URL (SQLite file: works fine in dev).
  */
 function shouldUseDb(): boolean {
-  // On Vercel, never use DB (no SQLite filesystem available)
-  if (process.env.VERCEL) return false
-
-  // If no DATABASE_URL, can't use DB
   if (!process.env.DATABASE_URL) return false
 
-  // SQLite file: URLs don't work on serverless platforms
-  if (process.env.DATABASE_URL.startsWith('file:') && process.env.NODE_ENV === 'production') {
+  // SQLite files don't work on serverless platforms (Vercel has no persistent fs)
+  if (process.env.VERCEL && process.env.DATABASE_URL.startsWith('file:')) {
     return false
   }
 
