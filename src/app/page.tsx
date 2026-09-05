@@ -3,6 +3,7 @@
 // Top-level SPA composition. Each section, dialog, and layout piece lives in
 // its own module under src/components/. This file only wires them together.
 
+import { useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useNavigation } from '@/store/navigation'
 import { Header } from '@/components/layout/header'
@@ -32,6 +33,12 @@ const SECTION_LABELS: Record<string, string> = {
 export default function HomePage() {
   const nav = useNavigation()
   const ariaLabel = SECTION_LABELS[nav.section] ?? 'Section loaded'
+
+  // Restore the last viewed section on mount so a page refresh stays where
+  // the user was instead of snapping back to Home.
+  useEffect(() => {
+    nav.hydrate()
+  }, [nav])
 
   return (
     <div className="min-h-screen flex flex-col relative noise-overlay">

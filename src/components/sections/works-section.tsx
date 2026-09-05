@@ -33,7 +33,7 @@ function ProjectCard({
       className="group relative w-full max-w-[420px] mx-auto text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[20px]"
       aria-label={`View ${project.title} case study`}
     >
-      <div className="relative aspect-[16/10] w-full">
+      <div className="relative aspect-[9/16] w-full">
         {/* Upright primary card */}
         <div
           className="absolute inset-0 rounded-[18px] overflow-hidden border border-surface-border surface-bg shadow-[0_18px_48px_-20px_rgba(0,0,0,0.55)] transition-all duration-500 ease-out group-hover:shadow-[0_30px_80px_-30px_rgba(0,229,176,0.35)] group-hover:border-teal/30"
