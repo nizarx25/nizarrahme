@@ -176,4 +176,31 @@ export const PROJECTS: Project[] = [
       'SEO optimized metadata',
     ],
   },
+  {
+    slug: 'ontario-pet-care',
+    title: 'Ontario Pet Care',
+    category: 'Pet Care Services',
+    country: 'Canada',
+    region: 'Ontario',
+    year: '2015',
+    images: ['/works/ontario-pet-care-1.svg', '/works/ontario-pet-care-2.svg'],
+    facebook: 'https://www.facebook.com/ontariopetcare',
+    instagram: 'https://www.instagram.com/ontariopetcare',
+    website: 'https://ontariopetcare.ca',
+    summary:
+      'منصة خدمات متكاملة للعناية بالحيوانات الأليفة في أونتاريو، تقدم العناية والتنظيف والمشي والإقامة والرعاية البيطرية.',
+    about:
+      'Ontario Pet Care مشروع متخصص في رعاية الحيوانات الأليفة للعائلات في أونتاريو، مع تركيز على منطقة تورنتو الكبرى. يخدم المشروع الكلاب والقطط وغيرها من الحيوانات الأليفة من خلال فريق من المختصين ومقدمي الرعاية. تشمل الخدمات العناية اليومية، الإقامة، المشي، الجلوس، والرعاية البيطرية الطارئة.',
+    designMethod:
+      'يعتمد التصميم على واجهة ودودة ودافئة تعكس الثقة والاهتمام بالحيوانات الأليفة. يستخدم الموقع صورًا واقعية، وألوانًا مستوحاة من الطبيعة مثل الأخضر الزمردي، مع لمسات كهرمانية لإبراز الدعوات إلى الحجز. بُنيت التجربة كصفحة واحدة متجاوبة مع تنقل سلس، بطاقات خدمات واضحة، ونماذج حجز وتواصل مباشرة.',
+    highlights: [
+      'Next.js 16',
+      'Responsive single-page design',
+      'Pet grooming, walking, sitting and boarding',
+      'Veterinary care booking',
+      'Framer Motion animations',
+      'SEO and Open Graph metadata',
+      'Validated booking and contact forms',
+    ],
+  },
 ]
