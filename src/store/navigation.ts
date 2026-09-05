@@ -59,22 +59,40 @@ interface NavigationState {
   setOfferDomainName: (name: string) => void
 }
 
-export const useNavigation = create<NavigationState>((set) => ({
-  section: 'home',
-  setSection: (section) => {
-    writePersistedSection(section)
-    set({ section, selectedDomain: null, showOfferForm: false })
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  },
-  hydrate: () => set({ section: readPersistedSection() }),
-  selectedDomain: null,
-  setSelectedDomain: (slug) => set({ selectedDomain: slug }),
-  showOfferForm: false,
-  setShowOfferForm: (show) => set({ showOfferForm: show }),
-  showPrivacy: false,
-  setShowPrivacy: (show) => set({ showPrivacy: show }),
-  showTerms: false,
-  setShowTerms: (show) => set({ showTerms: show }),
-  offerDomainName: '',
-  setOfferDomainName: (name) => set({ offerDomainName: name }),
-}))
+export const useNavigation = create<NavigationState>((set, get) => {
+  // Try to restore the section synchronously at module load on the client.
+  // We guard for `typeof window` so SSR keeps the default of 'home'. This
+  // means we never need a useEffect to hydrate, which avoids the
+  // "Maximum update depth exceeded" error (#185) that can fire when a
+  // set() inside an effect is observed by another subscriber that itself
+  // schedules another set() during render.
+  const initialSection: Section =
+    typeof window !== 'undefined' ? readPersistedSection() : 'home'
+
+  return {
+    section: initialSection,
+    setSection: (section) => {
+      writePersistedSection(section)
+      set({ section, selectedDomain: null, showOfferForm: false })
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+    },
+    // No-op kept for backwards compatibility with existing call sites.
+    hydrate: () => {
+      const current = get().section
+      const stored = readPersistedSection()
+      if (stored !== current) set({ section: stored })
+    },
+    selectedDomain: null,
+    setSelectedDomain: (slug) => set({ selectedDomain: slug }),
+    showOfferForm: false,
+    setShowOfferForm: (show) => set({ showOfferForm: show }),
+    showPrivacy: false,
+    setShowPrivacy: (show) => set({ showPrivacy: show }),
+    showTerms: false,
+    setShowTerms: (show) => set({ showTerms: show }),
+    offerDomainName: '',
+    setOfferDomainName: (name) => set({ offerDomainName: name }),
+  }
+})
