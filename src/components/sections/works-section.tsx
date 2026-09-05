@@ -1,7 +1,14 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from 'framer-motion'
 import {
   ArrowUpRight,
   Facebook,
@@ -12,8 +19,10 @@ import {
   Globe,
   Layers,
   Quote,
-  ArrowRight,
   ArrowUp,
+  Eye,
+  Zap,
+  MoveRight,
 } from 'lucide-react'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -27,9 +36,11 @@ import { PROJECTS, type Project } from '@/data/works'
 function Reveal({
   children,
   delay = 0,
+  className = '',
 }: {
   children: React.ReactNode
   delay?: number
+  className?: string
 }) {
   const reduce = useReducedMotion()
   return (
@@ -38,6 +49,7 @@ function Reveal({
       whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay }}
+      className={className}
     >
       {children}
     </motion.div>
@@ -45,7 +57,58 @@ function Reveal({
 }
 
 /* -------------------------------------------------------------------------- */
-/* Card with parallax tilt                                                    */
+/* Magnetic button wrapper                                                    */
+/* -------------------------------------------------------------------------- */
+
+function MagneticButton({
+  children,
+  onClick,
+  className = '',
+  ariaLabel,
+}: {
+  children: React.ReactNode
+  onClick?: () => void
+  className?: string
+  ariaLabel?: string
+}) {
+  const ref = useRef<HTMLButtonElement | null>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  const sx = useSpring(x, { stiffness: 260, damping: 22 })
+  const sy = useSpring(y, { stiffness: 260, damping: 22 })
+  const reduce = useReducedMotion()
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (reduce || !ref.current) return
+    const r = ref.current.getBoundingClientRect()
+    const dx = e.clientX - (r.left + r.width / 2)
+    const dy = e.clientY - (r.top + r.height / 2)
+    x.set(dx * 0.35)
+    y.set(dy * 0.35)
+  }
+  const handleMouseLeave = () => {
+    x.set(0)
+    y.set(0)
+  }
+
+  return (
+    <motion.button
+      ref={ref}
+      type="button"
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ x: sx, y: sy }}
+      aria-label={ariaLabel}
+      className={className}
+    >
+      {children}
+    </motion.button>
+  )
+}
+
+/* -------------------------------------------------------------------------- */
+/* SpotlightCard — advanced 3D tilt with cursor spotlight + grain             */
 /* -------------------------------------------------------------------------- */
 
 function ProjectCard({
@@ -58,14 +121,47 @@ function ProjectCard({
   onOpen: (p: Project) => void
 }) {
   const reduce = useReducedMotion()
+  const cardRef = useRef<HTMLDivElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const [hover, setHover] = useState(false)
+  const [spot, setSpot] = useState({ x: 50, y: 50 })
+
+  // 3D tilt values
+  const rotateX = useSpring(useMotionValue(0), { stiffness: 220, damping: 18 })
+  const rotateY = useSpring(useMotionValue(0), { stiffness: 220, damping: 18 })
+  const liftZ = useSpring(useMotionValue(0), { stiffness: 220, damping: 18 })
+
+  // Parallax scroll
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start end', 'end start'],
   })
-  const imageY = useTransform(scrollYProgress, [0, 1], ['-4%', '8%'])
-  const cardRotate = useTransform(scrollYProgress, [0, 1], [-1.5, 1.5])
-  const cardOpacity = useTransform(scrollYProgress, [0, 0.85, 1], [0.4, 1, 0.95])
+  const imageY = useTransform(scrollYProgress, [0, 1], ['-6%', '10%'])
+  const cardOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.15, 0.85, 1],
+    [0, 1, 1, 0.95]
+  )
+  const labelY = useTransform(scrollYProgress, [0, 1], ['8%', '-12%'])
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (reduce || !cardRef.current) return
+    const r = cardRef.current.getBoundingClientRect()
+    const px = ((e.clientX - r.left) / r.width) * 100
+    const py = ((e.clientY - r.top) / r.height) * 100
+    setSpot({ x: px, y: py })
+    const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2)
+    const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2)
+    rotateY.set(dx * 8)
+    rotateX.set(-dy * 8)
+    liftZ.set(1)
+  }
+  const handleMouseLeave = () => {
+    setHover(false)
+    rotateX.set(0)
+    rotateY.set(0)
+    liftZ.set(0)
+  }
 
   const isReversed = index % 2 === 1
   const primary = project.images[0]
@@ -77,74 +173,166 @@ function ProjectCard({
         ref={containerRef}
         style={{ opacity: reduce ? undefined : cardOpacity }}
         className={[
-          'group relative grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center',
-          'py-12 lg:py-20 first:pt-0',
+          'group relative grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center',
+          'py-10 lg:py-16 first:pt-0',
         ].join(' ')}
       >
-        {/* Image block — flips side every other card */}
+        {/* Image / card block — 3D tilt */}
         <div
           className={[
-            'relative lg:col-span-7',
+            'relative lg:col-span-7 [perspective:1500px]',
             isReversed ? 'lg:order-2 lg:col-start-6' : 'lg:order-1',
           ].join(' ')}
         >
           <motion.div
-            style={{ rotate: reduce ? undefined : cardRotate }}
-            className="relative aspect-[4/3] w-full overflow-hidden rounded-[24px] border border-surface-border surface-bg shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)] transition-shadow duration-700 group-hover:shadow-[0_50px_100px_-30px_rgba(0,229,176,0.4)]"
+            ref={cardRef}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={handleMouseLeave}
+            style={{
+              rotateX: reduce ? undefined : rotateX,
+              rotateY: reduce ? undefined : rotateY,
+              z: reduce ? undefined : liftZ,
+              transformStyle: 'preserve-3d',
+            }}
+            className="relative aspect-[16/11] w-full"
           >
-            {/* Animated gradient border on hover */}
-            <div className="pointer-events-none absolute inset-0 z-10 rounded-[24px] opacity-0 transition-opacity duration-700 group-hover:opacity-100">
-              <div className="absolute inset-0 rounded-[24px] bg-gradient-to-r from-teal/40 via-coral/30 to-teal-soft/40 [mask:linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)] [mask-composite:exclude] p-[1.5px]" />
-            </div>
+            {/* Outer frame — animated gradient border */}
+            <div className="absolute -inset-px rounded-[26px] bg-gradient-to-br from-teal/0 via-coral/0 to-teal-soft/0 p-[1px] transition-all duration-700 group-hover:from-teal/60 group-hover:via-coral/40 group-hover:to-teal-soft/60">
+              <div className="relative h-full w-full overflow-hidden rounded-[25px] surface-bg">
+                {/* Primary image with parallax */}
+                {primary && (
+                  <motion.div
+                    style={{ y: imageY }}
+                    className="absolute inset-[-8%]"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={primary}
+                      alt={`${project.title} — primary view`}
+                      loading="lazy"
+                      className="h-full w-full object-cover object-top transition-transform duration-1000 ease-out group-hover:scale-110"
+                    />
+                  </motion.div>
+                )}
 
-            {/* The image with parallax */}
-            {primary && (
-              <motion.div
-                style={{ y: imageY }}
-                className="absolute inset-0"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={primary}
-                  alt={`${project.title} — primary view`}
-                  loading="lazy"
-                  className="h-[110%] w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                {/* Top + bottom gradient scrims */}
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-black/65 via-black/20 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+
+                {/* Cursor spotlight — follows mouse on hover */}
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 mix-blend-screen"
+                  style={{
+                    background: `radial-gradient(420px circle at ${spot.x}% ${spot.y}%, rgba(0, 229, 176, 0.22), transparent 55%)`,
+                  }}
                 />
-              </motion.div>
-            )}
+                {/* Secondary radial highlight */}
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+                  style={{
+                    background: `radial-gradient(280px circle at ${spot.x}% ${spot.y}%, rgba(255, 77, 46, 0.15), transparent 60%)`,
+                  }}
+                />
 
-            {/* Top + bottom gradients */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-black/50 to-transparent" />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                {/* Grain overlay */}
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-[0.07] mix-blend-overlay"
+                  style={{
+                    backgroundImage:
+                      "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/></svg>\")",
+                    backgroundSize: '160px 160px',
+                  }}
+                />
 
-            {/* Top-left index pill */}
-            <div className="absolute left-5 top-5 z-10">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-[10px] font-mono-accent uppercase tracking-[0.22em] text-white backdrop-blur-md">
-                <span className="text-teal">{String(index + 1).padStart(2, '0')}</span>
-                <span className="h-px w-4 bg-white/30" />
-                <span>{project.category}</span>
-              </span>
+                {/* Animated scan line */}
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                  <motion.div
+                    initial={{ y: '-100%' }}
+                    animate={hover && !reduce ? { y: '100%' } : { y: '-100%' }}
+                    transition={{ duration: 1.4, ease: 'easeInOut' }}
+                    className="absolute inset-x-0 h-24 bg-gradient-to-b from-transparent via-teal/20 to-transparent"
+                  />
+                </div>
+
+                {/* Top-left index pill */}
+                <div
+                  className="absolute left-5 top-5 z-10"
+                  style={{ transform: 'translateZ(40px)' }}
+                >
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3.5 py-1.5 text-[10px] font-mono-accent uppercase tracking-[0.22em] text-white backdrop-blur-xl">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal opacity-70" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-teal" />
+                    </span>
+                    <span className="text-teal">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <span className="h-px w-4 bg-white/30" />
+                    <span>{project.category}</span>
+                  </span>
+                </div>
+
+                {/* Top-right live badge */}
+                {project.website && (
+                  <div
+                    className="absolute right-5 top-5 z-10"
+                    style={{ transform: 'translateZ(40px)' }}
+                  >
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-teal/30 bg-teal/10 px-2.5 py-1 text-[9px] font-mono-accent uppercase tracking-[0.22em] text-teal backdrop-blur-xl">
+                      <span className="h-1 w-1 rounded-full bg-teal animate-pulse" />
+                      Live
+                    </span>
+                  </div>
+                )}
+
+                {/* Bottom content — title strip */}
+                <div
+                  className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-7"
+                  style={{ transform: 'translateZ(50px)' }}
+                >
+                  <p className="text-[10px] font-mono-accent uppercase tracking-[0.25em] text-teal mb-2 inline-flex items-center gap-2">
+                    <span className="inline-block h-px w-5 bg-teal/60" />
+                    {project.year} · {project.region}
+                  </p>
+                  <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-bold leading-[1.1] text-white max-w-[90%]">
+                    {project.title}
+                  </h3>
+                </div>
+
+                {/* Open button (magnetic) */}
+                <div
+                  className="absolute bottom-5 right-5 z-20"
+                  style={{ transform: 'translateZ(60px)' }}
+                >
+                  <MagneticButton
+                    onClick={() => onOpen(project)}
+                    ariaLabel={`View ${project.title}`}
+                    className="group/open relative inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-background/85 text-white backdrop-blur-xl transition-all duration-500 group-hover:border-teal/60 group-hover:text-teal"
+                  >
+                    <span className="absolute inset-0 rounded-full bg-teal/0 transition-all duration-500 group-hover:bg-teal/15 group-hover:scale-150 group-hover:opacity-0" />
+                    <ArrowUpRight className="relative h-5 w-5 transition-all duration-500 group-hover:rotate-45" />
+                  </MagneticButton>
+                </div>
+
+                {/* Reflective gloss */}
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/[0.07] to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
+              </div>
             </div>
 
-            {/* Bottom-right open button */}
-            <button
-              type="button"
-              onClick={() => onOpen(project)}
-              className="absolute bottom-5 right-5 z-10 inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-background/85 text-white backdrop-blur-md transition-all duration-500 group-hover:scale-110 group-hover:border-teal/50 group-hover:text-teal group-hover:rotate-[-15deg]"
-              aria-label={`View ${project.title}`}
-            >
-              <ArrowUpRight className="h-5 w-5" />
-            </button>
+            {/* Outer glow shadow on hover */}
+            <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[40px] bg-teal/0 blur-3xl transition-all duration-700 group-hover:bg-teal/20" />
           </motion.div>
 
-          {/* Floating secondary thumbnail */}
-          <div
+          {/* Floating secondary thumbnail — peeking card */}
+          <motion.div
+            style={{ y: reduce ? undefined : labelY }}
             className={[
-              'absolute -bottom-8 z-20 hidden md:block',
-              isReversed ? 'left-0' : 'right-0',
+              'absolute -bottom-10 z-20 hidden md:block',
+              isReversed ? 'left-2 lg:-left-6' : 'right-2 lg:-right-6',
             ].join(' ')}
           >
-            <div className="relative h-24 w-32 overflow-hidden rounded-[14px] border border-surface-border surface-bg shadow-xl">
+            <div className="group/thumb relative h-28 w-40 overflow-hidden rounded-[16px] border border-surface-border surface-bg shadow-2xl transition-transform duration-500 hover:scale-105 hover:-rotate-2">
               {secondary && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -152,12 +340,19 @@ function ProjectCard({
                   alt=""
                   aria-hidden
                   loading="lazy"
-                  className="h-full w-full object-cover opacity-90"
+                  className="h-full w-full object-cover opacity-95"
                 />
               )}
-              <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10 rounded-[14px]" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+                <span className="text-[9px] font-mono-accent uppercase tracking-[0.2em] text-white/80">
+                  View 02
+                </span>
+                <Eye className="h-3.5 w-3.5 text-teal" />
+              </div>
+              <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/15 rounded-[16px]" />
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Text block */}
@@ -167,47 +362,66 @@ function ProjectCard({
             isReversed ? 'lg:order-1 lg:col-start-1' : 'lg:order-2',
           ].join(' ')}
         >
-          <p className="text-[10px] font-mono-accent uppercase tracking-[0.25em] text-teal mb-3 inline-flex items-center gap-2">
-            <span className="inline-block h-px w-6 bg-teal/60" />
-            {project.year} · {project.region}
-          </p>
+          <motion.div
+            initial={false}
+            whileHover={{ x: 4 }}
+            transition={{ type: 'spring', stiffness: 240, damping: 22 }}
+          >
+            <div className="mb-4 inline-flex items-center gap-2">
+              <span className="text-[10px] font-mono-accent uppercase tracking-[0.25em] text-teal">
+                {String(index + 1).padStart(2, '0')} /
+                {String(PROJECTS.length).padStart(2, '0')}
+              </span>
+              <span className="h-px w-8 bg-gradient-to-r from-teal/60 to-transparent" />
+            </div>
 
-          <h3 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.05] text-white">
-            {project.title}
-          </h3>
+            <h3 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.02] text-white">
+              <span className="bg-gradient-to-br from-white via-white to-white/70 bg-clip-text text-transparent">
+                {project.title}
+              </span>
+            </h3>
 
-          <p className="mt-4 text-[#B8C8C4] leading-relaxed text-sm sm:text-base">
-            {project.summary}
-          </p>
+            <p className="mt-4 text-[#B8C8C4] leading-relaxed text-sm sm:text-base">
+              {project.summary}
+            </p>
 
-          {project.highlights && project.highlights.length > 0 && (
-            <ul className="mt-5 space-y-2">
-              {project.highlights.slice(0, 3).map((h) => (
-                <li
-                  key={h}
-                  className="flex items-start gap-2.5 text-sm text-[#B8C8C4]"
-                >
-                  <ArrowRight className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-teal" />
-                  <span>{h}</span>
-                </li>
-              ))}
-            </ul>
-          )}
+            {project.highlights && project.highlights.length > 0 && (
+              <ul className="mt-6 space-y-2.5">
+                {project.highlights.slice(0, 3).map((h, i) => (
+                  <motion.li
+                    key={h}
+                    initial={reduce ? false : { opacity: 0, x: -8 }}
+                    whileInView={
+                      reduce ? undefined : { opacity: 1, x: 0 }
+                    }
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08, duration: 0.5 }}
+                    className="flex items-start gap-3 text-sm text-[#B8C8C4]"
+                  >
+                    <span className="mt-1.5 inline-block h-1 w-1 flex-shrink-0 rounded-full bg-gradient-to-r from-teal to-coral" />
+                    <span>{h}</span>
+                  </motion.li>
+                ))}
+              </ul>
+            )}
 
-          <div className="mt-6 flex items-center gap-3">
-            <Button
-              onClick={() => onOpen(project)}
-              variant="outline"
-              className="border-surface-border group/btn"
-            >
-              View case study
-              <ArrowUpRight className="h-4 w-4 transition-transform duration-500 group-hover/btn:rotate-45" />
-            </Button>
-            <span className="inline-flex items-center gap-1.5 text-xs text-[#718581]">
-              <MapPin className="h-3.5 w-3.5" />
-              {project.country}
-            </span>
-          </div>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Button
+                onClick={() => onOpen(project)}
+                className="relative overflow-hidden bg-gradient-to-r from-teal to-teal-soft text-background hover:shadow-[0_0_30px_-5px_rgba(0,229,176,0.6)] transition-shadow"
+              >
+                <span className="relative z-10 inline-flex items-center gap-2">
+                  View case study
+                  <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </span>
+                <span className="absolute inset-0 -z-0 bg-gradient-to-r from-teal-soft to-teal opacity-0 transition-opacity hover:opacity-100" />
+              </Button>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-surface-border surface-bg px-3 py-1.5 text-xs text-[#B8C8C4]">
+                <MapPin className="h-3.5 w-3.5 text-teal" />
+                {project.country}
+              </span>
+            </div>
+          </motion.div>
         </div>
       </motion.article>
     </Reveal>
@@ -220,11 +434,12 @@ function ProjectCard({
 
 function SectionDivider() {
   return (
-    <div className="my-4 sm:my-8 flex items-center gap-3" aria-hidden>
+    <div className="my-2 sm:my-6 flex items-center gap-3" aria-hidden>
       <span className="h-px flex-1 bg-gradient-to-r from-transparent via-surface-border to-transparent" />
-      <span className="inline-flex items-center gap-1 text-[10px] font-mono-accent uppercase tracking-[0.25em] text-[#718581]">
+      <span className="inline-flex items-center gap-1.5 text-[10px] font-mono-accent uppercase tracking-[0.25em] text-[#718581]">
         <Sparkles className="h-3 w-3 text-teal" />
         <span>Next project</span>
+        <Zap className="h-3 w-3 text-coral" />
       </span>
       <span className="h-px flex-1 bg-gradient-to-r from-transparent via-surface-border to-transparent" />
     </div>
@@ -340,7 +555,8 @@ function ProjectDialog({
               </button>
             ))}
             <p className="ml-auto text-[11px] font-mono-accent uppercase tracking-[0.22em] text-[#718581]">
-              {String(activeImage + 1).padStart(2, '0')} / {String(project.images.length).padStart(2, '0')}
+              {String(activeImage + 1).padStart(2, '0')} /{' '}
+              {String(project.images.length).padStart(2, '0')}
             </p>
           </div>
         )}
@@ -445,11 +661,7 @@ function ProjectDialog({
                       </Button>
                     )}
                     {project.website && (
-                      <Button
-                        asChild
-                        variant="default"
-                        size="sm"
-                      >
+                      <Button asChild variant="default" size="sm">
                         <a
                           href={project.website}
                           target="_blank"
@@ -479,13 +691,65 @@ function ProjectDialog({
 export function WorksSection() {
   const [active, setActive] = useState<Project | null>(null)
   const [open, setOpen] = useState(false)
+  const [mouse, setMouse] = useState({ x: 0, y: 0 })
+  const sectionRef = useRef<HTMLElement | null>(null)
+
+  // Track mouse for ambient orbs
+  useEffect(() => {
+    if (!sectionRef.current) return
+    const handler = (e: MouseEvent) => {
+      const r = sectionRef.current?.getBoundingClientRect()
+      if (!r) return
+      setMouse({
+        x: ((e.clientX - r.left) / r.width) * 100,
+        y: ((e.clientY - r.top) / r.height) * 100,
+      })
+    }
+    window.addEventListener('mousemove', handler)
+    return () => window.removeEventListener('mousemove', handler)
+  }, [])
 
   return (
     <section
-      className="relative py-16 sm:py-24"
+      ref={sectionRef}
+      className="relative py-16 sm:py-24 overflow-hidden"
       aria-labelledby="works-heading"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Ambient background orbs that follow mouse */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10"
+        aria-hidden
+      >
+        <div
+          className="absolute h-[480px] w-[480px] rounded-full blur-[120px] opacity-30 transition-all duration-1000 ease-out"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(0,229,176,0.5) 0%, transparent 70%)',
+            left: `${mouse.x}%`,
+            top: `${mouse.y}%`,
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
+        <div className="absolute -top-20 right-0 h-72 w-72 rounded-full bg-coral/15 blur-[100px]" />
+        <div className="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-teal/10 blur-[120px]" />
+      </div>
+
+      {/* Animated grid background */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.04]"
+        aria-hidden
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(0,229,176,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,176,0.5) 1px, transparent 1px)',
+          backgroundSize: '60px 60px',
+          maskImage:
+            'radial-gradient(ellipse at center, black 30%, transparent 75%)',
+          WebkitMaskImage:
+            'radial-gradient(ellipse at center, black 30%, transparent 75%)',
+        }}
+      />
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Header */}
         <Reveal>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 sm:mb-20">
@@ -496,11 +760,15 @@ export function WorksSection() {
               </p>
               <h1
                 id="works-heading"
-                className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-[1.05]"
+                className="font-display text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.05]"
               >
-                A small portfolio,
+                <span className="bg-gradient-to-br from-white via-white to-white/60 bg-clip-text text-transparent">
+                  A small portfolio,
+                </span>
                 <br />
-                built with care.
+                <span className="bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent">
+                  built with care.
+                </span>
               </h1>
               <p className="mt-4 text-[#718581] max-w-xl leading-relaxed text-sm sm:text-base">
                 A handful of recent projects — websites, brand systems, and
@@ -509,11 +777,23 @@ export function WorksSection() {
                 and a sense of intent.
               </p>
             </div>
-            <p className="hidden sm:block text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[#718581] text-right">
-              {String(PROJECTS.length).padStart(2, '0')} projects
-              <br />
-              2015 — 2026
-            </p>
+            <div className="hidden sm:flex flex-col items-end gap-1">
+              <p className="text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[#718581]">
+                {String(PROJECTS.length).padStart(2, '0')} projects
+              </p>
+              <p className="text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[#718581]">
+                2015 — 2026
+              </p>
+              <div className="mt-2 flex items-center gap-1.5">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal opacity-70" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-teal" />
+                </span>
+                <span className="text-[10px] font-mono-accent uppercase tracking-[0.22em] text-teal">
+                  All live
+                </span>
+              </div>
+            </div>
           </div>
         </Reveal>
 
