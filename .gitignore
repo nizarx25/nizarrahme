@@ -57,3 +57,5 @@ prisma/dev.db
 prisma/*.db
 
 prisma/*.db-journal
+
+public/works/*.png

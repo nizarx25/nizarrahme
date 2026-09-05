@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Afandie Pharmacy desktop preview">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B211E"/>
+      <stop offset="100%" stop-color="#061312"/>
+    </linearGradient>
+    <radialGradient id="emerald" cx="0.2" cy="0.2" r="0.6">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect width="1200" height="800" fill="url(#emerald)"/>
+  <g font-family="'Space Grotesk', system-ui, sans-serif" fill="#FFFFFF">
+    <text x="80" y="200" font-size="28" font-weight="600" fill="#10B981">صيدلية الأفندي المركزية</text>
+    <text x="80" y="260" font-size="64" font-weight="700" letter-spacing="-2">رعاية صيدلانية</text>
+    <text x="80" y="340" font-size="64" font-weight="700" letter-spacing="-2" fill="#10B981">يثق بها الأهالي</text>
+  </g>
+  <g font-family="'Inter', system-ui, sans-serif" fill="#B8C8C4" font-size="20">
+    <text x="80" y="420">عبسان الكبيرة · خان يونس</text>
+    <text x="80" y="452">أدوية موثوقة · استشارات سريعة · توصيل محلي</text>
+  </g>
+  <g transform="translate(80 540)">
+    <rect width="220" height="56" rx="12" fill="#10B981"/>
+    <text x="110" y="36" text-anchor="middle" fill="#061312" font-family="'Inter', system-ui, sans-serif" font-size="18" font-weight="600">تواصل واتساب</text>
+  </g>
+  <g transform="translate(320 540)">
+    <rect width="220" height="56" rx="12" fill="none" stroke="#173A35"/>
+    <text x="110" y="36" text-anchor="middle" fill="#FFFFFF" font-family="'Inter', system-ui, sans-serif" font-size="18" font-weight="600">الموقع على الخريطة</text>
+  </g>
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="14" fill="#718581" letter-spacing="2">
+    <text x="80" y="120">PALESTINE · KHAN YOUNIS</text>
+    <text x="80" y="720">NEXT.JS · REACT 19 · TAILWIND 4</text>
+  </g>
+</svg>

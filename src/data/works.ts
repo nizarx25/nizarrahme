@@ -155,7 +155,7 @@ export const PROJECTS: Project[] = [
     country: 'Palestine',
     region: 'Khan Younis - Abasan Al-Kabira',
     year: '2026',
-    images: ['/works/afandie-pharm-1.png', '/works/afandie-pharm-2.png'],
+    images: ['/works/afandie-pharm-1.svg', '/works/afandie-pharm-2.svg'],
     facebook: 'https://www.facebook.com/afandiepharm',
     instagram: 'https://instagram.com/afandie_pharmacy',
     website: 'https://afandiepharm.vercel.app/',
