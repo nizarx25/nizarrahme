@@ -108,7 +108,7 @@ function ProjectCard({
                   src={primary}
                   alt={`${project.title} — primary view`}
                   loading="lazy"
-                  className="h-[110%] w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                  className="h-[110%] w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                 />
               </motion.div>
             )}
