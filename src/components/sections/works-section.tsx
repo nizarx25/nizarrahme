@@ -1,106 +1,233 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowUpRight, Facebook, Instagram, MapPin, Sparkles, X, Globe, Layers, Quote } from 'lucide-react'
+import { useEffect, useState, useRef } from 'react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import {
+  ArrowUpRight,
+  Facebook,
+  Instagram,
+  MapPin,
+  Sparkles,
+  X,
+  Globe,
+  Layers,
+  Quote,
+  ArrowRight,
+  ArrowUp,
+} from 'lucide-react'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { PROJECTS, type Project } from '@/data/works'
 
 /* -------------------------------------------------------------------------- */
-/* Card                                                                       */
+/* Reveal helper                                                              */
+/* -------------------------------------------------------------------------- */
+
+function Reveal({
+  children,
+  delay = 0,
+}: {
+  children: React.ReactNode
+  delay?: number
+}) {
+  const reduce = useReducedMotion()
+  return (
+    <motion.div
+      initial={reduce ? false : { opacity: 0, y: 32 }}
+      whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+/* -------------------------------------------------------------------------- */
+/* Card with parallax tilt                                                    */
 /* -------------------------------------------------------------------------- */
 
 function ProjectCard({
   project,
-  onOpen,
   index,
+  onOpen,
 }: {
   project: Project
-  onOpen: (p: Project) => void
   index: number
+  onOpen: (p: Project) => void
 }) {
   const reduce = useReducedMotion()
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start end', 'end start'],
+  })
+  const imageY = useTransform(scrollYProgress, [0, 1], ['-4%', '8%'])
+  const cardRotate = useTransform(scrollYProgress, [0, 1], [-1.5, 1.5])
+  const cardOpacity = useTransform(scrollYProgress, [0, 0.85, 1], [0.4, 1, 0.95])
+
+  const isReversed = index % 2 === 1
   const primary = project.images[0]
   const secondary = project.images[1] ?? project.images[0]
 
   return (
-    <motion.button
-      type="button"
-      onClick={() => onOpen(project)}
-      whileHover={reduce ? undefined : { y: -6 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[22px]"
-      aria-label={`View ${project.title} case study`}
-    >
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[22px] border border-surface-border surface-bg shadow-[0_18px_48px_-22px_rgba(0,0,0,0.6)] transition-all duration-500 ease-out group-hover:border-teal/40 group-hover:shadow-[0_32px_80px_-28px_rgba(0,229,176,0.35)]">
-        {primary && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={primary}
-            alt={`${project.title} — primary view`}
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-          />
-        )}
-
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/70 via-black/20 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-
-        <div className="absolute left-4 top-4 right-4 flex items-start justify-between gap-3">
-          <span className="inline-flex items-center rounded-full border border-white/15 bg-black/30 px-2.5 py-1 text-[10px] font-mono-accent uppercase tracking-[0.22em] text-white/90 backdrop-blur-sm">
-            {String(index + 1).padStart(2, '0')} · {project.category}
-          </span>
-          <span
-            aria-hidden
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/30 text-white/80 backdrop-blur-sm transition-all duration-500 group-hover:border-teal/40 group-hover:text-teal group-hover:rotate-[-15deg]"
+    <Reveal delay={index * 0.05}>
+      <motion.article
+        ref={containerRef}
+        style={{ opacity: reduce ? undefined : cardOpacity }}
+        className={[
+          'group relative grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center',
+          'py-12 lg:py-20 first:pt-0',
+        ].join(' ')}
+      >
+        {/* Image block — flips side every other card */}
+        <div
+          className={[
+            'relative lg:col-span-7',
+            isReversed ? 'lg:order-2 lg:col-start-6' : 'lg:order-1',
+          ].join(' ')}
+        >
+          <motion.div
+            style={{ rotate: reduce ? undefined : cardRotate }}
+            className="relative aspect-[4/3] w-full overflow-hidden rounded-[24px] border border-surface-border surface-bg shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)] transition-shadow duration-700 group-hover:shadow-[0_50px_100px_-30px_rgba(0,229,176,0.4)]"
           >
-            <ArrowUpRight className="h-4 w-4" />
-          </span>
+            {/* Animated gradient border on hover */}
+            <div className="pointer-events-none absolute inset-0 z-10 rounded-[24px] opacity-0 transition-opacity duration-700 group-hover:opacity-100">
+              <div className="absolute inset-0 rounded-[24px] bg-gradient-to-r from-teal/40 via-coral/30 to-teal-soft/40 [mask:linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)] [mask-composite:exclude] p-[1.5px]" />
+            </div>
+
+            {/* The image with parallax */}
+            {primary && (
+              <motion.div
+                style={{ y: imageY }}
+                className="absolute inset-0"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={primary}
+                  alt={`${project.title} — primary view`}
+                  loading="lazy"
+                  className="h-[110%] w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                />
+              </motion.div>
+            )}
+
+            {/* Top + bottom gradients */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-black/50 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+            {/* Top-left index pill */}
+            <div className="absolute left-5 top-5 z-10">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-[10px] font-mono-accent uppercase tracking-[0.22em] text-white backdrop-blur-md">
+                <span className="text-teal">{String(index + 1).padStart(2, '0')}</span>
+                <span className="h-px w-4 bg-white/30" />
+                <span>{project.category}</span>
+              </span>
+            </div>
+
+            {/* Bottom-right open button */}
+            <button
+              type="button"
+              onClick={() => onOpen(project)}
+              className="absolute bottom-5 right-5 z-10 inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-background/85 text-white backdrop-blur-md transition-all duration-500 group-hover:scale-110 group-hover:border-teal/50 group-hover:text-teal group-hover:rotate-[-15deg]"
+              aria-label={`View ${project.title}`}
+            >
+              <ArrowUpRight className="h-5 w-5" />
+            </button>
+          </motion.div>
+
+          {/* Floating secondary thumbnail */}
+          <div
+            className={[
+              'absolute -bottom-8 z-20 hidden md:block',
+              isReversed ? 'left-0' : 'right-0',
+            ].join(' ')}
+          >
+            <div className="relative h-24 w-32 overflow-hidden rounded-[14px] border border-surface-border surface-bg shadow-xl">
+              {secondary && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={secondary}
+                  alt=""
+                  aria-hidden
+                  loading="lazy"
+                  className="h-full w-full object-cover opacity-90"
+                />
+              )}
+              <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10 rounded-[14px]" />
+            </div>
+          </div>
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-          <p className="flex items-center gap-1.5 text-[10px] font-mono-accent uppercase tracking-[0.22em] text-teal/90">
-            <MapPin className="h-3 w-3" />
-            {project.region}, {project.country}
+        {/* Text block */}
+        <div
+          className={[
+            'relative lg:col-span-5',
+            isReversed ? 'lg:order-1 lg:col-start-1' : 'lg:order-2',
+          ].join(' ')}
+        >
+          <p className="text-[10px] font-mono-accent uppercase tracking-[0.25em] text-teal mb-3 inline-flex items-center gap-2">
+            <span className="inline-block h-px w-6 bg-teal/60" />
+            {project.year} · {project.region}
           </p>
-          <h3 className="mt-1 font-display text-lg sm:text-xl font-bold leading-tight text-white line-clamp-2">
+
+          <h3 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.05] text-white">
             {project.title}
           </h3>
-        </div>
 
-        <div className="pointer-events-none absolute left-1/2 bottom-20 -translate-x-1/2 translate-y-3 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-teal/40 bg-background/85 px-3 py-1.5 text-[11px] font-mono-accent uppercase tracking-[0.2em] text-teal backdrop-blur">
-            <span>View project</span>
-            <ArrowUpRight className="h-3 w-3" />
-          </span>
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center gap-3">
-        <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-[10px] border border-surface-border surface-bg">
-          {secondary && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={secondary}
-              alt=""
-              aria-hidden
-              loading="lazy"
-              className="h-full w-full object-cover opacity-90"
-            />
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-mono-accent uppercase tracking-[0.22em] text-teal/80">
-            {project.year} · Case study
-          </p>
-          <p className="truncate text-xs text-[#B8C8C4]">
+          <p className="mt-4 text-[#B8C8C4] leading-relaxed text-sm sm:text-base">
             {project.summary}
           </p>
+
+          {project.highlights && project.highlights.length > 0 && (
+            <ul className="mt-5 space-y-2">
+              {project.highlights.slice(0, 3).map((h) => (
+                <li
+                  key={h}
+                  className="flex items-start gap-2.5 text-sm text-[#B8C8C4]"
+                >
+                  <ArrowRight className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-teal" />
+                  <span>{h}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="mt-6 flex items-center gap-3">
+            <Button
+              onClick={() => onOpen(project)}
+              variant="outline"
+              className="border-surface-border group/btn"
+            >
+              View case study
+              <ArrowUpRight className="h-4 w-4 transition-transform duration-500 group-hover/btn:rotate-45" />
+            </Button>
+            <span className="inline-flex items-center gap-1.5 text-xs text-[#718581]">
+              <MapPin className="h-3.5 w-3.5" />
+              {project.country}
+            </span>
+          </div>
         </div>
-      </div>
-    </motion.button>
+      </motion.article>
+    </Reveal>
+  )
+}
+
+/* -------------------------------------------------------------------------- */
+/* Section divider between cards                                             */
+/* -------------------------------------------------------------------------- */
+
+function SectionDivider() {
+  return (
+    <div className="my-4 sm:my-8 flex items-center gap-3" aria-hidden>
+      <span className="h-px flex-1 bg-gradient-to-r from-transparent via-surface-border to-transparent" />
+      <span className="inline-flex items-center gap-1 text-[10px] font-mono-accent uppercase tracking-[0.25em] text-[#718581]">
+        <Sparkles className="h-3 w-3 text-teal" />
+        <span>Next project</span>
+      </span>
+      <span className="h-px flex-1 bg-gradient-to-r from-transparent via-surface-border to-transparent" />
+    </div>
   )
 }
 
@@ -126,21 +253,29 @@ function ProjectDialog({
     return () => window.removeEventListener('keydown', handler)
   }, [open, onOpenChange])
 
+  const [activeImage, setActiveImage] = useState(0)
+
+  useEffect(() => {
+    setActiveImage(0)
+  }, [project?.slug])
+
   if (!project) return null
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-5xl w-[96vw] max-h-[92vh] overflow-y-auto surface-border surface-bg p-0 sm:rounded-[24px]"
+        className="max-w-5xl w-[96vw] max-h-[94vh] overflow-y-auto surface-border surface-bg p-0 sm:rounded-[28px]"
         aria-describedby={undefined}
       >
-        <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-surface-border surface-bg">
-          {project.images[0] && (
+        {/* Hero */}
+        <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-surface-border surface-bg">
+          {project.images[activeImage] && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={project.images[0]}
-              alt={`${project.title} — cover image`}
-              className="absolute inset-0 h-full w-full object-cover object-center"
+              key={activeImage}
+              src={project.images[activeImage]}
+              alt={`${project.title} — view ${activeImage + 1}`}
+              className="absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-300"
             />
           )}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-surface via-surface/30 to-transparent" />
@@ -179,19 +314,40 @@ function ProjectDialog({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-0">
-          <div className="p-5 sm:p-7 space-y-6 border-b border-surface-border lg:border-b-0 lg:border-r">
-            {project.images[1] && (
-              <div className="relative aspect-[4/3] overflow-hidden rounded-[16px] border border-surface-border surface-bg">
+        {/* Thumbnail switcher */}
+        {project.images.length > 1 && (
+          <div className="flex items-center gap-3 px-5 sm:px-7 py-4 border-b border-surface-border surface-bg">
+            {project.images.map((src, i) => (
+              <button
+                key={src}
+                type="button"
+                onClick={() => setActiveImage(i)}
+                className={[
+                  'relative h-14 w-20 overflow-hidden rounded-[10px] border transition-all',
+                  activeImage === i
+                    ? 'border-teal/60 ring-1 ring-teal/40'
+                    : 'border-surface-border opacity-60 hover:opacity-100',
+                ].join(' ')}
+                aria-label={`View image ${i + 1}`}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={project.images[1]}
-                  alt={`${project.title} — secondary view`}
-                  className="absolute inset-0 h-full w-full object-cover object-center"
+                  src={src}
+                  alt=""
+                  aria-hidden
+                  className="h-full w-full object-cover"
                 />
-              </div>
-            )}
+              </button>
+            ))}
+            <p className="ml-auto text-[11px] font-mono-accent uppercase tracking-[0.22em] text-[#718581]">
+              {String(activeImage + 1).padStart(2, '0')} / {String(project.images.length).padStart(2, '0')}
+            </p>
+          </div>
+        )}
 
+        {/* Body */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-0">
+          <div className="p-5 sm:p-7 space-y-6 border-b border-surface-border lg:border-b-0 lg:border-r">
             <section>
               <h4 className="flex items-center gap-2 font-display text-lg font-semibold text-white">
                 <Quote className="h-4 w-4 text-teal" />
@@ -288,6 +444,23 @@ function ProjectDialog({
                         </a>
                       </Button>
                     )}
+                    {project.website && (
+                      <Button
+                        asChild
+                        variant="default"
+                        size="sm"
+                      >
+                        <a
+                          href={project.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Visit ${project.title} live site`}
+                        >
+                          Visit site
+                          <ArrowUp className="h-3.5 w-3.5" />
+                        </a>
+                      </Button>
+                    )}
                   </div>
                 </section>
               </>
@@ -296,30 +469,6 @@ function ProjectDialog({
         </div>
       </DialogContent>
     </Dialog>
-  )
-}
-
-/* -------------------------------------------------------------------------- */
-/* Reveal on scroll                                                           */
-/* -------------------------------------------------------------------------- */
-
-function Reveal({
-  children,
-  delay = 0,
-}: {
-  children: React.ReactNode
-  delay?: number
-}) {
-  const reduce = useReducedMotion()
-  return (
-    <motion.div
-      initial={reduce ? false : { opacity: 0, y: 24 }}
-      whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay }}
-    >
-      {children}
-    </motion.div>
   )
 }
 
@@ -333,50 +482,55 @@ export function WorksSection() {
 
   return (
     <section
-      className="py-16 sm:py-24"
+      className="relative py-16 sm:py-24"
       aria-labelledby="works-heading"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <Reveal>
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 sm:mb-14">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 sm:mb-20">
             <div>
-              <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.22em] mb-3 inline-flex items-center gap-2">
+              <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.25em] mb-3 inline-flex items-center gap-2">
                 <span className="inline-block h-px w-6 bg-teal/60" />
                 Selected Works
               </p>
               <h1
                 id="works-heading"
-                className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-white"
+                className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-[1.05]"
               >
-                A small portfolio, built with care
+                A small portfolio,
+                <br />
+                built with care.
               </h1>
-              <p className="mt-3 text-[#718581] max-w-xl leading-relaxed text-sm sm:text-base">
+              <p className="mt-4 text-[#718581] max-w-xl leading-relaxed text-sm sm:text-base">
                 A handful of recent projects — websites, brand systems, and
                 product surfaces — designed end-to-end with the same
                 principles I apply to domain selection: clarity, restraint,
                 and a sense of intent.
               </p>
             </div>
-            <p className="hidden sm:block text-[11px] font-mono-accent uppercase tracking-[0.22em] text-[#718581]">
+            <p className="hidden sm:block text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[#718581] text-right">
               {String(PROJECTS.length).padStart(2, '0')} projects
+              <br />
+              2015 — 2026
             </p>
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {PROJECTS.map((p, idx) => (
-            <Reveal key={p.slug} delay={idx * 0.05}>
-              <ProjectCard
-                project={p}
-                index={idx}
-                onOpen={(proj) => {
-                  setActive(proj)
-                  setOpen(true)
-                }}
-              />
-            </Reveal>
-          ))}
-        </div>
+        {/* Cards (zigzag) */}
+        {PROJECTS.map((p, idx) => (
+          <div key={p.slug}>
+            <ProjectCard
+              project={p}
+              index={idx}
+              onOpen={(proj) => {
+                setActive(proj)
+                setOpen(true)
+              }}
+            />
+            {idx < PROJECTS.length - 1 && <SectionDivider />}
+          </div>
+        ))}
       </div>
 
       <ProjectDialog project={active} open={open} onOpenChange={setOpen} />
