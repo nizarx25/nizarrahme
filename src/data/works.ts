@@ -89,7 +89,7 @@ export const PROJECTS: Project[] = [
     category: 'Pet Care Services',
     country: 'Canada',
     region: 'Ontario',
-    year: '2015',
+    year: '2026',
     images: ['/works/ontario-pet-care-1.png', '/works/ontario-pet-care-2.png'],
     facebook: 'https://www.facebook.com/ontariopetcare',
     instagram: 'https://www.instagram.com/ontariopetcare',

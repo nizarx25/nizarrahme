@@ -782,7 +782,7 @@ export function WorksSection() {
                 {String(PROJECTS.length).padStart(2, '0')} projects
               </p>
               <p className="text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[#718581]">
-                2015 — 2026
+               2026
               </p>
               <div className="mt-2 flex items-center gap-1.5">
                 <span className="relative flex h-2 w-2">
