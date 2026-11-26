@@ -381,7 +381,7 @@ function ProjectCard({
               </span>
             </h3>
 
-            <p className="mt-4 text-[#B8C8C4] leading-relaxed text-sm sm:text-base">
+            <p className="mt-4 text-[var(--ed-soft)] leading-relaxed text-sm sm:text-base">
               {project.summary}
             </p>
 
@@ -396,7 +396,7 @@ function ProjectCard({
                     }
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.08, duration: 0.5 }}
-                    className="flex items-start gap-3 text-sm text-[#B8C8C4]"
+                    className="flex items-start gap-3 text-sm text-[var(--ed-soft)]"
                   >
                     <span className="mt-1.5 inline-block h-1 w-1 flex-shrink-0 rounded-full bg-gradient-to-r from-teal to-coral" />
                     <span>{h}</span>
@@ -416,7 +416,7 @@ function ProjectCard({
                 </span>
                 <span className="absolute inset-0 -z-0 bg-gradient-to-r from-teal-soft to-teal opacity-0 transition-opacity hover:opacity-100" />
               </Button>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-surface-border surface-bg px-3 py-1.5 text-xs text-[#B8C8C4]">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-surface-border surface-bg px-3 py-1.5 text-xs text-[var(--ed-soft)]">
                 <MapPin className="h-3.5 w-3.5 text-teal" />
                 {project.country}
               </span>
@@ -436,7 +436,7 @@ function SectionDivider() {
   return (
     <div className="my-2 sm:my-6 flex items-center gap-3" aria-hidden>
       <span className="h-px flex-1 bg-gradient-to-r from-transparent via-surface-border to-transparent" />
-      <span className="inline-flex items-center gap-1.5 text-[10px] font-mono-accent uppercase tracking-[0.25em] text-[#718581]">
+      <span className="inline-flex items-center gap-1.5 text-[10px] font-mono-accent uppercase tracking-[0.25em] text-[var(--ed-mute)]">
         <Sparkles className="h-3 w-3 text-teal" />
         <span>Next project</span>
         <Zap className="h-3 w-3 text-coral" />
@@ -509,7 +509,7 @@ function ProjectDialog({
             <DialogTitle className="mt-1 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
               {project.title}
             </DialogTitle>
-            <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[#B8C8C4]">
+            <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[var(--ed-soft)]">
               <span className="inline-flex items-center gap-1.5">
                 <MapPin className="h-3.5 w-3.5 text-teal" />
                 {project.region}, {project.country}
@@ -554,7 +554,7 @@ function ProjectDialog({
                 />
               </button>
             ))}
-            <p className="ml-auto text-[11px] font-mono-accent uppercase tracking-[0.22em] text-[#718581]">
+            <p className="ml-auto text-[11px] font-mono-accent uppercase tracking-[0.22em] text-[var(--ed-mute)]">
               {String(activeImage + 1).padStart(2, '0')} /{' '}
               {String(project.images.length).padStart(2, '0')}
             </p>
@@ -569,7 +569,7 @@ function ProjectDialog({
                 <Quote className="h-4 w-4 text-teal" />
                 About the work
               </h4>
-              <p className="mt-2 text-sm leading-relaxed text-[#B8C8C4]">
+              <p className="mt-2 text-sm leading-relaxed text-[var(--ed-soft)]">
                 {project.about}
               </p>
             </section>
@@ -579,7 +579,7 @@ function ProjectDialog({
                 <Layers className="h-4 w-4 text-teal" />
                 How it was designed
               </h4>
-              <p className="mt-2 text-sm leading-relaxed text-[#B8C8C4]">
+              <p className="mt-2 text-sm leading-relaxed text-[var(--ed-soft)]">
                 {project.designMethod}
               </p>
             </section>
@@ -588,14 +588,14 @@ function ProjectDialog({
           <div className="p-5 sm:p-7 space-y-6 surface-bg/40">
             {project.highlights && project.highlights.length > 0 && (
               <section>
-                <h4 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-[#718581]">
+                <h4 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-[var(--ed-mute)]">
                   Highlights
                 </h4>
                 <ul className="mt-3 grid grid-cols-1 gap-2">
                   {project.highlights.map((h) => (
                     <li
                       key={h}
-                      className="flex items-start gap-2.5 rounded-[12px] border border-surface-border surface-bg p-3 text-sm text-[#B8C8C4]"
+                      className="flex items-start gap-2.5 rounded-[12px] border border-surface-border surface-bg p-3 text-sm text-[var(--ed-soft)]"
                     >
                       <Sparkles className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-teal" />
                       <span className="leading-relaxed">{h}</span>
@@ -608,10 +608,10 @@ function ProjectDialog({
             <Separator className="bg-surface-border" />
 
             <section>
-              <h4 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-[#718581]">
+              <h4 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-[var(--ed-mute)]">
                 Summary
               </h4>
-              <p className="mt-2 text-sm leading-relaxed text-[#B8C8C4]">
+              <p className="mt-2 text-sm leading-relaxed text-[var(--ed-soft)]">
                 {project.summary}
               </p>
             </section>
@@ -620,7 +620,7 @@ function ProjectDialog({
               <>
                 <Separator className="bg-surface-border" />
                 <section>
-                  <h4 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-[#718581]">
+                  <h4 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-[var(--ed-mute)]">
                     Connect
                   </h4>
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -770,7 +770,7 @@ export function WorksSection() {
                   built with care.
                 </span>
               </h1>
-              <p className="mt-4 text-[#718581] max-w-xl leading-relaxed text-sm sm:text-base">
+              <p className="mt-4 text-[var(--ed-mute)] max-w-xl leading-relaxed text-sm sm:text-base">
                 A handful of recent projects — websites, brand systems, and
                 product surfaces — designed end-to-end with the same
                 principles I apply to domain selection: clarity, restraint,
@@ -778,10 +778,10 @@ export function WorksSection() {
               </p>
             </div>
             <div className="hidden sm:flex flex-col items-end gap-1">
-              <p className="text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[#718581]">
+              <p className="text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[var(--ed-mute)]">
                 {String(PROJECTS.length).padStart(2, '0')} projects
               </p>
-              <p className="text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[#718581]">
+              <p className="text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[var(--ed-mute)]">
                2026
               </p>
               <div className="mt-2 flex items-center gap-1.5">

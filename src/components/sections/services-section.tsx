@@ -41,7 +41,7 @@ export function ServicesSection() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">What I Offer</p>
         <h1 id="services-heading" className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Selected Digital Services</h1>
-        <p className="text-[#718581] max-w-2xl mb-12 leading-relaxed">
+        <p className="text-[var(--ed-mute)] max-w-2xl mb-12 leading-relaxed">
           Alongside domain investing, I offer select digital services for businesses and projects that need a hands-on, thoughtful approach to their online presence.
         </p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" role="list">
@@ -65,12 +65,12 @@ export function ServicesSection() {
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
                   <service.icon className="size-6 text-teal group-hover:drop-shadow-[0_0_12px_rgba(0,229,176,0.5)] transition-all" />
-                  <ArrowRight className="size-4 text-[#718581] group-hover:text-teal group-hover:translate-x-1 transition-all" />
+                  <ArrowRight className="size-4 text-[var(--ed-mute)] group-hover:text-teal group-hover:translate-x-1 transition-all" />
                 </div>
                 <h3 className="font-display text-lg font-bold mb-2 bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent transition-all duration-300">
                   {service.title}
                 </h3>
-                <p className="text-sm text-[#B8C8C4] leading-relaxed transition-colors">{service.desc}</p>
+                <p className="text-sm text-[var(--ed-soft)] leading-relaxed transition-colors">{service.desc}</p>
               </div>
             </motion.a>
           ))}

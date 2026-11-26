@@ -66,11 +66,11 @@ export function DomainsSection() {
         <div className="mb-8">
           <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Browse Catalog</p>
           <h1 id="domains-heading" className="font-display text-3xl sm:text-4xl font-bold text-white">Domain Catalog</h1>
-          <p className="text-[#718581] mt-2">Browse available domain names. Click any domain to view details and make an offer.</p>
+          <p className="text-[var(--ed-mute)] mt-2">Browse available domain names. Click any domain to view details and make an offer.</p>
         </div>
 
         <div className="relative mb-6">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[#718581]" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[var(--ed-mute)]" />
           <Input
             placeholder="Search domains by name, category, or description..."
             value={search}
@@ -78,7 +78,7 @@ export function DomainsSection() {
               setSearch(e.target.value)
               setPage(1)
             }}
-            className="pl-12 h-12 bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20 transition-all"
+            className="pl-12 h-12 bg-surface border-surface-border rounded-[12px] text-white placeholder:text-[var(--ed-mute)] focus:border-teal/40 focus:ring-teal/20 transition-all"
             aria-label="Search domains"
           />
         </div>
@@ -87,12 +87,12 @@ export function DomainsSection() {
           <Button
             variant="outline"
             size="sm"
-            className="lg:hidden border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]"
+            className="lg:hidden border-surface-border text-[var(--ed-soft)] hover:bg-elevated rounded-[10px]"
             onClick={() => setShowFilters(!showFilters)}
           >
             <SlidersHorizontal className="size-4 mr-2" /> Filters
           </Button>
-          <div className="hidden lg:block text-sm font-mono-accent text-[#718581]">
+          <div className="hidden lg:block text-sm font-mono-accent text-[var(--ed-mute)]">
             {data && <span>{data.total} domain{data.total !== 1 ? 's' : ''} found</span>}
           </div>
         </div>
@@ -100,7 +100,7 @@ export function DomainsSection() {
         <div className={`mb-6 ${showFilters ? 'block' : 'hidden'} lg:block`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <Select value={category || '_all'} onValueChange={(v) => { setCategory(v === '_all' ? '' : v); setPage(1) }}>
-              <SelectTrigger aria-label="Filter by category" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+              <SelectTrigger aria-label="Filter by category" className="bg-surface border-surface-border rounded-[12px] text-[var(--ed-soft)]">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
@@ -112,7 +112,7 @@ export function DomainsSection() {
               </SelectContent>
             </Select>
             <Select value={extension || '_all'} onValueChange={(v) => { setExtension(v === '_all' ? '' : v); setPage(1) }}>
-              <SelectTrigger aria-label="Filter by extension" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+              <SelectTrigger aria-label="Filter by extension" className="bg-surface border-surface-border rounded-[12px] text-[var(--ed-soft)]">
                 <SelectValue placeholder="Extension" />
               </SelectTrigger>
               <SelectContent>
@@ -124,7 +124,7 @@ export function DomainsSection() {
               </SelectContent>
             </Select>
             <Select value={status || '_all'} onValueChange={(v) => { setStatus(v === '_all' ? '' : v); setPage(1) }}>
-              <SelectTrigger aria-label="Filter by status" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+              <SelectTrigger aria-label="Filter by status" className="bg-surface border-surface-border rounded-[12px] text-[var(--ed-soft)]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -134,7 +134,7 @@ export function DomainsSection() {
               </SelectContent>
             </Select>
             <Select value={sort} onValueChange={(v) => { setSort(v); setPage(1) }}>
-              <SelectTrigger aria-label="Sort by" className="bg-surface border-surface-border rounded-[12px] text-[#B8C8C4]">
+              <SelectTrigger aria-label="Sort by" className="bg-surface border-surface-border rounded-[12px] text-[var(--ed-soft)]">
                 <SelectValue placeholder="Sort" />
               </SelectTrigger>
               <SelectContent>
@@ -157,7 +157,7 @@ export function DomainsSection() {
                   }}
                   className="data-[state=checked]:bg-teal"
                 />
-                <Label htmlFor="featured-toggle" className="text-sm text-[#B8C8C4] cursor-pointer">Featured</Label>
+                <Label htmlFor="featured-toggle" className="text-sm text-[var(--ed-soft)] cursor-pointer">Featured</Label>
               </div>
               <div className="flex items-center gap-2">
                 <Switch
@@ -169,15 +169,15 @@ export function DomainsSection() {
                   }}
                   className="data-[state=checked]:bg-teal"
                 />
-                <Label htmlFor="price-toggle" className="text-sm text-[#B8C8C4] cursor-pointer">Has Price</Label>
+                <Label htmlFor="price-toggle" className="text-sm text-[var(--ed-soft)] cursor-pointer">Has Price</Label>
               </div>
             </div>
           </div>
           {(category || extension || status || featured || hasPrice) && (
             <div className="mt-3 flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-mono-accent text-[#718581]">Active filters:</span>
+              <span className="text-xs font-mono-accent text-[var(--ed-mute)]">Active filters:</span>
               {category && (
-                <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">
+                <Badge variant="secondary" className="text-xs bg-elevated text-[var(--ed-soft)] rounded-full">
                   {category}
                   <button
                     onClick={() => {
@@ -192,7 +192,7 @@ export function DomainsSection() {
                 </Badge>
               )}
               {extension && (
-                <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">
+                <Badge variant="secondary" className="text-xs bg-elevated text-[var(--ed-soft)] rounded-full">
                   {extension}
                   <button
                     onClick={() => {
@@ -207,7 +207,7 @@ export function DomainsSection() {
                 </Badge>
               )}
               {status && (
-                <Badge variant="secondary" className="text-xs bg-elevated text-[#B8C8C4] rounded-full">
+                <Badge variant="secondary" className="text-xs bg-elevated text-[var(--ed-soft)] rounded-full">
                   {status}
                   <button
                     onClick={() => {
@@ -252,7 +252,7 @@ export function DomainsSection() {
                   disabled={page <= 1}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   aria-label="Previous page"
-                  className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]"
+                  className="border-surface-border text-[var(--ed-soft)] hover:bg-elevated rounded-[10px]"
                 >
                   <ChevronLeft className="size-4" />
                   <span className="sr-only">Previous</span>
@@ -269,7 +269,7 @@ export function DomainsSection() {
                         key={pageNum}
                         variant={pageNum === page ? 'default' : 'outline'}
                         size="sm"
-                        className={`w-9 rounded-[10px] ${pageNum === page ? 'bg-teal text-[#061312] hover:bg-teal/90 border-0' : 'border-surface-border text-[#B8C8C4] hover:bg-elevated'}`}
+                        className={`w-9 rounded-[10px] ${pageNum === page ? 'bg-teal text-[var(--ed-onacc)] hover:bg-teal/90 border-0' : 'border-surface-border text-[var(--ed-soft)] hover:bg-elevated'}`}
                         onClick={() => setPage(pageNum)}
                         aria-label={`Page ${pageNum}`}
                         aria-current={pageNum === page ? 'page' : undefined}
@@ -285,7 +285,7 @@ export function DomainsSection() {
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   aria-label="Next page"
-                  className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]"
+                  className="border-surface-border text-[var(--ed-soft)] hover:bg-elevated rounded-[10px]"
                 >
                   <ChevronRight className="size-4" />
                   <span className="sr-only">Next</span>
@@ -297,11 +297,11 @@ export function DomainsSection() {
           <div className="text-center py-20">
             <Globe className="size-12 text-surface-border mx-auto mb-4" />
             <h3 className="font-display text-xl font-bold text-white mb-2">No domains found</h3>
-            <p className="text-sm text-[#718581] mb-6">Try adjusting your search or filters.</p>
+            <p className="text-sm text-[var(--ed-mute)] mb-6">Try adjusting your search or filters.</p>
             <Button
               variant="outline"
               onClick={resetFilters}
-              className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]"
+              className="border-surface-border text-[var(--ed-soft)] hover:bg-elevated rounded-[12px]"
             >
               Clear Filters
             </Button>

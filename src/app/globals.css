@@ -57,6 +57,10 @@
 
 :root {
   --radius: 0.625rem;
+  --ed-mute: #718581;
+  --ed-soft: #B8C8C4;
+  --ed-onacc: #061312;
+  --ed-serif: Georgia, 'Times New Roman', serif;
   /* Premium Dark Color System */
   --background: #061312;
   --surface: #0B211E;
@@ -545,4 +549,90 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+
+/* ==========================================================
+   Editorial Light theme (public site only).
+   Applied by adding .theme-ed to <body> from the public pages,
+   so /admin keeps its current dark look. Overriding tokens here
+   re-colors every existing utility (bg-surface, text-teal, ...).
+   ========================================================== */
+.theme-ed {
+  --background: #F6F1E8;
+  --surface: #FFFDF8;
+  --elevated: #EFE8DA;
+  --surface-border: #DDD5C6;
+  --coral: #1F4D3A;
+  --coral-hover: #2B6650;
+  --teal: #1F4D3A;
+  --teal-soft: #3D7A5C;
+  --teal-muted: rgba(31, 77, 58, 0.08);
+  --success: #2C7A4F;
+  --warning: #B7791F;
+  --error: #B42318;
+  --foreground: #1B1A17;
+  --card-foreground: #1B1A17;
+  --popover-foreground: #1B1A17;
+  --secondary-foreground: #1B1A17;
+  --primary-foreground: #F6F1E8;
+  --accent-foreground: #F6F1E8;
+  --muted-foreground: #6B665C;
+  --ed-mute: #6B665C;
+  --ed-soft: #3A372F;
+  --ed-onacc: #F6F1E8;
+  --color-white: #1B1A17;
+  --font-display: Georgia, 'Times New Roman', serif;
+  color-scheme: light;
+}
+.theme-ed .font-display { font-family: var(--ed-serif); font-weight: 500; letter-spacing: -0.015em; }
+/* Text on filled green surfaces must stay light */
+.theme-ed .bg-coral, .theme-ed .bg-teal, .theme-ed .bg-primary,
+.theme-ed [class*="from-coral"], .theme-ed [class*="from-teal "] { color: #F6F1E8; }
+.theme-ed .bg-coral *, .theme-ed .bg-primary * { color: inherit; }
+.theme-ed .bg-black\/50 { background-color: rgba(27, 26, 23, 0.45); }
+/* Kill neon glows / gradients text from the old theme */
+.theme-ed .teal-glow, .theme-ed .teal-glow-sm, .theme-ed .coral-glow { box-shadow: none; }
+.theme-ed .teal-text-glow { text-shadow: none; }
+.theme-ed .animate-pulse-glow, .theme-ed .animate-shimmer, .theme-ed .animate-glow-pulse { animation: none; opacity: 0.35; }
+.theme-ed .domain-card-hover:hover {
+  transform: translateY(-3px);
+  border-color: #1F4D3A;
+  box-shadow: 0 14px 34px rgba(27, 26, 23, 0.10);
+}
+.theme-ed .grid-pattern, .theme-ed .grid-pattern-subtle {
+  background-image:
+    linear-gradient(rgba(27, 26, 23, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 26, 23, 0.05) 1px, transparent 1px);
+}
+.theme-ed .gradient-mesh { background-image: none; }
+.theme-ed ::selection, .theme-ed::selection { background: rgba(31, 77, 58, 0.22); color: #1B1A17; }
+.theme-ed .noise-overlay::before { opacity: 0.05; }
+
+.theme-ed .bg-clip-text, .theme-ed [class*="bg-clip-text"] {
+  background-image: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  color: var(--teal) !important;
+  animation: none !important;
+}
+.theme-ed h1 .bg-clip-text, .theme-ed h2 .bg-clip-text, .theme-ed h3 .bg-clip-text { color: #1B1A17 !important; }
+
+/* Editorial Light: undo the touch-device "always show glow" rules */
+.theme-ed .group h3, .theme-ed .group .font-display {
+  -webkit-text-fill-color: currentColor !important;
+  -webkit-background-clip: border-box;
+}
+.theme-ed .domain-card-hover {
+  transform: none;
+  border-color: var(--surface-border);
+  box-shadow: none;
+}
+.theme-ed .domain-card-hover > div.absolute { display: none; }
+.theme-ed .group > .opacity-0 { opacity: 0 !important; }
+@media (hover: hover) {
+  .theme-ed .domain-card-hover:hover {
+    transform: translateY(-3px);
+    border-color: #1F4D3A;
+    box-shadow: 0 14px 34px rgba(27, 26, 23, 0.10);
+  }
 }

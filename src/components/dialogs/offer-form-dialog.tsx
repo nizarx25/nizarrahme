@@ -121,7 +121,7 @@ export function OfferFormDialog() {
   if (submitted) {
     return (
       <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
-        <DialogContent className="bg-[#0B211E] border-surface-border rounded-2xl p-4 sm:p-6">
+        <DialogContent className="bg-surface border-surface-border rounded-2xl p-4 sm:p-6">
           <DialogHeader className="sr-only">
             <DialogTitle>Offer Submitted</DialogTitle>
             <DialogDescription>Your domain offer has been submitted successfully.</DialogDescription>
@@ -129,12 +129,12 @@ export function OfferFormDialog() {
           <div className="text-center py-4 sm:py-8">
             <CheckCircle2 className="size-8 sm:size-12 text-teal mx-auto mb-3 sm:mb-4" />
             <h3 className="font-display text-lg sm:text-2xl font-bold text-white mb-2">Thank you.</h3>
-            <p className="text-xs sm:text-sm text-[#B8C8C4] leading-relaxed px-2">
+            <p className="text-xs sm:text-sm text-[var(--ed-soft)] leading-relaxed px-2">
               Your inquiry has been received. NIZAR RAHME will review it and get back to you.
             </p>
             <Button
               variant="outline"
-              className="mt-4 sm:mt-6 border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]"
+              className="mt-4 sm:mt-6 border-surface-border text-[var(--ed-soft)] hover:bg-elevated rounded-[12px]"
               onClick={() => handleClose(false)}
             >
               Close
@@ -147,12 +147,12 @@ export function OfferFormDialog() {
 
   return (
     <Dialog open={nav.showOfferForm} onOpenChange={handleClose}>
-      <DialogContent className="bg-[#0B211E] border-surface-border rounded-2xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6">
+      <DialogContent className="bg-surface border-surface-border rounded-2xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader className="pb-1 sm:pb-2">
           <DialogTitle className="font-display text-lg sm:text-2xl font-bold text-white pr-8">
             Make an Offer
           </DialogTitle>
-          <DialogDescription className="text-xs sm:text-sm text-[#718581]">
+          <DialogDescription className="text-xs sm:text-sm text-[var(--ed-mute)]">
             {nav.offerDomainName
               ? `Submit your offer for ${nav.offerDomainName}`
               : 'Submit an inquiry about a domain'}
@@ -161,7 +161,7 @@ export function OfferFormDialog() {
         <form onSubmit={handleSubmit} className="mt-3 sm:mt-6 space-y-3 sm:space-y-5" noValidate aria-label="Domain offer form">
           {nav.offerDomainName && (
             <div className="p-2.5 sm:p-4 bg-elevated rounded-xl border border-surface-border">
-              <p className="text-[10px] sm:text-xs font-mono-accent text-[#718581]">Domain</p>
+              <p className="text-[10px] sm:text-xs font-mono-accent text-[var(--ed-mute)]">Domain</p>
               <p className="font-display text-sm sm:text-lg font-bold bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent mt-0.5 sm:mt-1">
                 {nav.offerDomainName}
               </p>
@@ -181,7 +181,7 @@ export function OfferFormDialog() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
             <div className="space-y-1">
-              <Label htmlFor="offer-name" className="text-xs sm:text-sm text-[#B8C8C4]">Name *</Label>
+              <Label htmlFor="offer-name" className="text-xs sm:text-sm text-[var(--ed-soft)]">Name *</Label>
               <Input
                 id="offer-name"
                 value={form.name}
@@ -197,7 +197,7 @@ export function OfferFormDialog() {
               )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="offer-email" className="text-xs sm:text-sm text-[#B8C8C4]">Email *</Label>
+              <Label htmlFor="offer-email" className="text-xs sm:text-sm text-[var(--ed-soft)]">Email *</Label>
               <Input
                 id="offer-email"
                 type="email"
@@ -216,7 +216,7 @@ export function OfferFormDialog() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
             <div className="space-y-1">
-              <Label htmlFor="offer-company" className="text-xs sm:text-sm text-[#B8C8C4]">Company / Project</Label>
+              <Label htmlFor="offer-company" className="text-xs sm:text-sm text-[var(--ed-soft)]">Company / Project</Label>
               <Input
                 id="offer-company"
                 value={form.company}
@@ -225,7 +225,7 @@ export function OfferFormDialog() {
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="offer-amount" className="text-xs sm:text-sm text-[#B8C8C4]">Offer Amount (USD)</Label>
+              <Label htmlFor="offer-amount" className="text-xs sm:text-sm text-[var(--ed-soft)]">Offer Amount (USD)</Label>
               <Input
                 id="offer-amount"
                 type="number"
@@ -234,22 +234,22 @@ export function OfferFormDialog() {
                 value={form.offerAmount}
                 onChange={(e) => setForm((f) => ({ ...f, offerAmount: e.target.value }))}
                 placeholder="e.g. 500"
-                className="bg-surface border-surface-border rounded-[10px] h-10 sm:h-11 text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20"
+                className="bg-surface border-surface-border rounded-[10px] h-10 sm:h-11 text-white text-sm placeholder:text-[var(--ed-mute)] focus:border-teal/40 focus:ring-teal/20"
               />
             </div>
           </div>
           <div className="space-y-1">
-            <Label htmlFor="offer-use" className="text-xs sm:text-sm text-[#B8C8C4]">Intended Use</Label>
+            <Label htmlFor="offer-use" className="text-xs sm:text-sm text-[var(--ed-soft)]">Intended Use</Label>
             <Input
               id="offer-use"
               value={form.intendedUse}
               onChange={(e) => setForm((f) => ({ ...f, intendedUse: e.target.value }))}
               placeholder="e.g. AI startup, SaaS platform"
-              className="bg-surface border-surface-border rounded-[10px] h-10 sm:h-11 text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20"
+              className="bg-surface border-surface-border rounded-[10px] h-10 sm:h-11 text-white text-sm placeholder:text-[var(--ed-mute)] focus:border-teal/40 focus:ring-teal/20"
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="offer-message" className="text-xs sm:text-sm text-[#B8C8C4]">Message *</Label>
+            <Label htmlFor="offer-message" className="text-xs sm:text-sm text-[var(--ed-soft)]">Message *</Label>
             <Textarea
               id="offer-message"
               value={form.message}
@@ -257,7 +257,7 @@ export function OfferFormDialog() {
               rows={3}
               aria-invalid={!!errors.message}
               aria-errormessage="offer-message-error"
-              className="bg-surface border-surface-border rounded-[10px] text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20"
+              className="bg-surface border-surface-border rounded-[10px] text-white text-sm placeholder:text-[var(--ed-mute)] focus:border-teal/40 focus:ring-teal/20"
             />
             {errors.message && (
               <p id="offer-message-error" role="alert" className="text-[10px] sm:text-xs text-error mt-0.5">
@@ -273,7 +273,7 @@ export function OfferFormDialog() {
               aria-errormessage="offer-consent-error"
               className="data-[state=checked]:bg-teal data-[state=checked]:border-teal mt-0.5"
             />
-            <Label htmlFor="offer-consent" className="text-[10px] sm:text-xs text-[#718581] leading-relaxed">
+            <Label htmlFor="offer-consent" className="text-[10px] sm:text-xs text-[var(--ed-mute)] leading-relaxed">
               I consent to having my information stored and used to respond to this inquiry. *
             </Label>
           </div>

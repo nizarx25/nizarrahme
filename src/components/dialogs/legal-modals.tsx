@@ -57,16 +57,16 @@ export function PrivacyModal() {
   const nav = useNavigation()
   return (
     <Dialog open={nav.showPrivacy} onOpenChange={(v) => nav.setShowPrivacy(v)}>
-      <DialogContent className="bg-[#0B211E] border-surface-border rounded-2xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 max-w-2xl">
+      <DialogContent className="bg-surface border-surface-border rounded-2xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-display text-xl sm:text-2xl font-bold text-white">Privacy</DialogTitle>
-          <DialogDescription className="text-xs sm:text-sm text-[#718581]">
+          <DialogDescription className="text-xs sm:text-sm text-[var(--ed-mute)]">
             How NIZAR RAHME handles your data.
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-4 text-sm text-[#B8C8C4] leading-relaxed whitespace-pre-line">{PRIVACY_TEXT}</div>
+        <div className="mt-4 text-sm text-[var(--ed-soft)] leading-relaxed whitespace-pre-line">{PRIVACY_TEXT}</div>
         <div className="mt-6 flex justify-end">
-          <Button variant="outline" className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => nav.setShowPrivacy(false)}>
+          <Button variant="outline" className="border-surface-border text-[var(--ed-soft)] hover:bg-elevated rounded-[12px]" onClick={() => nav.setShowPrivacy(false)}>
             Close
           </Button>
         </div>
@@ -79,16 +79,16 @@ export function TermsModal() {
   const nav = useNavigation()
   return (
     <Dialog open={nav.showTerms} onOpenChange={(v) => nav.setShowTerms(v)}>
-      <DialogContent className="bg-[#0B211E] border-surface-border rounded-2xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 max-w-2xl">
+      <DialogContent className="bg-surface border-surface-border rounded-2xl max-h-[90dvh] overflow-y-auto p-4 sm:p-6 max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-display text-xl sm:text-2xl font-bold text-white">Terms</DialogTitle>
-          <DialogDescription className="text-xs sm:text-sm text-[#718581]">
+          <DialogDescription className="text-xs sm:text-sm text-[var(--ed-mute)]">
             Terms of use for nizarrahme.com.
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-4 text-sm text-[#B8C8C4] leading-relaxed whitespace-pre-line">{TERMS_TEXT}</div>
+        <div className="mt-4 text-sm text-[var(--ed-soft)] leading-relaxed whitespace-pre-line">{TERMS_TEXT}</div>
         <div className="mt-6 flex justify-end">
-          <Button variant="outline" className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[12px]" onClick={() => nav.setShowTerms(false)}>
+          <Button variant="outline" className="border-surface-border text-[var(--ed-soft)] hover:bg-elevated rounded-[12px]" onClick={() => nav.setShowTerms(false)}>
             Close
           </Button>
         </div>

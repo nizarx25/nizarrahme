@@ -5,6 +5,9 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { useNavigation } from '@/store/navigation'
+import { ThemeEd } from '@/components/effects/theme-ed'
+import { IntroCurtain } from '@/components/effects/intro-curtain'
+import { SectionWipe } from '@/components/effects/section-wipe'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { PartnerLogos } from '@/components/layout/partner-logos'
@@ -38,6 +41,9 @@ export default function HomePage() {
       <a href="#main-content" className="skip-to-content">
         Skip to content
       </a>
+      <ThemeEd />
+      <IntroCurtain />
+      <SectionWipe />
       <Header />
       <main id="main-content" className="flex-1" role="main">
         <div aria-live="polite" className="sr-only">{ariaLabel} loaded</div>

@@ -16,9 +16,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { useNavigation } from '@/store/navigation'
 import { useFeaturedDomains, useStats, useTransactions } from '@/hooks/use-domain-data'
+import { HeroLens } from '@/components/effects/hero-lens'
 import { FeaturedCarousel } from '@/components/home/featured-carousel'
 import { ClaimedTicker } from '@/components/home/claimed-ticker'
-import { DomainCard } from '@/components/domain/domain-card'
+import { DomainIndexRow } from '@/components/domain/domain-index-row'
 import { WholesaleSection } from './wholesale-section'
 
 import type { Variants } from 'framer-motion'
@@ -60,8 +61,6 @@ export function HomeSection() {
     <div>
       {/* HERO */}
       <section className="relative py-20 sm:py-28 lg:py-36 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-teal/5 rounded-full blur-[120px] animate-pulse-glow pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-coral/3 rounded-full blur-[100px] pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="text-center max-w-4xl mx-auto">
@@ -72,22 +71,16 @@ export function HomeSection() {
               </span>
             </motion.div>
 
-            <motion.h1
-              variants={fadeUp}
-              className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.08] tracking-tight text-white"
-            >
-              Own the Name Behind{' '}
-              <span className="bg-gradient-to-r from-teal via-teal-soft via-coral/80 to-teal bg-clip-text text-transparent teal-text-glow animate-gradient-text">
-                What&rsquo;s Next.
-              </span>
-            </motion.h1>
+            <motion.div variants={fadeUp}>
+              <HeroLens names={(featured ?? []).map((d) => d.name)} />
+            </motion.div>
             <p className="sr-only">
               NIZAR RAHME&rsquo;s curated marketplace of premium brandable domain names for AI, SaaS, fintech, and technology businesses.
             </p>
 
             <motion.p
               variants={fadeUp}
-              className="mt-6 text-base sm:text-lg text-[#B8C8C4] max-w-2xl mx-auto leading-relaxed"
+              className="mt-6 text-base sm:text-lg text-[var(--ed-soft)] max-w-2xl mx-auto leading-relaxed"
             >
               Curated, brandable domain names for AI, SaaS, fintech, and technology businesses.
               Each name selected for real-world impact.
@@ -95,12 +88,12 @@ export function HomeSection() {
 
             <motion.form variants={fadeUp} onSubmit={handleHeroSearch} className="mt-10 max-w-xl mx-auto">
               <div className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[#718581] group-focus-within:text-teal transition-colors" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[var(--ed-mute)] group-focus-within:text-teal transition-colors" />
                 <Input
                   placeholder="Search premium domains..."
                   value={heroSearch}
                   onChange={(e) => setHeroSearch(e.target.value)}
-                  className="w-full h-14 pl-12 pr-28 bg-surface border-surface-border rounded-[14px] text-white placeholder:text-[#718581] text-base focus:border-teal/40 focus:ring-teal/20 transition-all"
+                  className="w-full h-14 pl-12 pr-28 bg-surface border-surface-border rounded-[14px] text-white placeholder:text-[var(--ed-mute)] text-base focus:border-teal/40 focus:ring-teal/20 transition-all"
                   aria-label="Search domains from hero"
                 />
                 <Button
@@ -119,7 +112,7 @@ export function HomeSection() {
                   whileHover={{ scale: 1.05, y: -1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => nav.setSection('domains')}
-                  className="px-3 py-1.5 text-xs font-mono-accent text-[#718581] hover:text-teal border border-surface-border hover:border-teal/30 rounded-full transition-all hover:shadow-[0_0_10px_rgba(0,229,176,0.1)]"
+                  className="px-3 py-1.5 text-xs font-mono-accent text-[var(--ed-mute)] hover:text-teal border border-surface-border hover:border-teal/30 rounded-full transition-all hover:shadow-[0_0_10px_rgba(0,229,176,0.1)]"
                 >
                   {cat}
                 </motion.button>
@@ -177,7 +170,7 @@ export function HomeSection() {
               </motion.div>
               <motion.div className="text-center group cursor-default" whileHover={{ y: -2 }}>
                 <p className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent">2</p>
-                <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.15em] mt-2">
+                <p className="text-xs font-mono-accent text-[var(--ed-mute)] uppercase tracking-[0.15em] mt-2">
                   Completed Sales
                 </p>
               </motion.div>
@@ -209,13 +202,13 @@ export function HomeSection() {
                   Premium Domains
                 </span>
               </h2>
-              <p className="text-[#718581] mt-3 max-w-md">
+              <p className="text-[var(--ed-mute)] mt-3 max-w-md">
                 Hand-picked brandable domain names for the next generation of digital businesses.
               </p>
             </div>
             <Button
               variant="ghost"
-              className="hidden sm:inline-flex text-[#718581] hover:text-teal hover:bg-teal-muted rounded-[10px]"
+              className="hidden sm:inline-flex text-[var(--ed-mute)] hover:text-teal hover:bg-teal-muted rounded-[10px]"
               onClick={() => nav.setSection('domains')}
             >
               View all <ArrowRight className="size-4" />
@@ -223,18 +216,13 @@ export function HomeSection() {
           </div>
 
           {featured && featured.length > 0 ? (
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-              initial="hidden"
-              animate="visible"
-              variants={stagger}
-            >
-              {featured.map((domain) => (
-                <DomainCard key={domain.id} domain={domain} />
+            <div>
+              {featured.map((domain, i) => (
+                <DomainIndexRow key={domain.id} domain={domain} index={i} />
               ))}
-            </motion.div>
+            </div>
           ) : featured ? (
-            <p className="text-[#718581] text-center py-16 font-mono-accent">
+            <p className="text-[var(--ed-mute)] text-center py-16 font-mono-accent">
               No featured domains at this time.
             </p>
           ) : (
@@ -249,7 +237,7 @@ export function HomeSection() {
             <Button
               variant="outline"
               onClick={() => nav.setSection('domains')}
-              className="w-full border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white rounded-[12px]"
+              className="w-full border-surface-border text-[var(--ed-soft)] hover:bg-elevated hover:text-white rounded-[12px]"
             >
               View All Domains <ArrowRight className="size-4" />
             </Button>
@@ -297,7 +285,7 @@ export function HomeSection() {
                   Step {step.num}
                 </p>
                 <h3 className="font-display text-xl font-bold mb-3 bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent transition-all duration-300">{step.title}</h3>
-                <p className="text-sm text-[#B8C8C4] leading-relaxed max-w-xs mx-auto transition-colors">{step.desc}</p>
+                <p className="text-sm text-[var(--ed-soft)] leading-relaxed max-w-xs mx-auto transition-colors">{step.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -331,7 +319,7 @@ export function HomeSection() {
                 </motion.div>
               ))}
             </div>
-            <p className="text-xs text-[#718581] mt-6 max-w-2xl font-mono-accent">
+            <p className="text-xs text-[var(--ed-mute)] mt-6 max-w-2xl font-mono-accent">
               These are selected completed transactions and do not represent a guarantee of future
               sale prices or outcomes.
             </p>
@@ -348,14 +336,14 @@ export function HomeSection() {
             Additional Services
           </p>
           <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">Beyond the Name</h2>
-          <p className="mt-4 text-[#B8C8C4] max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-4 text-[var(--ed-soft)] max-w-2xl mx-auto leading-relaxed">
             Alongside domain investing, I work on selected digital projects involving WordPress
             websites, content, social media, SEO, and AI-assisted workflows.
           </p>
           <Button
             onClick={() => nav.setSection('services')}
             variant="outline"
-            className="mt-8 border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white hover:border-teal/20 rounded-[12px] transition-all"
+            className="mt-8 border-surface-border text-[var(--ed-soft)] hover:bg-elevated hover:text-white hover:border-teal/20 rounded-[12px] transition-all"
           >
             Explore Services <ArrowRight className="size-4" />
           </Button>
@@ -369,7 +357,7 @@ export function HomeSection() {
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold">
             <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">Your next brand deserves the right domain.</span>
           </h2>
-          <p className="mt-4 text-[#B8C8C4] max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-4 text-[var(--ed-soft)] max-w-2xl mx-auto leading-relaxed">
             If you are building an AI, SaaS, fintech, technology, or online business, browse the
             catalog or start a conversation.
           </p>
@@ -387,7 +375,7 @@ export function HomeSection() {
               <Button
                 onClick={() => nav.setSection('contact')}
                 variant="outline"
-                className="border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white hover:border-teal/20 hover:shadow-[0_0_16px_rgba(0,229,176,0.08)] rounded-[12px] h-12 px-8 transition-all"
+                className="border-surface-border text-[var(--ed-soft)] hover:bg-elevated hover:text-white hover:border-teal/20 hover:shadow-[0_0_16px_rgba(0,229,176,0.08)] rounded-[12px] h-12 px-8 transition-all"
               >
                 Contact NIZAR RAHME
               </Button>

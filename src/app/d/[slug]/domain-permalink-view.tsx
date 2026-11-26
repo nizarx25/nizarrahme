@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle2, Globe, ShoppingCart, Tag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { ThemeEd } from '@/components/effects/theme-ed'
 import { useNavigation } from '@/store/navigation'
 import type { PublicDomain } from '@/hooks/use-domain-data'
 
@@ -37,8 +38,9 @@ export function DomainPermalinkView({ domain, siteUrl }: Props) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#061312]">
-      <header className="sticky top-0 z-50 bg-[#061312]/80 backdrop-blur-md surface-border-b">
+    <div className="min-h-screen flex flex-col bg-background">
+      <ThemeEd />
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md surface-border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link
@@ -47,14 +49,14 @@ export function DomainPermalinkView({ domain, siteUrl }: Props) {
               aria-label="Back to NIZAR RAHME home"
             >
               <span className="font-display text-xl font-bold tracking-tight text-teal">NR</span>
-              <span className="hidden sm:inline text-sm font-medium text-[#B8C8C4] tracking-wide group-hover:text-white transition-colors">
+              <span className="hidden sm:inline text-sm font-medium text-[var(--ed-soft)] tracking-wide group-hover:text-white transition-colors">
                 NIZAR RAHME
               </span>
             </Link>
             <Button
               variant="outline"
               size="sm"
-              className="border-surface-border text-[#B8C8C4] hover:bg-elevated rounded-[10px]"
+              className="border-surface-border text-[var(--ed-soft)] hover:bg-elevated rounded-[10px]"
               onClick={() => router.push('/')}
             >
               <Globe className="size-4 mr-2" /> Browse all domains
@@ -70,7 +72,7 @@ export function DomainPermalinkView({ domain, siteUrl }: Props) {
           transition={{ duration: 0.4 }}
         >
           <div className="flex flex-wrap items-center gap-2 mb-4">
-            <Badge className="bg-elevated text-[#718581] border-surface-border text-xs font-mono-accent rounded-full px-3 py-1">
+            <Badge className="bg-elevated text-[var(--ed-mute)] border-surface-border text-xs font-mono-accent rounded-full px-3 py-1">
               {domain.extension}
             </Badge>
             <Badge className="bg-coral/10 text-coral border-coral/20 text-xs font-mono-accent rounded-full px-3 py-1">
@@ -81,7 +83,7 @@ export function DomainPermalinkView({ domain, siteUrl }: Props) {
                 Featured
               </Badge>
             )}
-            <Badge variant="outline" className="border-surface-border text-[#718581] text-xs font-mono-accent rounded-full px-3 py-1">
+            <Badge variant="outline" className="border-surface-border text-[var(--ed-mute)] text-xs font-mono-accent rounded-full px-3 py-1">
               {domain.status}
             </Badge>
           </div>
@@ -97,7 +99,7 @@ export function DomainPermalinkView({ domain, siteUrl }: Props) {
           )}
 
           {domain.shortDescription && (
-            <p className="mt-6 text-base sm:text-lg text-[#B8C8C4] leading-relaxed max-w-2xl">
+            <p className="mt-6 text-base sm:text-lg text-[var(--ed-soft)] leading-relaxed max-w-2xl">
               {domain.shortDescription}
             </p>
           )}
@@ -108,7 +110,7 @@ export function DomainPermalinkView({ domain, siteUrl }: Props) {
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className="text-xs font-mono-accent bg-elevated text-[#B8C8C4] rounded-full px-3 py-1"
+                  className="text-xs font-mono-accent bg-elevated text-[var(--ed-soft)] rounded-full px-3 py-1"
                 >
                   <Tag className="size-3 mr-1" /> {tag}
                 </Badge>
@@ -123,7 +125,7 @@ export function DomainPermalinkView({ domain, siteUrl }: Props) {
               </h2>
               <ul className="space-y-2">
                 {domain.useCases.map((uc) => (
-                  <li key={uc} className="flex items-start gap-2 text-sm text-[#B8C8C4]">
+                  <li key={uc} className="flex items-start gap-2 text-sm text-[var(--ed-soft)]">
                     <CheckCircle2 className="size-4 text-teal mt-0.5 shrink-0" />
                     {uc}
                   </li>
@@ -145,15 +147,15 @@ export function DomainPermalinkView({ domain, siteUrl }: Props) {
             <Button
               variant="outline"
               onClick={handleCopyLink}
-              className="border-surface-border text-[#B8C8C4] hover:bg-elevated hover:text-white rounded-[12px] h-12 px-6 transition-all"
+              className="border-surface-border text-[var(--ed-soft)] hover:bg-elevated hover:text-white rounded-[12px] h-12 px-6 transition-all"
             >
               {copied ? 'Copied!' : 'Copy share link'}
             </Button>
           </div>
 
           <div className="mt-8 p-4 bg-elevated/40 surface-border rounded-xl">
-            <p className="text-xs font-mono-accent text-[#718581]">
-              Permalink: <span className="text-[#B8C8C4]">{shareUrl}</span>
+            <p className="text-xs font-mono-accent text-[var(--ed-mute)]">
+              Permalink: <span className="text-[var(--ed-soft)]">{shareUrl}</span>
             </p>
           </div>
 
@@ -168,9 +170,9 @@ export function DomainPermalinkView({ domain, siteUrl }: Props) {
         </motion.div>
       </main>
 
-      <footer className="surface-border-t py-8 bg-[#061312]/60">
+      <footer className="surface-border-t py-8 bg-background/60">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-xs text-[#718581] font-mono-accent">
+          <p className="text-xs text-[var(--ed-mute)] font-mono-accent">
             © {new Date().getFullYear()} NIZAR RAHME · All rights reserved
           </p>
         </div>

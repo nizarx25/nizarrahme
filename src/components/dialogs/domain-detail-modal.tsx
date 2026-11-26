@@ -31,7 +31,7 @@ export function DomainDetailModal() {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="sm:max-w-2xl max-h-[90dvh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl p-4 sm:p-6">
+      <DialogContent className="sm:max-w-2xl max-h-[90dvh] overflow-y-auto bg-surface border-surface-border rounded-2xl p-4 sm:p-6">
         {isLoading ? (
           <div className="py-4 sm:py-8 space-y-3 sm:space-y-4">
             <Skeleton className="h-8 w-48 bg-surface-border/50" />
@@ -43,7 +43,7 @@ export function DomainDetailModal() {
           <>
             <DialogHeader>
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                <Badge className="bg-elevated text-[#718581] border-surface-border text-[10px] sm:text-xs font-mono-accent rounded-full px-2 sm:px-3 py-0">
+                <Badge className="bg-elevated text-[var(--ed-mute)] border-surface-border text-[10px] sm:text-xs font-mono-accent rounded-full px-2 sm:px-3 py-0">
                   {data.domain.extension}
                 </Badge>
                 <Badge className="bg-coral/10 text-coral border-coral/20 text-[10px] sm:text-xs font-mono-accent rounded-full px-2 sm:px-3 py-0">
@@ -69,12 +69,12 @@ export function DomainDetailModal() {
                     ${data.domain.price.toLocaleString()}
                   </p>
                 )}
-                <Badge variant="outline" className="border-surface-border text-[#718581] text-xs sm:text-sm font-mono-accent rounded-full">
+                <Badge variant="outline" className="border-surface-border text-[var(--ed-mute)] text-xs sm:text-sm font-mono-accent rounded-full">
                   {data.domain.saleType}
                 </Badge>
               </div>
               {data.domain.shortDescription && (
-                <p className="text-sm text-[#B8C8C4] leading-relaxed">
+                <p className="text-sm text-[var(--ed-soft)] leading-relaxed">
                   {data.domain.shortDescription}
                 </p>
               )}
@@ -84,7 +84,7 @@ export function DomainDetailModal() {
                     <Badge
                       key={tag}
                       variant="secondary"
-                      className="text-[10px] sm:text-xs font-mono-accent bg-elevated text-[#B8C8C4] rounded-full px-2 sm:px-3 py-0"
+                      className="text-[10px] sm:text-xs font-mono-accent bg-elevated text-[var(--ed-soft)] rounded-full px-2 sm:px-3 py-0"
                     >
                       {tag}
                     </Badge>
@@ -100,7 +100,7 @@ export function DomainDetailModal() {
                     {data.domain.useCases.map((uc) => (
                       <li
                         key={uc}
-                        className="flex items-start gap-2 text-xs sm:text-sm text-[#B8C8C4]"
+                        className="flex items-start gap-2 text-xs sm:text-sm text-[var(--ed-soft)]"
                       >
                         <CheckCircle2 className="size-3.5 sm:size-4 text-teal mt-0.5 shrink-0" />
                         {uc}
@@ -111,7 +111,7 @@ export function DomainDetailModal() {
               )}
               {data.domain.publicNotes && (
                 <div className="p-3 sm:p-4 bg-elevated rounded-xl border border-surface-border">
-                  <p className="text-xs sm:text-sm text-[#B8C8C4]">
+                  <p className="text-xs sm:text-sm text-[var(--ed-soft)]">
                     {data.domain.publicNotes}
                   </p>
                 </div>
@@ -136,7 +136,7 @@ export function DomainDetailModal() {
                         <p className="font-display text-xs sm:text-sm font-bold text-white truncate">
                           {rd.name}
                         </p>
-                        <p className="text-[10px] sm:text-xs font-mono-accent text-[#718581] mt-1">
+                        <p className="text-[10px] sm:text-xs font-mono-accent text-[var(--ed-mute)] mt-1">
                           {rd.category}
                         </p>
                       </button>

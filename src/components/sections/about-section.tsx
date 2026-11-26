@@ -33,7 +33,7 @@ export function AboutSection() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">About</p>
         <h1 id="about-heading" className="font-display text-3xl sm:text-4xl font-bold text-white mb-8">About NIZAR RAHME</h1>
-        <div className="space-y-6 text-[#B8C8C4] leading-relaxed">
+        <div className="space-y-6 text-[var(--ed-soft)] leading-relaxed">
           <p>I&rsquo;m NIZAR RAHME. I invest in and curate domain names for businesses operating in AI, SaaS, fintech, technology, and the broader digital economy.</p>
           <p>My approach to domain investing is straightforward: I look for names that are short, memorable, and genuinely brandable: names that could serve as the foundation for a real business. I don&rsquo;t register names at scale or flip domains for quick returns. Each name in the catalog has been selected with specific industries and use cases in mind.</p>
           <p>Beyond domain investing, I have hands-on experience building WordPress websites, creating digital content, and working with AI-assisted workflows. This practical background informs how I evaluate names: I think about how a domain will work in context, not just how it sounds.</p>
@@ -68,7 +68,7 @@ export function AboutSection() {
                 <div
                   className={`w-8 h-8 rounded-lg bg-elevated border flex items-center justify-center text-xs font-mono-accent transition-all duration-300 ${
                     hoveredIndex === idx
-                      ? 'text-[#061312] border-teal/40 bg-gradient-to-br from-teal to-teal-soft shadow-[0_0_16px_rgba(0,229,176,0.25)]'
+                      ? 'text-[var(--ed-onacc)] border-teal/40 bg-gradient-to-br from-teal to-teal-soft shadow-[0_0_16px_rgba(0,229,176,0.25)]'
                       : 'text-teal/70 border-surface-border'
                   }`}
                 >
@@ -87,7 +87,7 @@ export function AboutSection() {
                 </h3>
                 <p
                   className={`text-sm leading-relaxed transition-colors duration-300 ${
-                    hoveredIndex === idx ? 'text-[#B8C8C4]' : 'text-[#718581]'
+                    hoveredIndex === idx ? 'text-[var(--ed-soft)]' : 'text-[var(--ed-mute)]'
                   }`}
                 >
                   {item.desc}
@@ -110,7 +110,7 @@ export function AboutSection() {
         <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-6">Supporting capabilities</h2>
         <ul className="space-y-3">
           {SUPPORTING_CAPABILITIES.map((item) => (
-            <li key={item} className="flex items-center gap-3 text-sm text-[#B8C8C4]">
+            <li key={item} className="flex items-center gap-3 text-sm text-[var(--ed-soft)]">
               <CheckCircle2 className="size-4 text-teal shrink-0" />
               {item}
             </li>
@@ -118,7 +118,7 @@ export function AboutSection() {
         </ul>
         <Separator className="my-12 bg-surface-border" />
         <div className="flex items-center gap-4">
-          <span className="text-sm text-[#718581] font-mono-accent">Connect:</span>
+          <span className="text-sm text-[var(--ed-mute)] font-mono-accent">Connect:</span>
           <SocialLinks />
         </div>
       </div>

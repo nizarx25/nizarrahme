@@ -83,7 +83,7 @@ export function ContactSection() {
           <h1 id="contact-heading" className="font-display text-2xl sm:text-3xl font-bold text-white mb-2">
             Thank you.
           </h1>
-          <p className="text-sm text-[#B8C8C4] leading-relaxed">
+          <p className="text-sm text-[var(--ed-soft)] leading-relaxed">
             Your message has been received. NIZAR RAHME will get back to you shortly.
           </p>
         </div>
@@ -96,7 +96,7 @@ export function ContactSection() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">Get in touch</p>
         <h1 id="contact-heading" className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Contact</h1>
-        <p className="text-[#718581] mb-8 leading-relaxed">
+        <p className="text-[var(--ed-mute)] mb-8 leading-relaxed">
           Whether you have a question about a specific domain, want to discuss a partnership, or are interested in working together, send a message and I&apos;ll respond as soon as I can.
         </p>
 
@@ -116,7 +116,7 @@ export function ContactSection() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label htmlFor="contact-name" className="text-sm text-[#B8C8C4]">Name *</Label>
+                <Label htmlFor="contact-name" className="text-sm text-[var(--ed-soft)]">Name *</Label>
                 <Input
                   id="contact-name"
                   value={form.name}
@@ -129,7 +129,7 @@ export function ContactSection() {
                 )}
               </div>
               <div className="space-y-1">
-                <Label htmlFor="contact-email" className="text-sm text-[#B8C8C4]">Email *</Label>
+                <Label htmlFor="contact-email" className="text-sm text-[var(--ed-soft)]">Email *</Label>
                 <Input
                   id="contact-email"
                   type="email"
@@ -144,7 +144,7 @@ export function ContactSection() {
               </div>
             </div>
             <div className="space-y-1">
-              <Label htmlFor="contact-category" className="text-sm text-[#B8C8C4]">Category *</Label>
+              <Label htmlFor="contact-category" className="text-sm text-[var(--ed-soft)]">Category *</Label>
               <select
                 id="contact-category"
                 value={form.category}
@@ -162,14 +162,14 @@ export function ContactSection() {
               )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="contact-message" className="text-sm text-[#B8C8C4]">Message *</Label>
+              <Label htmlFor="contact-message" className="text-sm text-[var(--ed-soft)]">Message *</Label>
               <Textarea
                 id="contact-message"
                 value={form.message}
                 onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
                 rows={5}
                 aria-invalid={!!errors.message}
-                className="bg-surface border-surface-border rounded-[10px] text-white text-sm placeholder:text-[#718581] focus:border-teal/40 focus:ring-teal/20"
+                className="bg-surface border-surface-border rounded-[10px] text-white text-sm placeholder:text-[var(--ed-mute)] focus:border-teal/40 focus:ring-teal/20"
               />
               {errors.message && (
                 <p role="alert" className="text-xs text-error mt-0.5">{errors.message}</p>
@@ -182,7 +182,7 @@ export function ContactSection() {
                 onCheckedChange={(v) => setForm((f) => ({ ...f, consent: v === true }))}
                 className="data-[state=checked]:bg-teal data-[state=checked]:border-teal mt-0.5"
               />
-              <Label htmlFor="contact-consent" className="text-xs text-[#718581] leading-relaxed">
+              <Label htmlFor="contact-consent" className="text-xs text-[var(--ed-mute)] leading-relaxed">
                 I consent to having my information stored and used to respond to this inquiry. *
               </Label>
             </div>

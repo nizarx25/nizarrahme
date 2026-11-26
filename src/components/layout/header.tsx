@@ -25,7 +25,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-[#061312]/80 backdrop-blur-md surface-border-b">
+    <header className="sticky top-0 z-50 bg-background/85 backdrop-blur-md surface-border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <button
@@ -36,11 +36,11 @@ export function Header() {
             <motion.span
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="font-display text-xl font-bold tracking-tight text-teal"
+              className="inline-flex size-8 items-center justify-center rounded-[4px] bg-teal text-[var(--ed-onacc)] font-display text-sm font-bold tracking-tight"
             >
               NR
             </motion.span>
-            <span className="hidden sm:inline text-sm font-medium text-[#B8C8C4] tracking-wide group-hover:text-white transition-colors">
+            <span className="hidden sm:inline font-display text-lg text-white tracking-tight">
               NIZAR RAHME
             </span>
           </button>
@@ -49,20 +49,18 @@ export function Header() {
             {NAV_ITEMS.map((item) => (
               <motion.button
                 key={item.section}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
                 onClick={() => handleNav(item.section)}
-                className={`relative px-3 py-2 text-sm rounded-[10px] transition-all duration-200 font-medium ${
+                className={`relative px-3 py-2 text-[13px] uppercase tracking-[0.14em] transition-colors duration-200 ${
                   nav.section === item.section
-                    ? 'text-white bg-gradient-to-r from-elevated to-elevated/80 shadow-[0_0_12px_rgba(0,229,176,0.08)]'
-                    : 'text-[#718581] hover:text-white hover:bg-elevated/50 hover:shadow-[0_0_8px_rgba(0,229,176,0.05)]'
+                    ? 'text-white'
+                    : 'text-[var(--ed-mute)] hover:text-white'
                 }`}
               >
                 {item.label}
                 {nav.section === item.section && (
                   <motion.div
                     layoutId="navIndicator"
-                    className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-6 bg-gradient-to-r from-teal to-teal-soft rounded-full shadow-[0_0_8px_rgba(0,229,176,0.5)]"
+                    className="absolute bottom-0 left-3 right-3 h-px bg-teal"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -75,7 +73,7 @@ export function Header() {
               <Button
                 onClick={() => handleNav('domains')}
                 size="sm"
-                className="hidden sm:inline-flex bg-gradient-to-r from-coral to-coral-hover text-white rounded-[10px] font-medium transition-all hover:shadow-[0_0_24px_rgba(255,77,46,0.4)] hover:brightness-110 gap-2"
+                className="hidden sm:inline-flex bg-coral hover:bg-coral-hover text-white rounded-full px-5 font-medium transition-colors gap-2"
               >
                 <ShoppingCart className="size-4" />
                 Buy a Domain
@@ -84,11 +82,11 @@ export function Header() {
 
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden text-[#B8C8C4] hover:bg-elevated" aria-label="Open menu">
+                <Button variant="ghost" size="icon" className="lg:hidden text-[var(--ed-soft)] hover:bg-elevated" aria-label="Open menu">
                   <Menu className="size-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-72 bg-[#061312] border-surface-border">
+              <SheetContent side="right" className="w-72 bg-background border-surface-border">
                 <SheetHeader>
                   <SheetTitle className="font-display text-xl text-white">Menu</SheetTitle>
                 </SheetHeader>
@@ -101,7 +99,7 @@ export function Header() {
                       className={`px-4 py-3 text-left rounded-[10px] text-sm transition-colors ${
                         nav.section === item.section
                           ? 'bg-elevated font-medium text-white'
-                          : 'text-[#718581] hover:text-white hover:bg-elevated/50'
+                          : 'text-[var(--ed-mute)] hover:text-white hover:bg-elevated/50'
                       }`}
                     >
                       {item.label}

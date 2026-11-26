@@ -94,7 +94,7 @@ export function AdminAuthButton({ variant = 'header' }: { variant?: Variant }) {
             variant="outline"
             className={cn(
               'h-8 rounded-[10px] gap-2 border-surface-border bg-elevated/40',
-              'text-[#B8C8C4] hover:text-white hover:bg-elevated hover:border-teal/30',
+              'text-[var(--ed-soft)] hover:text-white hover:bg-elevated hover:border-teal/30',
               'transition-colors',
             )}
             aria-label="Admin sign in"
@@ -113,7 +113,7 @@ export function AdminAuthButton({ variant = 'header' }: { variant?: Variant }) {
       <Button
         asChild
         variant="outline"
-        className="border-surface-border bg-elevated/40 text-[#B8C8C4] hover:text-white hover:bg-elevated rounded-[10px] gap-2"
+        className="border-surface-border bg-elevated/40 text-[var(--ed-soft)] hover:text-white hover:bg-elevated rounded-[10px] gap-2"
       >
         <Link href="/admin-login">
           <LogIn className="size-4" />
@@ -144,8 +144,8 @@ export function AdminAuthButton({ variant = 'header' }: { variant?: Variant }) {
             </span>
           </motion.button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56 bg-[#0B211E] border-surface-border">
-          <DropdownMenuLabel className="text-[#718581] text-xs font-normal">
+        <DropdownMenuContent align="end" className="w-56 bg-surface border-surface-border">
+          <DropdownMenuLabel className="text-[var(--ed-mute)] text-xs font-normal">
             Signed in as
             <div className="text-white text-sm font-medium truncate mt-0.5">
               {email}
@@ -154,7 +154,7 @@ export function AdminAuthButton({ variant = 'header' }: { variant?: Variant }) {
           <DropdownMenuSeparator className="bg-surface-border" />
           <DropdownMenuItem
             asChild
-            className="text-[#B8C8C4] focus:text-white focus:bg-elevated cursor-pointer"
+            className="text-[var(--ed-soft)] focus:text-white focus:bg-elevated cursor-pointer"
           >
             <Link href="/admin" className="flex items-center gap-2">
               <LayoutDashboard className="size-4" />
@@ -163,7 +163,7 @@ export function AdminAuthButton({ variant = 'header' }: { variant?: Variant }) {
           </DropdownMenuItem>
           <DropdownMenuItem
             asChild
-            className="text-[#B8C8C4] focus:text-white focus:bg-elevated cursor-pointer"
+            className="text-[var(--ed-soft)] focus:text-white focus:bg-elevated cursor-pointer"
           >
             <Link href="/admin/inquiries" className="flex items-center gap-2">
               Inquiries
@@ -171,7 +171,7 @@ export function AdminAuthButton({ variant = 'header' }: { variant?: Variant }) {
           </DropdownMenuItem>
           <DropdownMenuItem
             asChild
-            className="text-[#B8C8C4] focus:text-white focus:bg-elevated cursor-pointer"
+            className="text-[var(--ed-soft)] focus:text-white focus:bg-elevated cursor-pointer"
           >
             <Link href="/admin/domains" className="flex items-center gap-2">
               Domains
@@ -198,7 +198,7 @@ export function AdminAuthButton({ variant = 'header' }: { variant?: Variant }) {
   // Mobile signed-in view
   return (
     <div className="flex flex-col gap-2">
-      <div className="px-1 py-2 text-xs text-[#718581]">
+      <div className="px-1 py-2 text-xs text-[var(--ed-mute)]">
         Signed in as
         <div className="text-sm font-medium text-white truncate">{email}</div>
       </div>

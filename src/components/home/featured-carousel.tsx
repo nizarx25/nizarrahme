@@ -70,7 +70,7 @@ export function FeaturedCarousel({ domains }: Props) {
             </Badge>
           </div>
 
-          <p className="text-xs font-mono-accent text-[#718581] uppercase tracking-[0.2em] mb-4">
+          <p className="text-xs font-mono-accent text-[var(--ed-mute)] uppercase tracking-[0.2em] mb-4">
             Featured Domain
           </p>
 
@@ -79,7 +79,7 @@ export function FeaturedCarousel({ domains }: Props) {
           </h2>
 
           {domain.shortDescription && (
-            <p className="mt-4 text-sm text-[#718581] max-w-md leading-relaxed">
+            <p className="mt-4 text-sm text-[var(--ed-mute)] max-w-md leading-relaxed">
               {domain.shortDescription}
             </p>
           )}
@@ -90,12 +90,12 @@ export function FeaturedCarousel({ domains }: Props) {
                 ${domain.price.toLocaleString()}
               </p>
             )}
-            <Badge variant="outline" className="border-surface-border text-[#718581] text-xs font-mono-accent rounded-full">
+            <Badge variant="outline" className="border-surface-border text-[var(--ed-mute)] text-xs font-mono-accent rounded-full">
               {domain.status}
             </Badge>
           </div>
 
-          <div className="mt-6 flex items-center gap-2 text-sm text-[#718581] group-hover:text-teal transition-colors">
+          <div className="mt-6 flex items-center gap-2 text-sm text-[var(--ed-mute)] group-hover:text-teal transition-colors">
             <span className="font-medium">View details</span>
             <ArrowRight className="size-4" />
           </div>
@@ -116,7 +116,7 @@ export function FeaturedCarousel({ domains }: Props) {
             className={`transition-all rounded-full ${
               i === current
                 ? 'w-6 h-2 bg-teal shadow-[0_0_8px_rgba(0,229,176,0.5)]'
-                : 'w-2 h-2 bg-surface-border hover:bg-[#718581]'
+                : 'w-2 h-2 bg-surface-border hover:bg-[var(--ed-mute)]'
             }`}
           />
         ))}
@@ -129,7 +129,7 @@ export function FeaturedCarousel({ domains }: Props) {
           setCurrent((prev) => (prev - 1 + domains.length) % domains.length)
           startAutoplay()
         }}
-        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 sm:-translate-x-5 w-10 h-10 rounded-full bg-elevated border border-surface-border flex items-center justify-center text-[#718581] hover:text-teal hover:border-teal/30 transition-all opacity-0 sm:opacity-100 group-hover:opacity-100"
+        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 sm:-translate-x-5 w-10 h-10 rounded-full bg-elevated border border-surface-border flex items-center justify-center text-[var(--ed-mute)] hover:text-teal hover:border-teal/30 transition-all opacity-0 sm:opacity-100 group-hover:opacity-100"
         aria-label="Previous domain"
       >
         <ChevronLeft className="size-5" />
@@ -140,7 +140,7 @@ export function FeaturedCarousel({ domains }: Props) {
           setCurrent((prev) => (prev + 1) % domains.length)
           startAutoplay()
         }}
-        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 sm:translate-x-5 w-10 h-10 rounded-full bg-elevated border border-surface-border flex items-center justify-center text-[#718581] hover:text-teal hover:border-teal/30 transition-all opacity-0 sm:opacity-100 group-hover:opacity-100"
+        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 sm:translate-x-5 w-10 h-10 rounded-full bg-elevated border border-surface-border flex items-center justify-center text-[var(--ed-mute)] hover:text-teal hover:border-teal/30 transition-all opacity-0 sm:opacity-100 group-hover:opacity-100"
         aria-label="Next domain"
       >
         <ChevronRight className="size-5" />
