@@ -738,3 +738,9 @@ body:not(.theme-ed) .ed-glow, body:not(.theme-ed) .ed-dots { display: none; }
 .theme-ed [data-slot="select-item"]:focus, .theme-ed [data-slot="select-item"][data-highlighted] { background: #1F4D3A; color: #F6F1E8; }
 .theme-ed [data-slot="select-trigger"] { color: #0B0B0A; font-weight: 500; }
 .theme-ed [data-slot="select-value"] { color: #0B0B0A; }
+
+/* Arabic and other joined scripts: no letter spacing, no splitting */
+.ed-ar-text, .ed-ar-text * { letter-spacing: 0 !important; word-spacing: normal !important; text-transform: none !important; font-synthesis: none; }
+.ed-ar-text { unicode-bidi: plaintext; }
+.ed-ar-hover { transition: transform .35s cubic-bezier(.34,1.56,.64,1); transform: translateY(-4px);
+  text-decoration: underline; text-decoration-color: #0E6B42; text-decoration-thickness: 3px; text-underline-offset: 8px; }

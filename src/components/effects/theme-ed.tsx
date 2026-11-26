@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 
 const HEAD = 'h1, h2, h3'
+const ARABIC = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/
 const WORD_TAGS = 'P, LI, LABEL, BLOCKQUOTE, DD'
 
 /** Wrap each letter of a text node in hop-able spans. Returns a restore fn. */
@@ -106,6 +107,12 @@ export function ThemeEd() {
       window.clearTimeout(headTimer)
       endHead()
       head = h
+      if (ARABIC.test(h.textContent ?? '')) {
+        // joined scripts must never be split: lift the whole heading instead
+        h.classList.add('ed-ar-hover')
+        restore = [() => h.classList.remove('ed-ar-hover')]
+        return
+      }
       const tw = document.createTreeWalker(h, NodeFilter.SHOW_TEXT)
       const nodes: Text[] = []
       while (tw.nextNode()) {
@@ -253,6 +260,22 @@ export function ThemeEd() {
       resetMag()
       reg?.delete('ed-word')
     }
+    // Tag every element holding Arabic text so spacing never breaks the joins
+    let tagTimer = 0
+    const tagArabic = () => {
+      const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+      while (tw.nextNode()) {
+        const n = tw.currentNode as Text
+        if (ARABIC.test(n.data)) n.parentElement?.classList.add('ed-ar-text')
+      }
+    }
+    const sched = () => {
+      window.clearTimeout(tagTimer)
+      tagTimer = window.setTimeout(tagArabic, 150)
+    }
+    tagArabic()
+    const mo = new MutationObserver(sched)
+    mo.observe(document.body, { childList: true, subtree: true, characterData: true })
     raf = requestAnimationFrame(tick)
     window.addEventListener('pointermove', move, { passive: true })
     window.addEventListener('pointerdown', down, { passive: true })
@@ -260,6 +283,8 @@ export function ThemeEd() {
     root.addEventListener('pointerleave', leave)
     return () => {
       cancelAnimationFrame(raf)
+      mo.disconnect()
+      window.clearTimeout(tagTimer)
       window.clearTimeout(headTimer)
       endHead()
       resetCard()

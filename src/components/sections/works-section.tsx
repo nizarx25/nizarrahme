@@ -118,312 +118,110 @@ function ProjectCard({
 }: {
   project: Project
   index: number
-  onOpen: (p: Project) => void
+  onOpen: (p: Project, imageIndex?: number) => void
 }) {
-  const reduce = useReducedMotion()
-  const cardRef = useRef<HTMLDivElement | null>(null)
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const [hover, setHover] = useState(false)
-  const [spot, setSpot] = useState({ x: 50, y: 50 })
-
-  // 3D tilt values
-  const rotateX = useSpring(useMotionValue(0), { stiffness: 220, damping: 18 })
-  const rotateY = useSpring(useMotionValue(0), { stiffness: 220, damping: 18 })
-  const liftZ = useSpring(useMotionValue(0), { stiffness: 220, damping: 18 })
-
-  // Parallax scroll
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start end', 'end start'],
-  })
-  const imageY = useTransform(scrollYProgress, [0, 1], ['-6%', '10%'])
-  const cardOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.15, 0.85, 1],
-    [0, 1, 1, 0.95]
-  )
-  const labelY = useTransform(scrollYProgress, [0, 1], ['8%', '-12%'])
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (reduce || !cardRef.current) return
-    const r = cardRef.current.getBoundingClientRect()
-    const px = ((e.clientX - r.left) / r.width) * 100
-    const py = ((e.clientY - r.top) / r.height) * 100
-    setSpot({ x: px, y: py })
-    const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2)
-    const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2)
-    rotateY.set(dx * 8)
-    rotateX.set(-dy * 8)
-    liftZ.set(1)
-  }
-  const handleMouseLeave = () => {
-    setHover(false)
-    rotateX.set(0)
-    rotateY.set(0)
-    liftZ.set(0)
-  }
-
   const isReversed = index % 2 === 1
-  const primary = project.images[0]
-  const secondary = project.images[1] ?? project.images[0]
+  const imgs = project.images
+  const [cover, setCover] = useState(0)
 
   return (
     <Reveal delay={index * 0.05}>
-      <motion.article
-        ref={containerRef}
-        style={{ opacity: reduce ? undefined : cardOpacity }}
-        className={[
-          'group relative grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center',
-          'py-10 lg:py-16 first:pt-0',
-        ].join(' ')}
-      >
-        {/* Image / card block — 3D tilt */}
-        <div
-          className={[
-            'relative lg:col-span-7 [perspective:1500px]',
-            isReversed ? 'lg:order-2 lg:col-start-6' : 'lg:order-1',
-          ].join(' ')}
-        >
-          <motion.div
-            ref={cardRef}
-            onMouseMove={handleMouseMove}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={handleMouseLeave}
-            style={{
-              rotateX: reduce ? undefined : rotateX,
-              rotateY: reduce ? undefined : rotateY,
-              z: reduce ? undefined : liftZ,
-              transformStyle: 'preserve-3d',
-            }}
-            className="relative aspect-[16/11] w-full"
+      <article className="group relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center py-10 lg:py-16 first:pt-0">
+        {/* Images: one cover plus a strip of equal thumbnails */}
+        <div className={['lg:col-span-7', isReversed ? 'lg:order-2' : 'lg:order-1'].join(' ')}>
+          <button
+            type="button"
+            onClick={() => onOpen(project, cover)}
+            aria-label={`Open ${project.title}`}
+            className="domain-card-hover group/cover relative block aspect-[16/10] w-full overflow-hidden rounded-[20px] border border-surface-border bg-elevated text-left"
           >
-            {/* Outer frame — animated gradient border */}
-            <div className="absolute -inset-px rounded-[26px] bg-gradient-to-br from-teal/0 via-coral/0 to-teal-soft/0 p-[1px] transition-all duration-700 group-hover:from-teal/60 group-hover:via-coral/40 group-hover:to-teal-soft/60">
-              <div className="relative h-full w-full overflow-hidden rounded-[25px] surface-bg">
-                {/* Primary image with parallax */}
-                {primary && (
-                  <motion.div
-                    style={{ y: imageY }}
-                    className="absolute inset-[-8%]"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={primary}
-                      alt={`${project.title} — primary view`}
-                      loading="lazy"
-                      className="h-full w-full object-cover object-top transition-transform duration-1000 ease-out group-hover:scale-110"
-                    />
-                  </motion.div>
-                )}
-
-                {/* Top + bottom gradient scrims */}
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-black/65 via-black/20 to-transparent" />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-
-                {/* Cursor spotlight — follows mouse on hover */}
-                <div
-                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 mix-blend-screen"
-                  style={{
-                    background: `radial-gradient(420px circle at ${spot.x}% ${spot.y}%, rgba(0, 229, 176, 0.22), transparent 55%)`,
-                  }}
-                />
-                {/* Secondary radial highlight */}
-                <div
-                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
-                  style={{
-                    background: `radial-gradient(280px circle at ${spot.x}% ${spot.y}%, rgba(255, 77, 46, 0.15), transparent 60%)`,
-                  }}
-                />
-
-                {/* Grain overlay */}
-                <div
-                  className="pointer-events-none absolute inset-0 opacity-[0.07] mix-blend-overlay"
-                  style={{
-                    backgroundImage:
-                      "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/></svg>\")",
-                    backgroundSize: '160px 160px',
-                  }}
-                />
-
-                {/* Animated scan line */}
-                <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                  <motion.div
-                    initial={{ y: '-100%' }}
-                    animate={hover && !reduce ? { y: '100%' } : { y: '-100%' }}
-                    transition={{ duration: 1.4, ease: 'easeInOut' }}
-                    className="absolute inset-x-0 h-24 bg-gradient-to-b from-transparent via-teal/20 to-transparent"
-                  />
-                </div>
-
-                {/* Top-left index pill */}
-                <div
-                  className="absolute left-5 top-5 z-10"
-                  style={{ transform: 'translateZ(40px)' }}
-                >
-                  <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3.5 py-1.5 text-[10px] font-mono-accent uppercase tracking-[0.22em] text-[#F6F1E8] backdrop-blur-xl">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal opacity-70" />
-                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-teal" />
-                    </span>
-                    <span className="text-teal">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <span className="h-px w-4 bg-white/30" />
-                    <span>{project.category}</span>
-                  </span>
-                </div>
-
-                {/* Top-right live badge */}
-                {project.website && (
-                  <div
-                    className="absolute right-5 top-5 z-10"
-                    style={{ transform: 'translateZ(40px)' }}
-                  >
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-teal/30 bg-teal/10 px-2.5 py-1 text-[9px] font-mono-accent uppercase tracking-[0.22em] text-teal backdrop-blur-xl">
-                      <span className="h-1 w-1 rounded-full bg-teal animate-pulse" />
-                      Live
-                    </span>
-                  </div>
-                )}
-
-                {/* Bottom content — title strip */}
-                <div
-                  className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-7"
-                  style={{ transform: 'translateZ(50px)' }}
-                >
-                  <p className="text-[10px] font-mono-accent uppercase tracking-[0.25em] text-[#9FD8BD] mb-2 inline-flex items-center gap-2">
-                    <span className="inline-block h-px w-5 bg-[#9FD8BD]/60" />
-                    {project.year} · {project.region}
-                  </p>
-                  <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-bold leading-[1.1] text-[#F6F1E8] max-w-[90%]">
-                    {project.title}
-                  </h3>
-                </div>
-
-                {/* Open button (magnetic) */}
-                <div
-                  className="absolute bottom-5 right-5 z-20"
-                  style={{ transform: 'translateZ(60px)' }}
-                >
-                  <MagneticButton
-                    onClick={() => onOpen(project)}
-                    ariaLabel={`View ${project.title}`}
-                    className="group/open relative inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-[#1B1A17]/60 text-[#F6F1E8] backdrop-blur-xl transition-all duration-500 group-hover:border-teal/60 group-hover:text-teal"
-                  >
-                    <span className="absolute inset-0 rounded-full bg-teal/0 transition-all duration-500 group-hover:bg-teal/15 group-hover:scale-150 group-hover:opacity-0" />
-                    <ArrowUpRight className="relative h-5 w-5 transition-all duration-500 group-hover:rotate-45" />
-                  </MagneticButton>
-                </div>
-
-                {/* Reflective gloss */}
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/[0.07] to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
-              </div>
-            </div>
-
-            {/* Outer glow shadow on hover */}
-            <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[40px] bg-teal/0 blur-3xl transition-all duration-700 group-hover:bg-teal/20" />
-          </motion.div>
-
-          {/* Floating secondary thumbnail — peeking card */}
-          <motion.div
-            style={{ y: reduce ? undefined : labelY }}
-            className={[
-              'absolute -bottom-10 z-20 hidden md:block',
-              isReversed ? 'left-2 lg:-left-6' : 'right-2 lg:-right-6',
-            ].join(' ')}
-          >
-            <div className="group/thumb relative h-28 w-40 overflow-hidden rounded-[16px] border border-surface-border surface-bg shadow-2xl transition-transform duration-500 hover:scale-105 hover:-rotate-2">
-              {secondary && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={secondary}
-                  alt=""
-                  aria-hidden
-                  loading="lazy"
-                  className="h-full w-full object-cover opacity-95"
-                />
-              )}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-              <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-                <span className="text-[9px] font-mono-accent uppercase tracking-[0.2em] text-[#F6F1E8]/85">
-                  View 02
-                </span>
-                <Eye className="h-3.5 w-3.5 text-teal" />
-              </div>
-              <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/15 rounded-[16px]" />
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Text block */}
-        <div
-          className={[
-            'relative lg:col-span-5',
-            isReversed ? 'lg:order-1 lg:col-start-1' : 'lg:order-2',
-          ].join(' ')}
-        >
-          <motion.div
-            initial={false}
-            whileHover={{ x: 4 }}
-            transition={{ type: 'spring', stiffness: 240, damping: 22 }}
-          >
-            <div className="mb-4 inline-flex items-center gap-2">
-              <span className="text-[10px] font-mono-accent uppercase tracking-[0.25em] text-teal">
-                {String(index + 1).padStart(2, '0')} /
-                {String(PROJECTS.length).padStart(2, '0')}
-              </span>
-              <span className="h-px w-8 bg-gradient-to-r from-teal/60 to-transparent" />
-            </div>
-
-            <h3 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.02] text-white">
-              <span className="bg-gradient-to-br from-white via-white to-white/70 bg-clip-text text-transparent">
-                {project.title}
-              </span>
-            </h3>
-
-            <p className="mt-4 text-[var(--ed-soft)] leading-relaxed text-sm sm:text-base">
-              {project.summary}
-            </p>
-
-            {project.highlights && project.highlights.length > 0 && (
-              <ul className="mt-6 space-y-2.5">
-                {project.highlights.slice(0, 3).map((h, i) => (
-                  <motion.li
-                    key={h}
-                    initial={reduce ? false : { opacity: 0, x: -8 }}
-                    whileInView={
-                      reduce ? undefined : { opacity: 1, x: 0 }
-                    }
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.08, duration: 0.5 }}
-                    className="flex items-start gap-3 text-sm text-[var(--ed-soft)]"
-                  >
-                    <span className="mt-1.5 inline-block h-1 w-1 flex-shrink-0 rounded-full bg-gradient-to-r from-teal to-coral" />
-                    <span>{h}</span>
-                  </motion.li>
-                ))}
-              </ul>
+            {imgs[cover] && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={imgs[cover]}
+                alt={`${project.title} view ${cover + 1}`}
+                loading="lazy"
+                className="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover/cover:scale-105"
+              />
             )}
+            <span className="pointer-events-none absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-[#FFFDF8]/95 px-3 py-1.5 text-[10px] font-mono-accent uppercase tracking-[0.2em] text-[#0B0B0A] shadow">
+              <span className="text-[#0E6B42]">{String(index + 1).padStart(2, '0')}</span>
+              {project.category}
+            </span>
+            <span className="pointer-events-none absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-[#1F4D3A] px-4 py-2 text-xs font-medium text-[#F6F1E8] opacity-0 translate-y-2 transition-all duration-300 group-hover/cover:opacity-100 group-hover/cover:translate-y-0">
+              <Eye className="h-3.5 w-3.5" /> View
+            </span>
+          </button>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Button
-                onClick={() => onOpen(project)}
-                className="relative overflow-hidden bg-gradient-to-r from-teal to-teal-soft text-background hover:shadow-[0_0_30px_-5px_rgba(0,229,176,0.6)] transition-shadow"
-              >
-                <span className="relative z-10 inline-flex items-center gap-2">
-                  View case study
-                  <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </span>
-                <span className="absolute inset-0 -z-0 bg-gradient-to-r from-teal-soft to-teal opacity-0 transition-opacity hover:opacity-100" />
-              </Button>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-surface-border surface-bg px-3 py-1.5 text-xs text-[var(--ed-soft)]">
-                <MapPin className="h-3.5 w-3.5 text-teal" />
-                {project.country}
-              </span>
+          {imgs.length > 1 && (
+            <div className="mt-3 flex gap-3">
+              {imgs.map((src, i) => (
+                <button
+                  key={src}
+                  type="button"
+                  onMouseEnter={() => setCover(i)}
+                  onFocus={() => setCover(i)}
+                  onClick={() => onOpen(project, i)}
+                  aria-label={`Open ${project.title} image ${i + 1}`}
+                  className={[
+                    'relative aspect-[16/10] w-28 sm:w-36 overflow-hidden rounded-[12px] border-2 transition-all duration-300 hover:-translate-y-1',
+                    cover === i ? 'border-[#0E6B42] shadow-md' : 'border-surface-border opacity-80 hover:opacity-100',
+                  ].join(' ')}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={src} alt="" aria-hidden loading="lazy" className="h-full w-full object-cover object-top" />
+                </button>
+              ))}
             </div>
-          </motion.div>
+          )}
         </div>
-      </motion.article>
+
+        {/* Text */}
+        <div className={['lg:col-span-5', isReversed ? 'lg:order-1' : 'lg:order-2'].join(' ')}>
+          <div className="mb-4 inline-flex items-center gap-2">
+            <span className="text-[10px] font-mono-accent uppercase tracking-[0.25em] text-teal">
+              {String(index + 1).padStart(2, '0')} /{String(PROJECTS.length).padStart(2, '0')}
+            </span>
+            <span className="h-px w-8 bg-teal/50" />
+            <span className="text-[10px] font-mono-accent uppercase tracking-[0.25em] text-[var(--ed-mute)]">
+              {project.year} · {project.region}
+            </span>
+          </div>
+
+          <h3 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.05] text-white">
+            {project.title}
+          </h3>
+
+          <p className="mt-4 text-[var(--ed-soft)] leading-relaxed text-sm sm:text-base">{project.summary}</p>
+
+          {project.highlights && project.highlights.length > 0 && (
+            <ul className="mt-6 space-y-2.5">
+              {project.highlights.slice(0, 3).map((h) => (
+                <li key={h} className="flex items-start gap-3 text-sm text-[var(--ed-soft)]">
+                  <span className="mt-1.5 inline-block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#0E6B42]" />
+                  <span>{h}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="mt-7 flex flex-wrap items-center gap-3">
+            <Button
+              onClick={() => onOpen(project, cover)}
+              className="bg-[#1F4D3A] text-[#F6F1E8] hover:bg-[#2B6650] rounded-full px-6"
+            >
+              <span className="inline-flex items-center gap-2">
+                View case study
+                <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </span>
+            </Button>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-surface-border surface-bg px-3 py-1.5 text-xs text-[var(--ed-soft)]">
+              <MapPin className="h-3.5 w-3.5 text-teal" />
+              {project.country}
+            </span>
+          </div>
+        </div>
+      </article>
     </Reveal>
   )
 }
@@ -454,36 +252,41 @@ function ProjectDialog({
   project,
   open,
   onOpenChange,
+  initialImage = 0,
 }: {
   project: Project | null
   open: boolean
   onOpenChange: (v: boolean) => void
+  initialImage?: number
 }) {
+  const [activeImage, setActiveImage] = useState(initialImage)
+  const count = project?.images.length ?? 0
+
+  useEffect(() => {
+    setActiveImage(initialImage)
+  }, [project?.slug, initialImage, open])
+
   useEffect(() => {
     if (!open) return
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onOpenChange(false)
+      if (count > 1 && e.key === 'ArrowRight') setActiveImage((i) => (i + 1) % count)
+      if (count > 1 && e.key === 'ArrowLeft') setActiveImage((i) => (i - 1 + count) % count)
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [open, onOpenChange])
-
-  const [activeImage, setActiveImage] = useState(0)
-
-  useEffect(() => {
-    setActiveImage(0)
-  }, [project?.slug])
+  }, [open, onOpenChange, count])
 
   if (!project) return null
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-5xl w-[96vw] max-h-[94vh] overflow-y-auto surface-border surface-bg p-0 sm:rounded-[28px]"
+        className="!block max-w-5xl sm:max-w-5xl w-[96vw] max-h-[94vh] overflow-y-auto surface-border surface-bg p-0 sm:rounded-[28px]"
         aria-describedby={undefined}
       >
         {/* Hero */}
-        <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-surface-border surface-bg">
+        <div className="relative aspect-[16/9] max-h-[52vh] w-full overflow-hidden border-b border-surface-border surface-bg">
           {project.images[activeImage] && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -494,6 +297,26 @@ function ProjectDialog({
             />
           )}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-surface via-surface/30 to-transparent" />
+          {count > 1 && (
+            <>
+              <button
+                type="button"
+                aria-label="Previous image"
+                onClick={() => setActiveImage((i) => (i - 1 + count) % count)}
+                className="absolute left-4 top-1/2 z-20 -translate-y-1/2 grid h-11 w-11 place-items-center rounded-full bg-[#FFFDF8]/95 text-[#0B0B0A] shadow-lg text-2xl leading-none hover:bg-[#1F4D3A] hover:!text-[#F6F1E8]"
+              >
+                &lsaquo;
+              </button>
+              <button
+                type="button"
+                aria-label="Next image"
+                onClick={() => setActiveImage((i) => (i + 1) % count)}
+                className="absolute right-4 top-1/2 z-20 -translate-y-1/2 grid h-11 w-11 place-items-center rounded-full bg-[#FFFDF8]/95 text-[#0B0B0A] shadow-lg text-2xl leading-none hover:bg-[#1F4D3A] hover:!text-[#F6F1E8]"
+              >
+                &rsaquo;
+              </button>
+            </>
+          )}
           <button
             type="button"
             onClick={() => onOpenChange(false)}
@@ -691,6 +514,7 @@ function ProjectDialog({
 export function WorksSection() {
   const [active, setActive] = useState<Project | null>(null)
   const [open, setOpen] = useState(false)
+  const [startImage, setStartImage] = useState(0)
   const [mouse, setMouse] = useState({ x: 0, y: 0 })
   const sectionRef = useRef<HTMLElement | null>(null)
 
@@ -803,8 +627,9 @@ export function WorksSection() {
             <ProjectCard
               project={p}
               index={idx}
-              onOpen={(proj) => {
+              onOpen={(proj, imageIndex = 0) => {
                 setActive(proj)
+                setStartImage(imageIndex)
                 setOpen(true)
               }}
             />
@@ -813,7 +638,7 @@ export function WorksSection() {
         ))}
       </div>
 
-      <ProjectDialog project={active} open={open} onOpenChange={setOpen} />
+      <ProjectDialog project={active} open={open} onOpenChange={setOpen} initialImage={startImage} />
     </section>
   )
 }
