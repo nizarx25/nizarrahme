@@ -53,16 +53,32 @@ function makeWave(h: HTMLElement) {
     const mark = units.length
     const wrap = document.createElement('span')
     wrap.setAttribute('aria-hidden', 'true')
+    // Split into script runs. Each run is its own bidi isolate, so Arabic
+    // words (inline-blocks) keep right-to-left order and mixed text keeps its order.
+    wrap.dir = 'auto'
+    wrap.style.unicodeBidi = 'isolate'
+    let run: HTMLElement | null = null
+    let runAr = false
     node.data.split(/(\s+)/).forEach((part) => {
       if (!part) return
+      const neutral = /^[\s\p{P}\p{S}\d]+$/u.test(part)
+      const partAr = ARABIC.test(part)
+      if (!run || (!neutral && partAr !== runAr)) {
+        run = document.createElement('span')
+        runAr = neutral ? false : partAr
+        run.dir = runAr ? 'rtl' : 'ltr'
+        run.style.unicodeBidi = 'isolate'
+        wrap.appendChild(run)
+      }
       if (/^\s+$/.test(part)) {
-        wrap.appendChild(document.createTextNode(' '))
+        run.appendChild(document.createTextNode(' '))
         return
       }
       const w = document.createElement('span')
       w.style.cssText = 'display:inline-block;white-space:nowrap'
-      if (arabic) {
+      if (partAr || runAr) {
         w.style.willChange = 'transform'
+        w.textContent = part
         units.push({ el: w, y: 0, v: 0, r: 0 })
       } else {
         for (const ch of part) {
@@ -73,8 +89,7 @@ function makeWave(h: HTMLElement) {
           units.push({ el: c, y: 0, v: 0, r: 0 })
         }
       }
-      if (arabic) w.textContent = part
-      wrap.appendChild(w)
+      run.appendChild(w)
     })
     if (gEl) for (let q = mark; q < units.length; q++) units[q].g = gEl
     const label = document.createElement('span')
