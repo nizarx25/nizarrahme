@@ -12,8 +12,18 @@ function hasDirectText(e: Element) {
   for (const c of Array.from(e.childNodes)) if (c.nodeType === 3 && (c.textContent ?? '').trim()) return true
   return false
 }
+// real buttons and icons are skipped; a clickable card (div role=button holding headings/paragraphs) is text, not a button
+function skipped(e: Element | null | undefined): boolean {
+  let c = e?.closest(SKIP) as HTMLElement | null
+  while (c) {
+    const card = c.getAttribute('role') === 'button' && c.tagName !== 'BUTTON' && !!c.querySelector('h1,h2,h3,h4,p')
+    if (!card) return true
+    c = c.parentElement?.closest(SKIP) as HTMLElement | null
+  }
+  return false
+}
 function targetFor(t: HTMLElement | null): HTMLElement | null {
-  if (!t || t.closest(SKIP) || t.closest('.ed-caret')) return null
+  if (!t || skipped(t) || t.closest('.ed-caret')) return null
   const blk = t.closest(TEXTY) as HTMLElement | null
   if (blk) return blk
   return hasDirectText(t) ? t : null
@@ -29,7 +39,7 @@ function makeWave(h: HTMLElement) {
   const restores: (() => void)[] = []
   const units: Unit[] = []
   const tw = document.createTreeWalker(h, NodeFilter.SHOW_TEXT, {
-    acceptNode: (n) => ((n.parentElement as HTMLElement)?.closest(SKIP) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+    acceptNode: (n) => (skipped(n.parentElement) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
   })
   const nodes: Text[] = []
   while (tw.nextNode()) {

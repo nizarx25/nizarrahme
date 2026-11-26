@@ -12,7 +12,12 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <h3 className="font-display text-lg font-bold text-white">NIZAR RAHME</h3>
+            <h3 className="font-display text-lg font-bold tracking-[0.02em] text-white">
+              <span className="relative inline-block">
+                NIZAR <span className="text-teal">RAHME</span>
+                <span aria-hidden="true" className="absolute -bottom-1 left-0 h-[2px] w-full bg-teal" />
+              </span>
+            </h3>
             <p className="mt-2 text-sm text-[#718581] leading-relaxed">
               Curated, brandable domain names for AI, SaaS, fintech, and technology businesses.
             </p>
