@@ -32,7 +32,7 @@ export function DomainIndexRow({ domain, index }: Props) {
       <span className="relative text-xs tracking-[0.1em] text-[var(--ed-mute)] transition-colors duration-300 group-hover:text-[#cfe3d8]">
         {String(index + 1).padStart(2, '0')}
       </span>
-      <span className="relative min-w-0 truncate font-display text-2xl sm:text-4xl lg:text-5xl text-white transition-all duration-500 group-hover:translate-x-3 group-hover:!text-[#F6F1E8]">
+      <span className="relative min-w-0 break-words font-display text-xl sm:text-4xl lg:text-5xl leading-tight text-white transition-all duration-500 group-hover:translate-x-3 group-hover:!text-[#F6F1E8]">
         {domain.name}
       </span>
       <span className="relative hidden sm:block text-xs uppercase tracking-[0.18em] text-[var(--ed-mute)] transition-colors duration-300 group-hover:text-[#cfe3d8]">

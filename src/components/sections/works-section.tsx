@@ -260,7 +260,7 @@ function ProjectCard({
                   className="absolute left-5 top-5 z-10"
                   style={{ transform: 'translateZ(40px)' }}
                 >
-                  <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3.5 py-1.5 text-[10px] font-mono-accent uppercase tracking-[0.22em] text-white backdrop-blur-xl">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3.5 py-1.5 text-[10px] font-mono-accent uppercase tracking-[0.22em] text-[#F6F1E8] backdrop-blur-xl">
                     <span className="relative flex h-1.5 w-1.5">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal opacity-70" />
                       <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-teal" />
@@ -291,11 +291,11 @@ function ProjectCard({
                   className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-7"
                   style={{ transform: 'translateZ(50px)' }}
                 >
-                  <p className="text-[10px] font-mono-accent uppercase tracking-[0.25em] text-teal mb-2 inline-flex items-center gap-2">
-                    <span className="inline-block h-px w-5 bg-teal/60" />
+                  <p className="text-[10px] font-mono-accent uppercase tracking-[0.25em] text-[#9FD8BD] mb-2 inline-flex items-center gap-2">
+                    <span className="inline-block h-px w-5 bg-[#9FD8BD]/60" />
                     {project.year} · {project.region}
                   </p>
-                  <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-bold leading-[1.1] text-white max-w-[90%]">
+                  <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-bold leading-[1.1] text-[#F6F1E8] max-w-[90%]">
                     {project.title}
                   </h3>
                 </div>
@@ -308,7 +308,7 @@ function ProjectCard({
                   <MagneticButton
                     onClick={() => onOpen(project)}
                     ariaLabel={`View ${project.title}`}
-                    className="group/open relative inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-background/85 text-white backdrop-blur-xl transition-all duration-500 group-hover:border-teal/60 group-hover:text-teal"
+                    className="group/open relative inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-[#1B1A17]/60 text-[#F6F1E8] backdrop-blur-xl transition-all duration-500 group-hover:border-teal/60 group-hover:text-teal"
                   >
                     <span className="absolute inset-0 rounded-full bg-teal/0 transition-all duration-500 group-hover:bg-teal/15 group-hover:scale-150 group-hover:opacity-0" />
                     <ArrowUpRight className="relative h-5 w-5 transition-all duration-500 group-hover:rotate-45" />
@@ -345,7 +345,7 @@ function ProjectCard({
               )}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
               <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-                <span className="text-[9px] font-mono-accent uppercase tracking-[0.2em] text-white/80">
+                <span className="text-[9px] font-mono-accent uppercase tracking-[0.2em] text-[#F6F1E8]/85">
                   View 02
                 </span>
                 <Eye className="h-3.5 w-3.5 text-teal" />
@@ -497,7 +497,7 @@ function ProjectDialog({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white hover:bg-black/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 backdrop-blur"
+            className="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/40 text-[#F6F1E8] hover:bg-black/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 backdrop-blur"
             aria-label="Close project"
           >
             <X className="h-4 w-4" />
