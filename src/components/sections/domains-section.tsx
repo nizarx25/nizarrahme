@@ -104,6 +104,7 @@ export function DomainsSection() {
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="_all">All categories</SelectItem>
                 {data?.categories?.map((c) => (
                   <SelectItem key={c} value={c}>
                     {c}
@@ -116,6 +117,7 @@ export function DomainsSection() {
                 <SelectValue placeholder="Extension" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="_all">All extensions</SelectItem>
                 {data?.extensions?.map((ext) => (
                   <SelectItem key={ext} value={ext}>
                     {ext}
@@ -128,6 +130,7 @@ export function DomainsSection() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="_all">All statuses</SelectItem>
                 <SelectItem value="Available">Available</SelectItem>
                 <SelectItem value="Negotiating">Negotiating</SelectItem>
                 <SelectItem value="Sold">Sold</SelectItem>
