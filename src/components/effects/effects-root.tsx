@@ -60,6 +60,30 @@ function makeWave(h: HTMLElement) {
       label.remove()
     })
   })
+  // Gradient text (bg-clip-text): the gradient lives on the heading, so moving
+  // letters would ghost. Give each unit its own slice of the same gradient.
+  const g = (h.matches('[class*="bg-clip-text"]') ? h : h.querySelector('[class*="bg-clip-text"]')) as HTMLElement | null
+  if (g) {
+    const gr = g.getBoundingClientRect()
+    const cs = getComputedStyle(g)
+    const img = cs.backgroundImage
+    const old = g.style.backgroundImage
+    units.forEach((u) => {
+      const r = u.el.getBoundingClientRect()
+      const st = u.el.style
+      st.backgroundImage = img
+      st.backgroundSize = `${gr.width}px ${gr.height}px`
+      st.backgroundPosition = `${-(r.left - gr.left)}px ${-(r.top - gr.top)}px`
+      st.backgroundRepeat = 'no-repeat'
+      st.setProperty('-webkit-background-clip', 'text')
+      st.backgroundClip = 'text'
+      st.setProperty('-webkit-text-fill-color', 'transparent')
+    })
+    g.style.backgroundImage = 'none'
+    restores.push(() => {
+      g.style.backgroundImage = old
+    })
+  }
   return { units, restore: () => restores.forEach((f) => f()) }
 }
 
@@ -109,10 +133,10 @@ export function EffectsRoot() {
           const u = units[i]
           const a = units[i - 1]?.y ?? u.y
           const b = units[i + 1]?.y ?? u.y
-          let f = (a - u.y) * 0.1 + (b - u.y) * 0.1 - u.y * 0.022
+          let f = (a - u.y) * 0.1 + (b - u.y) * 0.1 - u.y * (pull ? 0.022 : 0.09)
           if (i === k) f += (-18 - u.y) * 0.07
           else if (k >= 0 && Math.abs(i - k) === 1) f += (-9 - u.y) * 0.025
-          u.v = (u.v + f) * 0.9
+          u.v = (u.v + f) * (pull ? 0.9 : 0.8)
           ny[i] = u.y + u.v
         }
         let moving = false
@@ -120,7 +144,7 @@ export function EffectsRoot() {
           u.y = ny[i]
           u.r += (u.y * 0.12 - u.r) * 0.2
           u.el.style.transform = `translateY(${u.y.toFixed(2)}px) rotate(${u.r.toFixed(2)}deg)`
-          if (Math.abs(u.y) > 0.04 || Math.abs(u.v) > 0.04) moving = true
+          if (Math.abs(u.y) > 0.15 || Math.abs(u.v) > 0.15) moving = true
         })
         if (moving || pull) raf = requestAnimationFrame(frame)
         else {
@@ -135,8 +159,8 @@ export function EffectsRoot() {
         lastMove = performance.now()
         const t = e.target as HTMLElement | null
         const h = (t?.closest?.(HEAD) as HTMLElement | null) ?? null
-        inside = !!h && !h.querySelector('[class*="bg-clip-text"]')
-        if (h && !h.querySelector('[class*="bg-clip-text"]') && (!active || active.h !== h)) {
+        inside = !!h
+        if (h && (!active || active.h !== h)) {
           if (active) {
             active.restore()
             active = null

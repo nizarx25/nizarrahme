@@ -74,7 +74,7 @@ export function FeaturedCarousel({ domains }: Props) {
             Featured Domain
           </p>
 
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent teal-text-glow hover:shadow-[0_0_30px_rgba(0,229,176,0.3)] transition-all duration-300 leading-tight">
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent teal-text-glow leading-tight">
             {domain.name}
           </h2>
 
