@@ -307,17 +307,17 @@ export function HomeSection() {
       {/* SELECTED TRANSACTIONS */}
       {transactions && transactions.transactions.length > 0 && (
         <section className="py-16 sm:py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <p className="text-xs font-mono-accent text-teal uppercase tracking-[0.2em] mb-3">
               Track Record
             </p>
             <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-12">Selected Transactions</h2>
-            <div className="grid sm:grid-cols-2 gap-4 max-w-3xl">
+            <div className="grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
               {transactions.transactions.map((tx) => (
                 <motion.div
                   key={tx.domain}
                   whileHover={{ y: -2 }}
-                  className="surface-border rounded-[16px] bg-surface p-6 flex flex-col justify-between domain-card-hover"
+                  className="surface-border rounded-[16px] bg-surface p-6 flex flex-col items-center justify-between text-center domain-card-hover"
                 >
                   <div>
                     <p className="font-display text-xl font-bold text-white">{tx.domain}</p>
@@ -331,7 +331,7 @@ export function HomeSection() {
                 </motion.div>
               ))}
             </div>
-            <p className="text-xs text-[#718581] mt-6 max-w-2xl font-mono-accent">
+            <p className="text-xs text-[#718581] mt-6 max-w-2xl mx-auto font-mono-accent">
               These are selected completed transactions and do not represent a guarantee of future
               sale prices or outcomes.
             </p>
