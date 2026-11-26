@@ -2,10 +2,22 @@
 
 import { useEffect } from 'react'
 
-const HEAD = 'h1, h2, h3'
 const ARABIC = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/
 
-type Unit = { el: HTMLElement; y: number; v: number; r: number }
+type Unit = { el: HTMLElement; y: number; v: number; r: number; g?: HTMLElement }
+const SKIP = 'button, [role="button"], svg, input, textarea, select, [role="combobox"], [role="option"], [aria-hidden="true"], .sr-only, script, style'
+const GRAD = '[class*="bg-clip-text"]'
+const TEXTY = 'h1, h2, h3, h4, h5, p, li, label, dt, dd, blockquote, figcaption, td'
+function hasDirectText(e: Element) {
+  for (const c of Array.from(e.childNodes)) if (c.nodeType === 3 && (c.textContent ?? '').trim()) return true
+  return false
+}
+function targetFor(t: HTMLElement | null): HTMLElement | null {
+  if (!t || t.closest(SKIP) || t.closest('.ed-caret')) return null
+  const blk = t.closest(TEXTY) as HTMLElement | null
+  if (blk) return blk
+  return hasDirectText(t) ? t : null
+}
 
 /**
  * Chain wave on headings: while the pointer moves along a heading, each unit
@@ -16,15 +28,19 @@ type Unit = { el: HTMLElement; y: number; v: number; r: number }
 function makeWave(h: HTMLElement) {
   const restores: (() => void)[] = []
   const units: Unit[] = []
-  const tw = document.createTreeWalker(h, NodeFilter.SHOW_TEXT)
+  const tw = document.createTreeWalker(h, NodeFilter.SHOW_TEXT, {
+    acceptNode: (n) => ((n.parentElement as HTMLElement)?.closest(SKIP) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+  })
   const nodes: Text[] = []
   while (tw.nextNode()) {
     const t = tw.currentNode as Text
     if (t.data.trim()) nodes.push(t)
   }
-  if (nodes.length === 0 || nodes.length > 4) return null
+  if (nodes.length === 0 || nodes.length > 80) return null
   nodes.forEach((node) => {
     const arabic = ARABIC.test(node.data)
+    const gEl = (node.parentElement?.closest(GRAD) as HTMLElement | null) ?? null
+    const mark = units.length
     const wrap = document.createElement('span')
     wrap.setAttribute('aria-hidden', 'true')
     node.data.split(/(\s+)/).forEach((part) => {
@@ -50,6 +66,7 @@ function makeWave(h: HTMLElement) {
       if (arabic) w.textContent = part
       wrap.appendChild(w)
     })
+    if (gEl) for (let q = mark; q < units.length; q++) units[q].g = gEl
     const label = document.createElement('span')
     label.className = 'sr-only'
     label.textContent = node.data
@@ -60,30 +77,31 @@ function makeWave(h: HTMLElement) {
       label.remove()
     })
   })
-  // Gradient text (bg-clip-text): the gradient lives on the heading, so moving
-  // letters would ghost. Give each unit its own slice of the same gradient.
-  const g = (h.matches('[class*="bg-clip-text"]') ? h : h.querySelector('[class*="bg-clip-text"]')) as HTMLElement | null
-  if (g) {
-    const gr = g.getBoundingClientRect()
-    const cs = getComputedStyle(g)
-    const img = cs.backgroundImage
+  // Gradient text: each unit carries its own slice of its heading's gradient.
+  const gs = new Set<HTMLElement>()
+  units.forEach((u) => u.g && gs.add(u.g))
+  const info = new Map<HTMLElement, { gr: DOMRect; img: string }>()
+  gs.forEach((g) => info.set(g, { gr: g.getBoundingClientRect(), img: getComputedStyle(g).backgroundImage }))
+  units.forEach((u) => {
+    if (!u.g) return
+    const { gr, img } = info.get(u.g)!
+    const r = u.el.getBoundingClientRect()
+    const st = u.el.style
+    st.backgroundImage = img
+    st.backgroundSize = `${gr.width}px ${gr.height}px`
+    st.backgroundPosition = `${-(r.left - gr.left)}px ${-(r.top - gr.top)}px`
+    st.backgroundRepeat = 'no-repeat'
+    st.setProperty('-webkit-background-clip', 'text')
+    st.backgroundClip = 'text'
+    st.setProperty('-webkit-text-fill-color', 'transparent')
+  })
+  gs.forEach((g) => {
     const old = g.style.backgroundImage
-    units.forEach((u) => {
-      const r = u.el.getBoundingClientRect()
-      const st = u.el.style
-      st.backgroundImage = img
-      st.backgroundSize = `${gr.width}px ${gr.height}px`
-      st.backgroundPosition = `${-(r.left - gr.left)}px ${-(r.top - gr.top)}px`
-      st.backgroundRepeat = 'no-repeat'
-      st.setProperty('-webkit-background-clip', 'text')
-      st.backgroundClip = 'text'
-      st.setProperty('-webkit-text-fill-color', 'transparent')
-    })
     g.style.backgroundImage = 'none'
     restores.push(() => {
       g.style.backgroundImage = old
     })
-  }
+  })
   return { units, restore: () => restores.forEach((f) => f()) }
 }
 
@@ -158,7 +176,7 @@ export function EffectsRoot() {
         cx = e.clientX
         lastMove = performance.now()
         const t = e.target as HTMLElement | null
-        const h = (t?.closest?.(HEAD) as HTMLElement | null) ?? null
+        const h = active && t && active.h.contains(t) ? active.h : targetFor(t)
         inside = !!h
         if (h && (!active || active.h !== h)) {
           if (active) {

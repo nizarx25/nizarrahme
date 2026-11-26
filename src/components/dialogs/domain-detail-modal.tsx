@@ -40,6 +40,8 @@ function TypeText({ text, className }: { text: string; className?: string }) {
     }, 650)
     return () => window.clearTimeout(t)
   }, [text, arabic])
+  const total = arabic ? text.split(/(\s+)/).length : Array.from(text).length
+  if (n >= total) return <p className={className}>{text}</p>
   if (arabic) {
     const parts = text.split(/(\s+)/)
     return (
@@ -191,11 +193,11 @@ export function DomainDetailModal() {
                   initial={{ opacity: 0, scale: 0.4 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ ...spring, delay: 1.4 }}
-                  whileHover={{ scale: 1.12, rotate: -6 }}
-                  whileTap={{ scale: 0.92 }}
-                  className="ed-offer-btn grid size-14 place-items-center rounded-full bg-coral text-white hover:bg-coral-hover"
+                  whileTap={{ scale: 0.95 }}
+                  className="ed-offer-btn bg-coral text-white hover:bg-coral-hover"
                 >
-                  <ArrowRight className="size-6" />
+                  <ArrowRight className="size-6 shrink-0" />
+                  <span className="ed-offer-text">Make an Offer</span>
                 </motion.button>
               </div>
               {data.relatedDomains.length > 0 && (

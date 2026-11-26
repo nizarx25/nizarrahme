@@ -570,6 +570,9 @@ body {
 @keyframes edShimmer { to { background-position: -200% 0; } }
 @keyframes edPulse { 0% { box-shadow: 0 0 0 0 rgba(255,77,46,.45); } 100% { box-shadow: 0 0 0 16px rgba(255,77,46,0); } }
 .ed-offer-label { background: linear-gradient(90deg, #FF4D2E, #FFB199, #FF4D2E); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: edShimmer 3.5s linear infinite; }
-.ed-offer-btn { animation: edPulse 2s ease-out infinite; }
+.ed-offer-btn { animation: edPulse 2s ease-out infinite; display: flex; align-items: center; justify-content: center; gap: 0; height: 3.5rem; width: 3.5rem; border-radius: 9999px; overflow: hidden; white-space: nowrap; font-weight: 600; font-size: 0.95rem; transition: width .38s cubic-bezier(.22,1,.36,1), border-radius .38s cubic-bezier(.22,1,.36,1), gap .38s, background-color .2s; }
+.ed-offer-text { max-width: 0; opacity: 0; transition: max-width .38s cubic-bezier(.22,1,.36,1), opacity .25s; }
+.ed-offer-btn:hover, .ed-offer-btn:focus-visible { width: 13rem; border-radius: 0.875rem; gap: 0.6rem; animation: none; }
+.ed-offer-btn:hover .ed-offer-text, .ed-offer-btn:focus-visible .ed-offer-text { max-width: 9rem; opacity: 1; transition-delay: 0s, .08s; }
 .ed-caret::after { content: ''; display: inline-block; width: 2px; height: 1em; margin-left: 2px; vertical-align: -0.12em; background: #00E5B0; animation: edBlink 1s steps(1) infinite; }
 @keyframes edBlink { 50% { opacity: 0; } }
