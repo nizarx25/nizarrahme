@@ -636,3 +636,48 @@ body {
     box-shadow: 0 14px 34px rgba(27, 26, 23, 0.10);
   }
 }
+
+/* ---- Editorial Light v2: clearer text, site-wide lens, card flood ---- */
+.theme-ed {
+  --foreground: #0B0B0A;
+  --card-foreground: #0B0B0A;
+  --color-white: #0B0B0A;
+  --muted-foreground: #45413A;
+  --ed-mute: #45413A;
+  --ed-soft: #22201B;
+}
+.theme-ed .text-teal, .theme-ed .text-teal-soft { color: #0E6B42; }
+.theme-ed .font-display { font-weight: 600; }
+.theme-ed h3.bg-clip-text, .theme-ed h2.bg-clip-text { color: #0B0B0A !important; }
+
+.ed-lens {
+  position: fixed; left: 0; top: 0; z-index: 70;
+  width: 220px; height: 220px; border-radius: 50%;
+  pointer-events: none; opacity: 0;
+  transition: opacity .3s ease;
+  background: radial-gradient(circle, rgba(31,77,58,.07) 0%, rgba(31,77,58,.04) 60%, rgba(31,77,58,0) 72%);
+  -webkit-backdrop-filter: brightness(1.14) contrast(1.4);
+  backdrop-filter: brightness(1.14) contrast(1.4);
+  box-shadow: 0 0 0 1.5px rgba(31,77,58,.55), 0 10px 40px rgba(31,77,58,.18);
+  will-change: transform;
+}
+.ed-lens.is-on { opacity: 1; }
+body:not(.theme-ed) .ed-lens { display: none; }
+@media (hover: none), (pointer: coarse) { .ed-lens { display: none; } }
+
+.theme-ed .domain-card-hover { position: relative; isolation: isolate; }
+.theme-ed .domain-card-hover::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background: #1F4D3A;
+  clip-path: circle(0px at var(--mx, 50%) var(--my, 100%));
+  transition: clip-path .6s cubic-bezier(.77,0,.18,1);
+}
+@media (hover: hover) {
+  .theme-ed .domain-card-hover:hover::before { clip-path: circle(160% at var(--mx, 50%) var(--my, 100%)); }
+  .theme-ed .domain-card-hover:hover { border-color: #1F4D3A; transform: translateY(-4px) scale(1.01); box-shadow: 0 22px 44px rgba(31,77,58,.28); }
+  .theme-ed .domain-card-hover:hover * { color: #F6F1E8 !important; -webkit-text-fill-color: #F6F1E8 !important; }
+  .theme-ed .domain-card-hover:hover [class*="bg-elevated"],
+  .theme-ed .domain-card-hover:hover [class*="bg-teal"] { background: rgba(246,241,232,.14) !important; border-color: rgba(246,241,232,.4) !important; }
+  .theme-ed .domain-card-hover:hover .border-surface-border\/50 { border-color: rgba(246,241,232,.3) !important; }
+}
+.theme-ed .domain-card-hover { transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s, border-color .3s; }
