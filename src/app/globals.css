@@ -652,7 +652,7 @@ body {
 
 .ed-lens {
   position: fixed; left: 0; top: 0; z-index: 70;
-  width: 220px; height: 220px; border-radius: 50%;
+  width: 120px; height: 120px; border-radius: 50%;
   pointer-events: none; opacity: 0;
   transition: opacity .3s ease;
   background: radial-gradient(circle, rgba(31,77,58,.07) 0%, rgba(31,77,58,.04) 60%, rgba(31,77,58,0) 72%);
@@ -665,19 +665,58 @@ body {
 body:not(.theme-ed) .ed-lens { display: none; }
 @media (hover: none), (pointer: coarse) { .ed-lens { display: none; } }
 
-.theme-ed .domain-card-hover { position: relative; isolation: isolate; }
-.theme-ed .domain-card-hover::before {
-  content: ''; position: absolute; inset: 0; z-index: -1;
-  background: #1F4D3A;
-  clip-path: circle(0px at var(--mx, 50%) var(--my, 100%));
-  transition: clip-path .6s cubic-bezier(.77,0,.18,1);
+
+/* ---- Editorial Light v3 ---- */
+.ed-lens { transition: opacity .3s ease, width .25s ease, height .25s ease, margin .25s ease; }
+.ed-lens.is-big { width: 170px; height: 170px; margin: -25px 0 0 -25px; }
+.ed-lens.is-down { width: 90px; height: 90px; margin: 15px 0 0 15px; }
+.ed-glow {
+  position: fixed; inset: 0; z-index: 4; pointer-events: none; opacity: 0; transition: opacity .4s;
+  background: radial-gradient(520px circle at var(--px, -500px) var(--py, -500px), rgba(31,77,58,.10), rgba(31,77,58,.04) 40%, transparent 70%);
 }
+.ed-dots {
+  position: fixed; inset: 0; z-index: 4; pointer-events: none; opacity: 0; transition: opacity .4s;
+  background-image: radial-gradient(rgba(31,77,58,.55) 1.2px, transparent 1.4px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(260px circle at var(--px, -500px) var(--py, -500px), #000, transparent 70%);
+  mask-image: radial-gradient(260px circle at var(--px, -500px) var(--py, -500px), #000, transparent 70%);
+}
+.ed-glow.is-on, .ed-dots.is-on { opacity: 1; }
+body:not(.theme-ed) .ed-glow, body:not(.theme-ed) .ed-dots { display: none; }
+@media (hover: none), (pointer: coarse) { .ed-glow, .ed-dots { display: none; } }
+
+/* heading letters */
+.ed-w { display: inline-block; white-space: nowrap; }
+.ed-c { display: inline-block; animation: edHop .62s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes edHop { 0% { transform: translateY(0); } 38% { transform: translateY(-.22em) scale(1.08); } 100% { transform: translateY(0); } }
+::highlight(ed-word) { background-color: rgba(31,77,58,.2); text-decoration: underline; text-decoration-color: #0E6B42; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+/* domain cards: tilt, sheen, glow, pop */
+.theme-ed .domain-card-hover { position: relative; isolation: isolate; transform-style: preserve-3d;
+  transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .35s, border-color .3s; }
+.theme-ed .domain-card-hover::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; z-index: 3;
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.75), rgba(255,255,255,0) 60%);
+  mix-blend-mode: soft-light; transition: opacity .3s;
+}
+.theme-ed .domain-card-hover h3 { transition: transform .35s cubic-bezier(.34,1.56,.64,1), color .3s; transform-origin: left center; }
+.theme-ed .domain-card-hover p.font-display, .theme-ed .domain-card-hover .text-teal.font-display { transition: transform .35s cubic-bezier(.34,1.56,.64,1); transform-origin: right center; }
 @media (hover: hover) {
-  .theme-ed .domain-card-hover:hover::before { clip-path: circle(160% at var(--mx, 50%) var(--my, 100%)); }
-  .theme-ed .domain-card-hover:hover { border-color: #1F4D3A; transform: translateY(-4px) scale(1.01); box-shadow: 0 22px 44px rgba(31,77,58,.28); }
-  .theme-ed .domain-card-hover:hover * { color: #F6F1E8 !important; -webkit-text-fill-color: #F6F1E8 !important; }
-  .theme-ed .domain-card-hover:hover [class*="bg-elevated"],
-  .theme-ed .domain-card-hover:hover [class*="bg-teal"] { background: rgba(246,241,232,.14) !important; border-color: rgba(246,241,232,.4) !important; }
-  .theme-ed .domain-card-hover:hover .border-surface-border\/50 { border-color: rgba(246,241,232,.3) !important; }
+  .theme-ed .domain-card-hover:hover {
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-6px) scale(1.02);
+    border-color: #0E6B42;
+    box-shadow: 0 0 0 1px #0E6B42, 0 0 28px rgba(14,107,66,.28), 0 24px 48px rgba(27,26,23,.16);
+  }
+  .theme-ed .domain-card-hover:hover::after { opacity: 1; }
+  .theme-ed .domain-card-hover:hover h3 { transform: translateZ(30px) scale(1.06); color: #0E6B42 !important; }
+  .theme-ed .domain-card-hover:hover p.font-display, .theme-ed .domain-card-hover:hover .text-teal.font-display { transform: translateZ(40px) scale(1.18); }
 }
-.theme-ed .domain-card-hover { transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s, border-color .3s; }
+.theme-ed .domain-card-hover:active { transform: perspective(900px) scale(.97) !important; transition-duration: .1s; }
+.ed-ripple { position: absolute; border-radius: 50%; width: 20px; height: 20px; margin: -10px 0 0 -10px; background: rgba(14,107,66,.45);
+  pointer-events: none; z-index: 4; animation: edRipple .7s ease-out forwards; }
+@keyframes edRipple { to { transform: scale(30); opacity: 0; } }
+.theme-ed .domain-card-hover { overflow: hidden; }
+
+/* chat panel */
+.ed-chat-in { animation: edChatIn .5s cubic-bezier(.2,.9,.2,1) both; transform-origin: var(--ox, 100%) var(--oy, 100%); }
+@keyframes edChatIn { from { opacity: 0; transform: translateY(40px) scale(.6); } to { opacity: 1; transform: none; } }

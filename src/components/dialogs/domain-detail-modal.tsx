@@ -1,21 +1,51 @@
 'use client'
 
-import { useCallback } from 'react'
-import { ArrowRight, CheckCircle2, ShoppingCart } from 'lucide-react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import { motion } from 'framer-motion'
+import { CheckCircle2, SendHorizontal } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useNavigation } from '@/store/navigation'
 import { useDomainDetail } from '@/hooks/use-domain-data'
 
+function Typing() {
+  return (
+    <div className="inline-flex items-center gap-1 rounded-2xl rounded-tl-sm bg-[#EFE8DA] px-4 py-3" aria-hidden="true">
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          key={i}
+          className="block size-1.5 rounded-full bg-[#45413A]"
+          animate={{ y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.15 }}
+        />
+      ))}
+    </div>
+  )
+}
+
+function Bubble({ children }: { children: ReactNode }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14, scale: 0.92 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 26 }}
+      style={{ transformOrigin: 'left top' }}
+      className="max-w-[88%] rounded-2xl rounded-tl-sm bg-[#EFE8DA] px-4 py-3 text-sm text-[#0B0B0A] shadow-sm"
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+/**
+ * Domain detail, styled as a chat panel: the facts arrive as messages and
+ * the bottom bar opens the existing offer form.
+ */
 export function DomainDetailModal() {
   const nav = useNavigation()
   const { data, isLoading } = useDomainDetail(nav.selectedDomain)
@@ -29,124 +59,138 @@ export function DomainDetailModal() {
     }
   }
 
+  const d = data?.domain
+  const id = d?.id
+  const [step, setStep] = useState(0)
+  useEffect(() => {
+    setStep(0)
+    if (!id) return
+    const t = [450, 1100, 1750, 2400].map((ms, i) => window.setTimeout(() => setStep(i + 1), ms))
+    return () => t.forEach(window.clearTimeout)
+  }, [id])
+
+  const hasMore = !!d && (d.tags.length > 0 || d.useCases.length > 0 || !!d.publicNotes)
+
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="sm:max-w-2xl max-h-[90dvh] overflow-y-auto bg-surface border-surface-border rounded-2xl p-4 sm:p-6">
-        {isLoading ? (
-          <div className="py-4 sm:py-8 space-y-3 sm:space-y-4">
-            <Skeleton className="h-8 w-48 bg-surface-border/50" />
-            <Skeleton className="h-3 w-32 bg-surface-border/30" />
-            <Skeleton className="h-16 w-full bg-surface-border/30" />
-            <Skeleton className="h-24 w-full bg-surface-border/30" />
+      <DialogContent
+        showCloseButton
+        className="ed-chat-in sm:max-w-md !gap-0 overflow-hidden border-surface-border bg-[#FFFDF8] !p-0 max-sm:!inset-x-0 max-sm:!bottom-0 max-sm:!top-auto max-sm:!max-w-none max-sm:!translate-x-0 max-sm:!translate-y-0 max-sm:rounded-b-none sm:!left-auto sm:!right-6 sm:!bottom-6 sm:!top-auto sm:!translate-x-0 sm:!translate-y-0 rounded-3xl shadow-[0_30px_80px_rgba(27,26,23,0.28)] [&>[data-slot=dialog-close]]:text-[#F6F1E8] [&>[data-slot=dialog-close]]:opacity-90"
+      >
+        {isLoading || !d ? (
+          <div className="p-6 space-y-3">
+            <DialogTitle className="sr-only">Loading domain</DialogTitle>
+            <DialogDescription className="sr-only">Loading domain details</DialogDescription>
+            <Skeleton className="h-10 w-48" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-24 w-full" />
           </div>
-        ) : data?.domain ? (
+        ) : (
           <>
-            <DialogHeader>
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                <Badge className="bg-elevated text-[var(--ed-mute)] border-surface-border text-[10px] sm:text-xs font-mono-accent rounded-full px-2 sm:px-3 py-0">
-                  {data.domain.extension}
-                </Badge>
-                <Badge className="bg-coral/10 text-coral border-coral/20 text-[10px] sm:text-xs font-mono-accent rounded-full px-2 sm:px-3 py-0">
-                  {data.domain.category}
-                </Badge>
-                {data.domain.featured && (
-                  <Badge className="bg-teal/10 text-teal border-teal/20 text-[10px] sm:text-xs font-mono-accent rounded-full px-2 sm:px-3 py-0">
-                    Featured
-                  </Badge>
-                )}
+            <div className="flex items-center gap-3 bg-[#1F4D3A] px-5 py-4 pr-12 text-[#F6F1E8]">
+              <div className="grid size-11 shrink-0 place-items-center rounded-full bg-[#F6F1E8] font-display text-lg font-semibold text-[#1F4D3A]">
+                {d.name.charAt(0).toUpperCase()}
               </div>
-              <DialogTitle className="font-display text-xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight pr-8">
-                {data.domain.name}
-              </DialogTitle>
-              <DialogDescription className="sr-only">
-                Details for {data.domain.name}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="mt-3 sm:mt-6 space-y-3 sm:space-y-5">
-              <div className="flex items-center gap-3 sm:gap-4">
-                {data.domain.showPrice && data.domain.price && (
-                  <p className="font-display text-2xl sm:text-3xl font-bold text-teal">
-                    ${data.domain.price.toLocaleString()}
-                  </p>
-                )}
-                <Badge variant="outline" className="border-surface-border text-[var(--ed-mute)] text-xs sm:text-sm font-mono-accent rounded-full">
-                  {data.domain.saleType}
-                </Badge>
+              <div className="min-w-0">
+                <DialogTitle className="truncate font-display text-lg font-semibold !text-[#F6F1E8] leading-tight">
+                  {d.name}
+                </DialogTitle>
+                <DialogDescription className="text-xs !text-[#cfe3d8]">
+                  {d.saleType} &middot; {d.category}
+                </DialogDescription>
               </div>
-              {data.domain.shortDescription && (
-                <p className="text-sm text-[var(--ed-soft)] leading-relaxed">
-                  {data.domain.shortDescription}
-                </p>
+            </div>
+
+            <div className="max-h-[56dvh] space-y-3 overflow-y-auto bg-[#F6F1E8] px-4 py-5">
+              <Bubble>
+                <span className="font-mono-accent text-xs">{d.extension}</span> &middot; {d.category}
+                {d.featured && <span className="ml-2 rounded-full bg-[#1F4D3A] px-2 py-0.5 text-[10px] text-[#F6F1E8]">Featured</span>}
+              </Bubble>
+
+              {step < 1 ? (
+                <Typing />
+              ) : (
+                <Bubble>
+                  {d.showPrice && d.price ? (
+                    <span className="font-display text-2xl font-semibold text-[#0E6B42]">${d.price.toLocaleString()}</span>
+                  ) : (
+                    <span className="font-semibold">Make an Offer</span>
+                  )}
+                  {d.showPrice && d.price && <span className="ml-2 text-xs text-[#45413A]">{d.saleType}</span>}
+                </Bubble>
               )}
-              {data.domain.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                  {data.domain.tags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant="secondary"
-                      className="text-[10px] sm:text-xs font-mono-accent bg-elevated text-[var(--ed-soft)] rounded-full px-2 sm:px-3 py-0"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-              {data.domain.useCases.length > 0 && (
-                <div>
-                  <h4 className="text-xs sm:text-sm font-medium text-white mb-2 sm:mb-3">
-                    Potential use cases
-                  </h4>
-                  <ul className="space-y-1.5 sm:space-y-2">
-                    {data.domain.useCases.map((uc) => (
-                      <li
-                        key={uc}
-                        className="flex items-start gap-2 text-xs sm:text-sm text-[var(--ed-soft)]"
-                      >
-                        <CheckCircle2 className="size-3.5 sm:size-4 text-teal mt-0.5 shrink-0" />
-                        {uc}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {data.domain.publicNotes && (
-                <div className="p-3 sm:p-4 bg-elevated rounded-xl border border-surface-border">
-                  <p className="text-xs sm:text-sm text-[var(--ed-soft)]">
-                    {data.domain.publicNotes}
-                  </p>
-                </div>
-              )}
-              <Button
-                onClick={handleOffer}
-                className="w-full bg-coral hover:bg-coral-hover text-white h-11 sm:h-12 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)] text-sm sm:text-base"
-              >
-                <ShoppingCart className="size-4 mr-2" /> Make an Offer <ArrowRight className="size-4" />
-              </Button>
-              {data.relatedDomains.length > 0 && (
-                <div>
-                  <Separator className="bg-surface-border mb-3 sm:mb-6" />
-                  <h4 className="text-xs sm:text-sm font-medium text-white mb-3">Related domains</h4>
-                  <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+
+              {d.shortDescription &&
+                (step < 2 ? step >= 1 && <Typing /> : <Bubble>{d.shortDescription}</Bubble>)}
+
+              {hasMore &&
+                (step < 3 ? (
+                  step >= 2 && <Typing />
+                ) : (
+                  <Bubble>
+                    {d.tags.length > 0 && (
+                      <div className="mb-2 flex flex-wrap gap-1.5">
+                        {d.tags.map((tag) => (
+                          <span key={tag} className="rounded-full bg-[#FFFDF8] px-2 py-0.5 font-mono-accent text-[11px]">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {d.useCases.length > 0 && (
+                      <>
+                        <p className="mb-1 text-xs font-semibold">Potential use cases</p>
+                        <ul className="space-y-1">
+                          {d.useCases.map((uc) => (
+                            <li key={uc} className="flex items-start gap-2 text-[13px]">
+                              <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-[#0E6B42]" />
+                              {uc}
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+                    {d.publicNotes && <p className="mt-2 text-[13px]">{d.publicNotes}</p>}
+                  </Bubble>
+                ))}
+
+              {step >= 4 && data.relatedDomains.length > 0 && (
+                <Bubble>
+                  <p className="mb-2 text-xs font-semibold">Related domains</p>
+                  <div className="flex flex-wrap gap-1.5">
                     {data.relatedDomains.map((rd) => (
                       <button
                         key={rd.id}
                         onClick={() => nav.setSelectedDomain(rd.slug)}
-                        className="shrink-0 surface-border rounded-xl p-3 sm:p-4 hover:border-teal/30 transition-colors text-left min-w-[140px] sm:min-w-[180px] bg-surface"
+                        className="rounded-full border border-[#1F4D3A]/40 bg-[#FFFDF8] px-3 py-1 text-xs font-medium hover:bg-[#1F4D3A] hover:!text-[#F6F1E8]"
                       >
-                        <p className="font-display text-xs sm:text-sm font-bold text-white truncate">
-                          {rd.name}
-                        </p>
-                        <p className="text-[10px] sm:text-xs font-mono-accent text-[var(--ed-mute)] mt-1">
-                          {rd.category}
-                        </p>
+                        {rd.name}
                       </button>
                     ))}
                   </div>
-                </div>
+                </Bubble>
               )}
             </div>
+
+            <div className="flex items-center gap-2 border-t border-surface-border bg-[#FFFDF8] p-3">
+              <button
+                type="button"
+                onClick={handleOffer}
+                className="flex-1 rounded-full border border-surface-border bg-[#F6F1E8] px-4 py-3 text-left text-sm text-[#45413A] transition-colors hover:border-[#0E6B42]"
+              >
+                Make an Offer
+              </button>
+              <button
+                type="button"
+                onClick={handleOffer}
+                aria-label="Make an Offer"
+                className="grid size-11 place-items-center rounded-full bg-[#1F4D3A] text-[#F6F1E8] transition-transform hover:scale-110 active:scale-95"
+              >
+                <SendHorizontal className="size-5" />
+              </button>
+            </div>
           </>
-        ) : null}
+        )}
       </DialogContent>
     </Dialog>
   )

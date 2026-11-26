@@ -25,7 +25,7 @@ export function TransactionsSection() {
             {data.transactions.map((tx) => (
               <motion.div
                 key={tx.domain}
-                whileHover={{ y: -2 }}
+               
                 className="surface-border rounded-[16px] bg-surface p-6 sm:p-8 domain-card-hover"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

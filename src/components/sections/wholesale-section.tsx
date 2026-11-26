@@ -86,8 +86,8 @@ export function WholesaleSection() {
           {WHOLESALE_DOMAINS.map((domain) => (
             <motion.div
               key={domain.name}
-              whileHover={{ y: -4 }}
-              className="group surface-border rounded-2xl bg-surface/80 backdrop-blur-sm p-5 sm:p-6 cursor-pointer transition-all duration-300 hover:border-coral/30 hover:shadow-[0_0_30px_rgba(255,77,46,0.08)]"
+             
+              className="group surface-border rounded-2xl bg-surface/80 p-5 sm:p-6 cursor-pointer domain-card-hover"
               onClick={() => nav.setSelectedDomain(domain.slug)}
               role="button"
               tabIndex={0}
