@@ -15,6 +15,7 @@ import { ServicesSection } from '@/components/sections/services-section'
 import { WorksSection } from '@/components/sections/works-section'
 import { TransactionsSection } from '@/components/sections/transactions-section'
 import { ContactSection } from '@/components/sections/contact-section'
+import { EffectsRoot } from '@/components/effects/effects-root'
 import { DomainDetailModal } from '@/components/dialogs/domain-detail-modal'
 import { OfferFormDialog } from '@/components/dialogs/offer-form-dialog'
 import { PrivacyModal, TermsModal } from '@/components/dialogs/legal-modals'
@@ -38,6 +39,7 @@ export default function HomePage() {
       <a href="#main-content" className="skip-to-content">
         Skip to content
       </a>
+      <EffectsRoot />
       <Header />
       <main id="main-content" className="flex-1" role="main">
         <div aria-live="polite" className="sr-only">{ariaLabel} loaded</div>

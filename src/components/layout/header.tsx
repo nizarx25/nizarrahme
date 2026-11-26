@@ -34,15 +34,16 @@ export function Header() {
             aria-label="Go to home"
           >
             <motion.span
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="font-display text-xl font-bold tracking-tight text-teal"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="relative font-display text-lg sm:text-[22px] font-bold tracking-[0.02em] text-white"
             >
-              NR
+              NIZAR <span className="text-teal">RAHME</span>
+              <span
+                aria-hidden="true"
+                className="absolute -bottom-1 left-0 h-[2px] w-full origin-left scale-x-0 bg-teal transition-transform duration-500 ease-out group-hover:scale-x-100"
+              />
             </motion.span>
-            <span className="hidden sm:inline text-sm font-medium text-[#B8C8C4] tracking-wide group-hover:text-white transition-colors">
-              NIZAR RAHME
-            </span>
           </button>
 
           <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation" role="navigation">
