@@ -4,8 +4,6 @@ import { isDbAvailable, db } from '@/lib/db'
 import { sanitizeString } from '@/lib/auth'
 import { Resend } from 'resend'
 import { redisRateLimit, RATE_LIMITS } from '@/lib/redis-rate-limiter'
-import { createInquiry, type Inquiry } from '@/lib/inquiry-store'
-import { isRedisAvailable } from '@/lib/redis'
 
 const inquirySchema = z.object({
   domainSlug: z.string().optional(),
@@ -147,6 +145,8 @@ export async function POST(request: NextRequest) {
         await db.inquiry.create({
           data: {
             domainId,
+            domainSlug: domainSlug ?? null,
+            domainName: domainName ?? null,
             name: sanitizeString(data.name),
             email: sanitizeString(data.email).toLowerCase(),
             company: data.company ? sanitizeString(data.company) : null,
@@ -157,24 +157,6 @@ export async function POST(request: NextRequest) {
         })
       } catch (dbError) {
         console.error('[inquiry] Prisma save failed:', dbError)
-      }
-    }
-
-    if (isRedisAvailable()) {
-      try {
-        await createInquiry({
-          domainId,
-          domainSlug: domainSlug ?? null,
-          domainName: domainName ?? null,
-          name: sanitizeString(data.name),
-          email: sanitizeString(data.email).toLowerCase(),
-          company: data.company ? sanitizeString(data.company) : null,
-          offerAmount: data.offerAmount ?? null,
-          intendedUse: data.intendedUse ? sanitizeString(data.intendedUse) : null,
-          message: sanitizeString(data.message),
-        })
-      } catch (redisError) {
-        console.error('[inquiry] Redis save failed:', redisError)
       }
     }
 

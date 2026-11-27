@@ -45,6 +45,8 @@ model Inquiry {
   id          String   @id @default(cuid())
   domainId    String?
   domain      Domain?  @relation(fields: [domainId], references: [id], onDelete: SetNull)
+  domainSlug  String?
+  domainName  String?
   inquiryType String   @default("domain_offer")
   name        String
   email       String
@@ -73,4 +75,23 @@ model SiteSettings {
   socialLinks     String   @default("{}")
   featuredDomainIds String  @default("[]")
   updatedAt       DateTime @updatedAt
+}
+
+
+model AdminSession {
+  token     String   @id
+  email     String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
+model RateLimitHit {
+  id  Int      @id @default(autoincrement())
+  key String
+  at  DateTime @default(now())
+
+  @@index([key, at])
 }
