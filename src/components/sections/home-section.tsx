@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge'
 import { useNavigation } from '@/store/navigation'
 import { useFeaturedDomains, useStats, useTransactions } from '@/hooks/use-domain-data'
 import { FeaturedCarousel } from '@/components/home/featured-carousel'
+import { CinematicHero } from '@/components/home/cinematic-hero'
 import { ClaimedTicker } from '@/components/home/claimed-ticker'
 import { DomainCard } from '@/components/domain/domain-card'
 import { WholesaleSection } from './wholesale-section'
@@ -58,92 +59,33 @@ export function HomeSection() {
 
   return (
     <div>
-      {/* HERO */}
-      <section className="relative py-20 sm:py-28 lg:py-36 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-teal/5 rounded-full blur-[120px] animate-pulse-glow pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-coral/3 rounded-full blur-[100px] pointer-events-none" />
+      {/* HERO (cinematic, scroll-driven) */}
+      <CinematicHero
+        onSearch={(q) => {
+          setHeroSearch(q)
+          nav.setSection('domains')
+          setTimeout(() => {
+            const searchInput = document.querySelector<HTMLInputElement>('input[aria-label="Search domains"]')
+            if (searchInput) {
+              const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set
+              setter?.call(searchInput, q)
+              searchInput.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+          }, 100)
+        }}
+        onBrowse={() => nav.setSection('domains')}
+      />
 
+      {/* FEATURED CAROUSEL */}
+      <section className="relative py-16 sm:py-20 overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div initial="hidden" animate="visible" variants={stagger} className="text-center max-w-4xl mx-auto">
-            <motion.div variants={fadeUp} className="mb-6">
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-teal-muted border border-teal/10 text-xs font-mono-accent text-teal tracking-[0.2em] uppercase">
-                <Crosshair className="size-3" />
-                Premium Digital Real Estate
-              </span>
-            </motion.div>
-
-            <motion.h1
-              variants={fadeUp}
-              className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.08] tracking-tight text-white"
-            >
-              Own the Name Behind{' '}
-              <span className="bg-gradient-to-r from-teal via-teal-soft via-coral/80 to-teal bg-clip-text text-transparent teal-text-glow animate-gradient-text">
-                What&rsquo;s Next.
-              </span>
-            </motion.h1>
-            <p className="sr-only">
-              NIZAR RAHME&rsquo;s curated marketplace of premium brandable domain names for AI, SaaS, fintech, and technology businesses.
-            </p>
-
-            <motion.p
-              variants={fadeUp}
-              className="mt-6 text-base sm:text-lg text-[#B8C8C4] max-w-2xl mx-auto leading-relaxed"
-            >
-              Curated, brandable domain names for AI, SaaS, fintech, and technology businesses.
-              Each name selected for real-world impact.
-            </motion.p>
-
-            <motion.form variants={fadeUp} onSubmit={handleHeroSearch} className="mt-10 max-w-xl mx-auto">
-              <div className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[#718581] group-focus-within:text-teal transition-colors" />
-                <Input
-                  placeholder="Search premium domains..."
-                  value={heroSearch}
-                  onChange={(e) => setHeroSearch(e.target.value)}
-                  className="w-full h-14 pl-12 pr-28 bg-surface border-surface-border rounded-[14px] text-white placeholder:text-[#718581] text-base focus:border-teal/40 focus:ring-teal/20 transition-all"
-                  aria-label="Search domains from hero"
-                />
-                <Button
-                  type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-10 px-5 bg-coral hover:bg-coral-hover text-white rounded-[10px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,77,46,0.3)]"
-                >
-                  Search
-                </Button>
-              </div>
-            </motion.form>
-
-            <motion.div variants={fadeUp} className="mt-6 flex flex-wrap justify-center gap-2">
-              {['AI', 'SaaS', 'Fintech', 'Tech', 'Brandable'].map((cat) => (
-                <motion.button
-                  key={cat}
-                  whileHover={{ scale: 1.05, y: -1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => nav.setSection('domains')}
-                  className="px-3 py-1.5 text-xs font-mono-accent text-[#718581] hover:text-teal border border-surface-border hover:border-teal/30 rounded-full transition-all hover:shadow-[0_0_10px_rgba(0,229,176,0.1)]"
-                >
-                  {cat}
-                </motion.button>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          {/* Featured Domain Carousel */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-16 sm:mt-20"
-          >
-            {featured && featured.length > 0 ? (
-              <FeaturedCarousel domains={carouselDomains} />
-            ) : (
-              <div className="max-w-2xl mx-auto p-8 sm:p-10 surface-border rounded-2xl bg-surface/80">
-                <Skeleton className="h-12 w-64 bg-surface-border/50" />
-                <Skeleton className="h-4 w-40 bg-surface-border/30 mt-4" />
-                <Skeleton className="h-4 w-56 bg-surface-border/30 mt-2" />
-              </div>
-            )}
-          </motion.div>
+          {featured && featured.length > 0 ? (
+            <FeaturedCarousel domains={carouselDomains} />
+          ) : (
+            <div className="max-w-2xl mx-auto p-8 sm:p-10 surface-border rounded-2xl bg-surface/80">
+              <Skeleton className="h-12 w-64 bg-surface-border/50" />
+            </div>
+          )}
         </div>
       </section>
 
