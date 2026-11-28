@@ -37,8 +37,7 @@ export async function POST(request: NextRequest) {
 
   // When Redis is the auth backend, the DB check is irrelevant.
   // We still allow it for Prisma-backed local dev.
-  const authUsesRedis = !!process.env.UPSTASH_REDIS_REST_URL
-  if (!authUsesRedis && !isDbAvailable()) {
+  if (!isDbAvailable()) {
     return NextResponse.json(
       { error: 'Admin API not available in this environment' },
       { status: 503 },
