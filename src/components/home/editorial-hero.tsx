@@ -4,7 +4,14 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform, useSpring } from 'framer-motion'
 import { ArrowRight, Search } from 'lucide-react'
 
-const EXTS = ['.com', '.ai', '.si', '.io', '.xyz', '.co', '.net', '.tr']
+const TAGS = [
+  { n: 'fogengine', e: '.ai' },
+  { n: 'vectorsift', e: '.com' },
+  { n: 'sunly', e: '.si' },
+  { n: 'finlyra', e: '.io' },
+  { n: 'dnabite', e: '.com' },
+  { n: 'mythosscale', e: '.ai' },
+]
 const NAMES = ['BaseOPolis.com', 'FogEngine.ai', 'KernEngine.com', 'VectorSift.com', 'DnaBite.com', 'MythosScale.com', 'FinTriva.com']
 
 export function EditorialHero({ onSearch, onBrowse }: { onSearch: (q: string) => void; onBrowse: () => void }) {
@@ -14,14 +21,12 @@ export function EditorialHero({ onSearch, onBrowse }: { onSearch: (q: string) =>
   const reduce = useReducedMotion()
   useEffect(() => {
     if (reduce) return
-    const t = setInterval(() => setExt((e) => (e + 1) % EXTS.length), 1800)
+    const t = setInterval(() => setExt((e) => (e + 1) % TAGS.length), 2800)
     return () => clearInterval(t)
   }, [reduce])
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const sp = useSpring(scrollYProgress, { stiffness: 80, damping: 22 })
-  const rot = useTransform(sp, [0, 1], [0, 300])
   const y = useTransform(sp, [0, 1], [0, 140])
-  const innerRot = useTransform(sp, [0, 1], [-8, 40])
   const tick = useTransform(sp, [0, 1], ['0%', '-35%'])
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -30,11 +35,11 @@ export function EditorialHero({ onSearch, onBrowse }: { onSearch: (q: string) =>
   return (
     <section ref={ref} className="relative px-3 sm:px-5 pt-4 pb-10">
       <div className="relative overflow-hidden rounded-[28px] sm:rounded-[44px] bg-[#0c3b2a] border border-surface-border min-h-[640px] lg:min-h-[760px]">
-        <div className="relative z-10 px-6 sm:px-12 pt-12 sm:pt-16 pb-28 max-w-[900px]">
+        <div className="relative z-10 px-6 sm:px-12 pt-12 sm:pt-16 pb-28 max-w-[900px] lg:max-w-[700px]">
           <span className="inline-block mb-6 px-4 py-1.5 rounded-full border border-[#f3ecd9]/20 text-[11px] font-mono-accent tracking-[0.25em] uppercase text-[#ffd83a]">
             Premium Digital Real Estate
           </span>
-          <h1 className="font-display text-[3.2rem] sm:text-[5.5rem] lg:text-[7.5rem] leading-[0.92] tracking-[-0.04em] text-[#f3ecd9]">
+          <h1 className="font-display text-[3.2rem] sm:text-[5.5rem] lg:text-[5.6rem] xl:text-[6.4rem] leading-[0.92] tracking-[-0.04em] text-[#f3ecd9]">
             Own the name behind{' '}
             <span className="italic font-medium text-[#ffd83a]">what&rsquo;s next.</span>
           </h1>
@@ -60,26 +65,56 @@ export function EditorialHero({ onSearch, onBrowse }: { onSearch: (q: string) =>
         </div>
 
         <motion.div
-          style={{ rotate: rot, y }}
-          className="absolute -right-24 sm:-right-16 bottom-[-120px] sm:bottom-[-140px] size-[360px] sm:size-[520px] lg:size-[640px] rounded-full bg-[#ffd83a] flex items-center justify-center"
+          style={{ y }}
+          className="relative z-10 mx-6 sm:mx-12 mb-24 lg:mb-0 lg:absolute lg:right-12 lg:top-1/2 lg:-translate-y-1/2 lg:w-[480px] -mt-16 lg:mt-0"
         >
-          <motion.div
-            style={{ rotate: innerRot }}
-            className="size-[52%] rounded-full bg-[#f3ecd9] flex items-center justify-center text-[#0c3b2a] font-display italic text-5xl sm:text-6xl lg:text-7xl"
-          >
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={EXTS[ext]}
-                initial={{ opacity: 0, y: 30, rotateX: -70 }}
-                animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                exit={{ opacity: 0, y: -30, rotateX: 70 }}
-                transition={{ duration: 0.35, ease: 'easeOut' }}
-                className="inline-block"
-              >
-                {EXTS[ext]}
-              </motion.span>
-            </AnimatePresence>
-          </motion.div>
+          <div className="rounded-3xl bg-[#f3ecd9] shadow-[0_30px_80px_rgba(0,0,0,0.45)] rotate-[-3deg] overflow-hidden">
+            <div className="flex items-center gap-2 px-5 py-3 border-b border-[#0c3b2a]/10">
+              <span className="size-3 rounded-full bg-[#0c3b2a]/20" />
+              <span className="size-3 rounded-full bg-[#0c3b2a]/20" />
+              <span className="size-3 rounded-full bg-[#ffd83a]" />
+              <span className="ml-3 text-[11px] font-mono-accent tracking-[0.2em] uppercase text-[#0c3b2a]/60">Your next domain</span>
+            </div>
+            <div className="px-6 sm:px-8 py-10 sm:py-14 font-display text-[#0c3b2a] flex items-baseline flex-wrap gap-y-2 min-h-[150px]">
+              <span className="relative inline-flex text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight" aria-hidden>
+                <AnimatePresence mode="wait">
+                  <motion.span key={TAGS[ext].n} className="inline-flex">
+                    {TAGS[ext].n.split('').map((c, i) => (
+                      <motion.span
+                        key={i}
+                        initial={{ y: '110%', opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: '-110%', opacity: 0 }}
+                        transition={{ duration: 0.3, delay: i * 0.025 }}
+                        className="inline-block"
+                      >
+                        {c}
+                      </motion.span>
+                    ))}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+              <span className="ml-1 inline-flex overflow-hidden rounded-xl bg-[#ffd83a] px-3 py-1 text-4xl sm:text-5xl lg:text-6xl font-bold italic" aria-hidden>
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={ext}
+                    initial={{ y: '100%' }}
+                    animate={{ y: 0 }}
+                    exit={{ y: '-100%' }}
+                    transition={{ type: 'spring', stiffness: 260, damping: 22, delay: 0.25 }}
+                    className="inline-block"
+                  >
+                    {TAGS[ext].e}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+              <span className="sr-only">{TAGS[ext].n}{TAGS[ext].e}</span>
+            </div>
+            <div className="flex items-center justify-between px-6 sm:px-8 py-4 bg-[#0c3b2a] text-[#f3ecd9] text-xs font-mono-accent tracking-[0.2em] uppercase">
+              <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-[#ffd83a] animate-pulse" /> Curated listing</span>
+              <span className="text-[#ffd83a]">Make an offer &rarr;</span>
+            </div>
+          </div>
         </motion.div>
 
         <motion.div style={{ x: tick }} className="absolute left-6 bottom-6 z-10 whitespace-nowrap font-display italic text-2xl sm:text-3xl text-[#8fc0a6]">

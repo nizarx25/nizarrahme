@@ -35,9 +35,8 @@ export function ContactSection() {
   const reduce = useReducedMotion()
   const btnWrap = useRef<HTMLDivElement>(null)
   const [off, setOff] = useState({ x: 0, y: 0 })
-  const isValid = contactSchema.safeParse({
-    name: form.name, email: form.email, category: form.category, message: form.message, consent: form.consent,
-  }).success
+  // Dodge only while a required field is still empty. Once all are filled, the button holds still.
+  const isValid = !!(form.name.trim() && form.email.trim() && form.category && form.message.trim() && form.consent)
   const offRef = useRef(off)
   offRef.current = off
   useEffect(() => {

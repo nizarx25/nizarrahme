@@ -41,6 +41,9 @@ function ProjectRow({
   onOpen: (p: Project) => void
 }) {
   const reduce = useReducedMotion()
+  const [circleHover, setSplit] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const split = circleHover || focused
   const [a, b] = [project.images[0], project.images[1] ?? project.images[0]]
   const counter = `${String(index + 1).padStart(2, '0')} / ${String(PROJECTS.length).padStart(2, '0')}`
   const spring = reduce ? { duration: 0 } : { type: 'spring' as const, stiffness: 230, damping: 24 }
@@ -59,12 +62,12 @@ function ProjectRow({
       }}
       onMouseEnter={() => onHover(project.slug)}
       onMouseLeave={() => onHover(null)}
-      onFocus={() => onHover(project.slug)}
-      onBlur={() => onHover(null)}
+      onFocus={() => { onHover(project.slug); setFocused(true) }}
+      onBlur={() => { onHover(null); setFocused(false) }}
       className="group relative grid cursor-pointer grid-cols-[88px_1fr] items-center gap-x-5 border-t border-surface-border py-6 !outline-none transition-opacity duration-300 last:border-b md:min-h-[176px] md:grid-cols-[112px_minmax(0,1fr)_minmax(0,420px)] md:gap-x-8"
       style={{ opacity: anyHovered && !hovered ? 0.6 : 1 }}
     >
-      <div className="grid place-items-center">
+      <div className="grid place-items-center" onMouseEnter={() => setSplit(true)} onMouseLeave={() => setSplit(false)}>
         <motion.div
           layoutId={`proj-img-${project.slug}`}
           transition={reduce ? { duration: 0 } : { duration: 0.5, ease }}
@@ -77,8 +80,8 @@ function ProjectRow({
             boxShadow: hovered
               ? '0 0 0 6px rgba(255,216,58,0.14), 0 0 34px rgba(255,216,58,0.3)'
               : '0 0 0 4px rgba(255,216,58,0.08), 0 0 18px rgba(255,216,58,0.12)',
-            scale: hovered ? 0.9 : 1,
-            opacity: hovered ? 0.35 : 1,
+            scale: split ? 0.9 : 1,
+            opacity: split ? 0.35 : 1,
             visibility: modalOpen ? 'hidden' : 'visible',
           }}
         >
@@ -104,11 +107,11 @@ function ProjectRow({
               key={i}
               initial={false}
               animate={
-                hovered
+                split
                   ? { opacity: 1, x: i * 156, scale: 1, rotate: 0 }
                   : { opacity: 0, x: -136, scale: 0.4, rotate: i ? 90 : -90 }
               }
-              transition={{ ...spring, delay: hovered ? i * 0.06 : 0 }}
+              transition={{ ...spring, delay: split ? i * 0.06 : 0 }}
               className="absolute left-0 top-[11px] size-[128px] overflow-hidden rounded-full border-2 border-[#ffd83a] bg-elevated shadow-[0_14px_34px_rgba(0,0,0,0.5)]"
               style={{ zIndex: 3 - i }}
             >
