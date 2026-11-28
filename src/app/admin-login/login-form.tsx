@@ -65,7 +65,7 @@ export function LoginForm({
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#061312] via-[#0B211E] to-[#061312] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a3022] via-[#0f4030] to-[#0a3022] p-4">
       <div className="w-full max-w-md space-y-6">
         <div className="flex justify-center">
           <Link

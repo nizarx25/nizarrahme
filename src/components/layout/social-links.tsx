@@ -63,7 +63,7 @@ export function SocialLinks() {
         href="https://wa.me/963932264918"
         target="_blank"
         rel="noopener noreferrer"
-        className="p-2 rounded-[10px] hover:bg-elevated transition-all text-muted-foreground hover:text-teal hover:shadow-[0_0_12px_rgba(0,229,176,0.15)]"
+        className="p-2 rounded-[10px] hover:bg-elevated transition-all text-muted-foreground hover:text-teal hover:shadow-[0_0_12px_rgba(255,216,58,0.15)]"
         aria-label="WhatsApp"
       >
         <MessageCircle className="size-4" />

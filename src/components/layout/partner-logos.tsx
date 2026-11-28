@@ -19,7 +19,7 @@ export function PartnerLogos() {
     <section className="py-12 surface-border-t relative">
       <div className="absolute inset-0 bg-gradient-to-b from-surface/30 to-background/50" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-center text-xs font-mono-accent text-[#718581] uppercase tracking-[0.2em] mb-8">
+        <p className="text-center text-xs font-mono-accent text-[#a9c4b4] uppercase tracking-[0.2em] mb-8">
           Listed On Trusted Marketplaces
         </p>
         <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-12">

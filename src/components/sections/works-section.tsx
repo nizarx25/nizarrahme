@@ -73,10 +73,10 @@ function ProjectRow({
             width: 88,
             height: 88,
             borderRadius: 9999,
-            border: '2px solid #00E5B0',
+            border: '2px solid #ffd83a',
             boxShadow: hovered
-              ? '0 0 0 6px rgba(0,229,176,0.14), 0 0 34px rgba(0,229,176,0.3)'
-              : '0 0 0 4px rgba(0,229,176,0.08), 0 0 18px rgba(0,229,176,0.12)',
+              ? '0 0 0 6px rgba(255,216,58,0.14), 0 0 34px rgba(255,216,58,0.3)'
+              : '0 0 0 4px rgba(255,216,58,0.08), 0 0 18px rgba(255,216,58,0.12)',
             scale: hovered ? 1.1 : 1,
             visibility: modalOpen ? 'hidden' : 'visible',
           }}
@@ -93,7 +93,7 @@ function ProjectRow({
           <h3 dir="auto" className="text-left font-display text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl">
             {project.title}
           </h3>
-          <p dir="auto" className="text-left mt-2 line-clamp-2 text-sm text-[#718581]">
+          <p dir="auto" className="text-left mt-2 line-clamp-2 text-sm text-[#a9c4b4]">
             {project.category}
           </p>
         </div>
@@ -107,7 +107,7 @@ function ProjectRow({
                   : { opacity: 0, x: -30, y: 6, rotate: 0, scale: 0.7 }
               }
               transition={{ ...spring, delay: hovered ? i * 0.05 : 0 }}
-              className="absolute left-0 top-0 h-[128px] w-[212px] overflow-hidden rounded-[14px] border border-[#1d4a44] bg-elevated shadow-[0_14px_30px_rgba(0,0,0,0.5)]"
+              className="absolute left-0 top-0 h-[128px] w-[212px] overflow-hidden rounded-[14px] border border-[#276a4f] bg-elevated shadow-[0_14px_30px_rgba(0,0,0,0.5)]"
               style={{ zIndex: 3 - i }}
             >
               <img src={src} alt="" loading="eager" decoding="async" className="h-full w-full object-cover object-top" />
@@ -124,7 +124,7 @@ function ProjectRow({
           <h3 dir="auto" className="text-left mt-2 font-display text-xl font-bold leading-snug text-white">
             {project.title}
           </h3>
-          <p dir="auto" className="text-left mt-2 line-clamp-2 text-sm leading-relaxed text-[#B8C8C4]">
+          <p dir="auto" className="text-left mt-2 line-clamp-2 text-sm leading-relaxed text-[#d4e3d9]">
             {project.summary}
           </p>
           <p className="mt-3 inline-flex items-center gap-1.5 font-mono-accent text-xs text-teal">
@@ -152,8 +152,8 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
     }
   }, [onClose])
 
-  const h4 = 'font-display text-xs font-semibold uppercase tracking-[0.18em] text-[#718581]'
-  const ghost = 'inline-flex items-center gap-1.5 rounded-[12px] border border-surface-border px-4 py-2.5 text-sm text-[#B8C8C4] transition-colors hover:border-teal/40 hover:text-white'
+  const h4 = 'font-display text-xs font-semibold uppercase tracking-[0.18em] text-[#a9c4b4]'
+  const ghost = 'inline-flex items-center gap-1.5 rounded-[12px] border border-surface-border px-4 py-2.5 text-sm text-[#d4e3d9] transition-colors hover:border-teal/40 hover:text-white'
 
   return (
     <motion.div
@@ -172,13 +172,13 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 12 }}
         transition={{ duration: 0.35, ease }}
-        className="relative grid max-h-[92vh] w-full max-w-6xl overflow-y-auto rounded-[22px] border border-[#1d4a44] bg-[#0B211E] shadow-[0_30px_80px_rgba(0,0,0,0.6)] lg:grid-cols-[1.45fr_1fr] lg:overflow-hidden"
+        className="relative grid max-h-[92vh] w-full max-w-6xl overflow-y-auto rounded-[22px] border border-[#276a4f] bg-[#0f4030] shadow-[0_30px_80px_rgba(0,0,0,0.6)] lg:grid-cols-[1.45fr_1fr] lg:overflow-hidden"
       >
         <button
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-3 top-3 z-10 grid size-9 place-items-center rounded-full border border-[#1d4a44] bg-[#061312]/80 text-white transition-colors hover:border-teal hover:text-teal"
+          className="absolute right-3 top-3 z-10 grid size-9 place-items-center rounded-full border border-[#276a4f] bg-[#0a3022]/80 text-white transition-colors hover:border-teal hover:text-teal"
         >
           <X className="size-4" />
         </button>
@@ -187,7 +187,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
           <motion.div
             layoutId={`proj-img-${project.slug}`}
             transition={reduce ? { duration: 0 } : { duration: 0.5, ease }}
-            className="relative aspect-[16/10] w-full overflow-hidden border border-[#1d4a44] bg-elevated"
+            className="relative aspect-[16/10] w-full overflow-hidden border border-[#276a4f] bg-elevated"
             style={{ borderRadius: 16 }}
           >
             <AnimatePresence mode="popLayout">
@@ -212,7 +212,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
                   onClick={() => setActive(i)}
                   aria-label={`Screenshot ${i + 1}`}
                   className={`h-[72px] w-[116px] overflow-hidden rounded-[10px] border-2 transition-colors ${
-                    active === i ? 'border-teal' : 'border-[#1d4a44] opacity-70 hover:opacity-100'
+                    active === i ? 'border-teal' : 'border-[#276a4f] opacity-70 hover:opacity-100'
                   }`}
                 >
                   <img src={src} alt="" loading="eager" className="h-full w-full object-cover object-top" />
@@ -234,21 +234,21 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
           <h2 dir="auto" className="font-display text-2xl font-bold leading-tight text-white sm:text-3xl">
             {project.title}
           </h2>
-          <p dir="auto" className="text-sm leading-relaxed text-[#B8C8C4]">{project.summary}</p>
+          <p dir="auto" className="text-sm leading-relaxed text-[#d4e3d9]">{project.summary}</p>
           <div>
             <h4 className={h4}>About the work</h4>
-            <p dir="auto" className="mt-2 text-sm leading-relaxed text-[#B8C8C4]">{project.about}</p>
+            <p dir="auto" className="mt-2 text-sm leading-relaxed text-[#d4e3d9]">{project.about}</p>
           </div>
           <div>
             <h4 className={h4}>How it was designed</h4>
-            <p dir="auto" className="mt-2 text-sm leading-relaxed text-[#B8C8C4]">{project.designMethod}</p>
+            <p dir="auto" className="mt-2 text-sm leading-relaxed text-[#d4e3d9]">{project.designMethod}</p>
           </div>
           {project.highlights && project.highlights.length > 0 && (
             <div>
               <h4 className={h4}>Highlights</h4>
               <ul className="mt-3 grid gap-2">
                 {project.highlights.map((h) => (
-                  <li key={h} className="flex items-start gap-2.5 rounded-[12px] border border-surface-border bg-[#061312]/50 p-3 text-sm text-[#B8C8C4]">
+                  <li key={h} className="flex items-start gap-2.5 rounded-[12px] border border-surface-border bg-[#0a3022]/50 p-3 text-sm text-[#d4e3d9]">
                     <Sparkles className="mt-0.5 size-3.5 shrink-0 text-teal" />
                     <span dir="auto" className="leading-relaxed">{h}</span>
                   </li>
@@ -308,7 +308,7 @@ export function WorksSection() {
           className="absolute h-[480px] w-[480px] rounded-full blur-[120px] opacity-30 transition-all duration-1000 ease-out"
           style={{
             background:
-              'radial-gradient(circle, rgba(0,229,176,0.5) 0%, transparent 70%)',
+              'radial-gradient(circle, rgba(255,216,58,0.5) 0%, transparent 70%)',
             left: `${mouse.x}%`,
             top: `${mouse.y}%`,
             transform: 'translate(-50%, -50%)',
@@ -324,7 +324,7 @@ export function WorksSection() {
         aria-hidden
         style={{
           backgroundImage:
-            'linear-gradient(rgba(0,229,176,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,176,0.5) 1px, transparent 1px)',
+            'linear-gradient(rgba(255,216,58,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,216,58,0.5) 1px, transparent 1px)',
           backgroundSize: '60px 60px',
           maskImage:
             'radial-gradient(ellipse at center, black 30%, transparent 75%)',
@@ -354,7 +354,7 @@ export function WorksSection() {
                   built with care.
                 </span>
               </h1>
-              <p className="mt-4 text-[#718581] max-w-xl leading-relaxed text-sm sm:text-base">
+              <p className="mt-4 text-[#a9c4b4] max-w-xl leading-relaxed text-sm sm:text-base">
                 A handful of recent projects — websites, brand systems, and
                 product surfaces — designed end-to-end with the same
                 principles I apply to domain selection: clarity, restraint,
@@ -362,10 +362,10 @@ export function WorksSection() {
               </p>
             </div>
             <div className="hidden sm:flex flex-col items-end gap-1">
-              <p className="text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[#718581]">
+              <p className="text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[#a9c4b4]">
                 {String(PROJECTS.length).padStart(2, '0')} projects
               </p>
-              <p className="text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[#718581]">
+              <p className="text-[11px] font-mono-accent uppercase tracking-[0.25em] text-[#a9c4b4]">
                2026
               </p>
               <div className="mt-2 flex items-center gap-1.5">

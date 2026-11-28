@@ -45,9 +45,9 @@ async function sendEmailNotification(data: {
     : `New Domain Inquiry from ${data.name}`
 
   const domainLine = data.domainName ? `
-    <p style="color:#e0e0e0;margin:8px 0"><strong style="color:#00E5B0">Domain: ${data.domainName}</strong></p>` : ''
+    <p style="color:#e0e0e0;margin:8px 0"><strong style="color:#ffd83a">Domain: ${data.domainName}</strong></p>` : ''
   const offerLine = data.offerAmount ? `
-    <p style="color:#e0e0e0;margin:8px 0"><strong style="color:#FF4D2E">Offer: $${data.offerAmount}</strong></p>` : ''
+    <p style="color:#e0e0e0;margin:8px 0"><strong style="color:#ffd83a">Offer: $${data.offerAmount}</strong></p>` : ''
   const companyLine = data.company ? `
     <p style="color:#e0e0e0;margin:8px 0"><strong style="color:#ccc">Company:</strong> ${data.company}</p>` : ''
   const useLine = data.intendedUse ? `
@@ -60,20 +60,20 @@ async function sendEmailNotification(data: {
       replyTo: data.email,
       subject,
       html: `
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0B211E;border:1px solid #173A35;border-radius:8px;overflow:hidden">
-          <div style="padding:24px;border-bottom:2px solid #FF4D2E">
-            <h1 style="color:#00E5B0;margin:0;font-size:20px">New Domain Inquiry</h1>
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0f4030;border:1px solid #276a4f;border-radius:8px;overflow:hidden">
+          <div style="padding:24px;border-bottom:2px solid #ffd83a">
+            <h1 style="color:#ffd83a;margin:0;font-size:20px">New Domain Inquiry</h1>
           </div>
-          <div style="padding:24px;background:#061312">
+          <div style="padding:24px;background:#0a3022">
             ${domainLine}${offerLine}
             <p style="color:#e0e0e0;margin:8px 0"><strong style="color:#ccc">Name:</strong> ${data.name}</p>
             <p style="color:#e0e0e0;margin:8px 0"><strong style="color:#ccc">Email:</strong> ${data.email}</p>
             ${companyLine}${useLine}
-            <div style="margin-top:16px;padding:16px;background:#102A26;border-radius:6px;border-left:3px solid #00E5B0">
+            <div style="margin-top:16px;padding:16px;background:#102A26;border-radius:6px;border-left:3px solid #ffd83a">
               <p style="color:#ccc;margin:0;white-space:pre-wrap">${data.message}</p>
             </div>
           </div>
-          <div style="padding:16px 24px;background:#0B211E;border-top:1px solid #173A35">
+          <div style="padding:16px 24px;background:#0f4030;border-top:1px solid #276a4f">
             <p style="color:#4C6259;margin:0;font-size:12px">Sent from nizarrahme.com</p>
           </div>
         </div>`,

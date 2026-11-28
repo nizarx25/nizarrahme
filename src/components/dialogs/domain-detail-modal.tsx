@@ -81,7 +81,7 @@ export function DomainDetailModal() {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="ed-box grid-cols-[minmax(0,1fr)] overflow-x-hidden sm:max-w-2xl max-h-[90dvh] overflow-y-auto bg-[#0B211E] border-surface-border rounded-2xl p-4 sm:p-6">
+      <DialogContent className="ed-box grid-cols-[minmax(0,1fr)] overflow-x-hidden sm:max-w-2xl max-h-[90dvh] overflow-y-auto bg-[#0f4030] border-surface-border rounded-2xl p-4 sm:p-6">
         {isLoading ? (
           <div className="py-4 sm:py-8 space-y-3 sm:space-y-4">
             <Skeleton className="h-8 w-48 bg-surface-border/50" />
@@ -93,7 +93,7 @@ export function DomainDetailModal() {
           <>
             <DialogHeader>
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                <Badge className="bg-elevated text-[#718581] border-surface-border text-[10px] sm:text-xs font-mono-accent rounded-full px-2 sm:px-3 py-0">
+                <Badge className="bg-elevated text-[#a9c4b4] border-surface-border text-[10px] sm:text-xs font-mono-accent rounded-full px-2 sm:px-3 py-0">
                   {data.domain.extension}
                 </Badge>
                 <Badge className="bg-coral/10 text-coral border-coral/20 text-[10px] sm:text-xs font-mono-accent rounded-full px-2 sm:px-3 py-0">
@@ -126,7 +126,7 @@ export function DomainDetailModal() {
               {data.domain.shortDescription && (
                 <TypeText
                   text={data.domain.shortDescription}
-                  className="text-sm text-[#B8C8C4] leading-relaxed"
+                  className="text-sm text-[#d4e3d9] leading-relaxed"
                 />
               )}
               {data.domain.tags.length > 0 && (
@@ -141,7 +141,7 @@ export function DomainDetailModal() {
                     >
                       <Badge
                         variant="secondary"
-                        className="text-[10px] sm:text-xs font-mono-accent bg-elevated text-[#B8C8C4] rounded-full px-2 sm:px-3 py-0"
+                        className="text-[10px] sm:text-xs font-mono-accent bg-elevated text-[#d4e3d9] rounded-full px-2 sm:px-3 py-0"
                       >
                         {tag}
                       </Badge>
@@ -161,7 +161,7 @@ export function DomainDetailModal() {
                         initial={{ opacity: 0, x: -14 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ ...spring, delay: 1.2 + i * 0.1 }}
-                        className="flex items-start gap-2 text-xs sm:text-sm text-[#B8C8C4]"
+                        className="flex items-start gap-2 text-xs sm:text-sm text-[#d4e3d9]"
                       >
                         <motion.span
                           initial={{ scale: 0, rotate: -90 }}
@@ -179,7 +179,7 @@ export function DomainDetailModal() {
               )}
               {data.domain.publicNotes && (
                 <div className="p-3 sm:p-4 bg-elevated rounded-xl border border-surface-border">
-                  <p className="text-xs sm:text-sm text-[#B8C8C4]">
+                  <p className="text-xs sm:text-sm text-[#d4e3d9]">
                     {data.domain.publicNotes}
                   </p>
                 </div>
@@ -214,12 +214,12 @@ export function DomainDetailModal() {
                         transition={{ ...spring, delay: 1.5 + i * 0.1 }}
                         whileHover={{ y: -4 }}
                         whileTap={{ scale: 0.97 }}
-                        className="shrink-0 surface-border rounded-xl p-3 sm:p-4 hover:border-teal/50 hover:shadow-[0_8px_24px_rgba(0,229,176,0.12)] transition-colors text-left min-w-[140px] sm:min-w-[180px] bg-surface"
+                        className="shrink-0 surface-border rounded-xl p-3 sm:p-4 hover:border-teal/50 hover:shadow-[0_8px_24px_rgba(255,216,58,0.12)] transition-colors text-left min-w-[140px] sm:min-w-[180px] bg-surface"
                       >
                         <p className="font-display text-xs sm:text-sm font-bold text-white truncate">
                           {rd.name}
                         </p>
-                        <p className="text-[10px] sm:text-xs font-mono-accent text-[#718581] mt-1">
+                        <p className="text-[10px] sm:text-xs font-mono-accent text-[#a9c4b4] mt-1">
                           {rd.category}
                         </p>
                       </motion.button>
