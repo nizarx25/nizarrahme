@@ -4,7 +4,30 @@ import { useEffect } from 'react'
 
 const ARABIC = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/
 
-type Unit = { el: HTMLElement; y: number; v: number; r: number; g?: HTMLElement }
+type Unit = { el: HTMLElement; y: number; v: number; r: number; g?: HTMLElement; f?: number }
+type Shine = { base: [number, number, number]; dur: number; t0: number }
+const YEL: [number, number, number] = [255, 216, 58]
+const WHT: [number, number, number] = [255, 255, 255]
+const mix = (a: number[], b: number[], t: number) => a.map((v, i) => Math.round(v + (b[i] - v) * t))
+function parseRgb(c: string): [number, number, number] {
+  const m = c.trim()
+  if (m.startsWith('#')) {
+    const h = m.length === 4 ? m.slice(1).split('').map((x) => x + x).join('') : m.slice(1)
+    return [parseInt(h.slice(0, 2), 16) || 0, parseInt(h.slice(2, 4), 16) || 0, parseInt(h.slice(4, 6), 16) || 0]
+  }
+  const n = m.match(/\d+/g)
+  return n && n.length >= 3 ? [+n[0], +n[1], +n[2]] : [185, 209, 194]
+}
+// Solid per-letter colour for the travelling yellow/white band. No background-clip, so it cannot go blank under transforms.
+function shineColor(sh: Shine, f: number, now: number) {
+  const p = (((now - sh.t0) / 1000) / sh.dur) % 1
+  const c = p * 1.6 - 0.3
+  const d = Math.abs(f - c) / 0.13
+  if (d >= 1) return `rgb(${sh.base.join(',')})`
+  const k = 1 - d
+  const col = k > 0.7 ? mix(YEL, WHT, (k - 0.7) / 0.3) : mix(sh.base, YEL, k / 0.7)
+  return `rgb(${col.join(',')})`
+}
 const SKIP = 'button, [role="button"], svg, input, textarea, select, [role="combobox"], [role="option"], [aria-hidden="true"], .sr-only, script, style'
 const GRAD = '[class*="bg-clip-text"]'
 const TEXTY = 'h1, h2, h3, h4, h5, p, li, label, dt, dd, blockquote, figcaption, td'
@@ -124,23 +147,15 @@ function makeWave(h: HTMLElement) {
     st.backgroundClip = 'text'
     st.setProperty('-webkit-text-fill-color', 'transparent')
   })
+  let shine: Shine | null = null
   if (shimmer && shImg !== 'none') {
-    // The block's own shimmer would vanish once its text is split into letters, so each letter
-    // carries the same sweep, delayed by its position so the band still travels along the line.
     const hr = h.getBoundingClientRect()
+    shine = { base: parseRgb(hcs.getPropertyValue('--sb') || '#b9d1c2'), dur: shDur, t0: performance.now() - (((performance.now() / 1000) % shDur) * 1000) }
     units.forEach((u) => {
       if (u.g) return
       const r = u.el.getBoundingClientRect()
-      const f = Math.min(1, Math.max(0, (r.left - hr.left) / (hr.width || 1)))
-      const st = u.el.style
-      st.backgroundImage = shImg
-      st.backgroundSize = '300% 100%'
-      st.backgroundRepeat = 'no-repeat'
-      st.setProperty('-webkit-background-clip', 'text')
-      st.backgroundClip = 'text'
-      st.setProperty('-webkit-text-fill-color', 'transparent')
-      st.animation = `shineSweep ${shDur}s linear infinite`
-      st.animationDelay = `${-(shDur * (0.6 - f * 0.5)).toFixed(2)}s`
+      u.f = Math.min(1, Math.max(0, (r.left - hr.left) / (hr.width || 1)))
+      u.el.style.setProperty('-webkit-text-fill-color', shineColor(shine!, u.f, performance.now()))
     })
     const oldH = h.style.backgroundImage
     h.style.backgroundImage = 'none'
@@ -155,7 +170,7 @@ function makeWave(h: HTMLElement) {
       g.style.backgroundImage = old
     })
   })
-  return { units, restore: () => restores.forEach((f) => f()) }
+  return { units, shine, restore: () => restores.forEach((f) => f()) }
 }
 
 export function EffectsRoot() {
@@ -171,7 +186,7 @@ export function EffectsRoot() {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let cleanup = () => {}
     if (fine && !reduce) {
-      let active: { h: HTMLElement; units: Unit[]; restore: () => void } | null = null
+      let active: { h: HTMLElement; units: Unit[]; shine: Shine | null; restore: () => void } | null = null
       let cx = -1e5
       let raf = 0
       let inside = false
@@ -180,7 +195,8 @@ export function EffectsRoot() {
       const frame = () => {
         raf = 0
         if (!active) return
-        const { units } = active
+        const { units, shine } = active
+        const nowT = performance.now()
         const n = units.length
         const rects = units.map((u) => {
           const r = u.el.getBoundingClientRect()
@@ -214,6 +230,7 @@ export function EffectsRoot() {
         units.forEach((u, i) => {
           u.y = ny[i]
           u.r += (u.y * 0.12 - u.r) * 0.2
+          if (shine && u.f !== undefined) u.el.style.setProperty('-webkit-text-fill-color', shineColor(shine, u.f, nowT))
           u.el.style.transform = `translateY(${u.y.toFixed(2)}px) rotate(${u.r.toFixed(2)}deg)`
           if (Math.abs(u.y) > 0.15 || Math.abs(u.v) > 0.15) moving = true
         })
@@ -237,7 +254,7 @@ export function EffectsRoot() {
             active = null
           }
           const w = makeWave(h)
-          if (w) active = { h, units: w.units, restore: w.restore }
+          if (w) active = { h, units: w.units, shine: w.shine, restore: w.restore }
         }
         if (active && !raf) raf = requestAnimationFrame(frame)
       }
