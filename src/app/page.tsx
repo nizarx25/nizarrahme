@@ -3,7 +3,7 @@
 // Top-level SPA composition. Each section, dialog, and layout piece lives in
 // its own module under src/components/. This file only wires them together.
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useNavigation } from '@/store/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
@@ -32,6 +32,7 @@ const SECTION_LABELS: Record<string, string> = {
 
 export default function HomePage() {
   const nav = useNavigation()
+  const reduce = useReducedMotion()
   const ariaLabel = SECTION_LABELS[nav.section] ?? 'Section loaded'
 
   return (
@@ -43,13 +44,15 @@ export default function HomePage() {
       <Header />
       <main id="main-content" className="flex-1" role="main">
         <div aria-live="polite" className="sr-only">{ariaLabel} loaded</div>
+        <div className="overflow-x-clip" style={{ perspective: 1800 }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={nav.section}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            initial={reduce ? { opacity: 0 } : { opacity: 0, rotateY: -84, skewY: 1.5 }}
+            animate={reduce ? { opacity: 1 } : { opacity: 1, rotateY: 0, skewY: 0 }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, rotateY: 70, skewY: -1 }}
+            transition={{ duration: reduce ? 0.2 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+            style={{ transformOrigin: 'left center', transformStyle: 'preserve-3d' }}
           >
             {nav.section === 'home' && <HomeSection />}
             {nav.section === 'domains' && <DomainsSection />}
@@ -60,6 +63,7 @@ export default function HomePage() {
             {nav.section === 'contact' && <ContactSection />}
           </motion.div>
         </AnimatePresence>
+        </div>
       </main>
       <PartnerLogos />
       <Footer />

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { z } from 'zod/v4'
 import { CheckCircle2, Loader2, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -31,6 +32,36 @@ export function ContactSection() {
   const [form, setForm] = useState({ name: '', email: '', category: '', message: '', consent: false, honeypot: '' })
   const [errors, setErrors] = useState<FormErrors>({})
   const [submitted, setSubmitted] = useState(false)
+  const reduce = useReducedMotion()
+  const btnWrap = useRef<HTMLDivElement>(null)
+  const [off, setOff] = useState({ x: 0, y: 0 })
+  const isValid = contactSchema.safeParse({
+    name: form.name, email: form.email, category: form.category, message: form.message, consent: form.consent,
+  }).success
+  const offRef = useRef(off)
+  offRef.current = off
+  useEffect(() => {
+    if (reduce || isValid) return
+    const h = (e: PointerEvent) => dodge(e)
+    window.addEventListener('pointermove', h)
+    return () => window.removeEventListener('pointermove', h)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduce, isValid])
+  const dodge = (e: PointerEvent) => {
+    const off = offRef.current
+    if (e.pointerType !== 'mouse') return
+    const r = btnWrap.current?.getBoundingClientRect()
+    if (!r) return
+    const cx = r.left + r.width / 2 + off.x, cy = r.top + r.height / 2 + off.y
+    const dx = e.clientX - cx, dy = e.clientY - cy
+    const d = Math.hypot(dx, dy)
+    if (d > 130) return
+    const k = 170 / (d || 1)
+    let nx = off.x - dx * k / 3 , ny = off.y - dy * k / 3
+    nx = Math.max(-20, Math.min(260, nx)); ny = Math.max(-90, Math.min(90, ny))
+    if (Math.abs(nx - off.x) < 20 && Math.abs(ny - off.y) < 20) { nx = off.x > 100 ? 0 : 200; ny = -off.y }
+    setOff({ x: nx, y: ny })
+  }
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -189,6 +220,8 @@ export function ContactSection() {
             {errors.consent && (
               <p role="alert" className="text-xs text-error">{errors.consent}</p>
             )}
+            <div ref={btnWrap} className="relative inline-block w-full sm:w-auto py-6 -my-6 px-10 -mx-10">
+            <motion.div animate={isValid || reduce ? { x: 0, y: 0 } : off} transition={{ type: 'spring', stiffness: 380, damping: 22 }} className="inline-block w-full sm:w-auto">
             <Button
               type="submit"
               className="w-full sm:w-auto bg-coral hover:bg-coral-hover text-white h-11 px-6 rounded-[12px] font-medium transition-all hover:shadow-[0_0_20px_rgba(255,216,58,0.3)]"
@@ -204,6 +237,8 @@ export function ContactSection() {
                 </>
               )}
             </Button>
+            </motion.div>
+            </div>
           </form>
 
           <aside className="space-y-6">
