@@ -2,31 +2,55 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform, useSpring } from 'framer-motion'
+import { useNavigation } from '@/store/navigation'
 import { ArrowRight, Search } from 'lucide-react'
 
-const TAGS = [
-  { n: 'fogengine', e: '.ai' },
-  { n: 'vectorsift', e: '.com' },
-  { n: 'sunly', e: '.si' },
-  { n: 'finlyra', e: '.io' },
-  { n: 'dnabite', e: '.com' },
-  { n: 'mythosscale', e: '.ai' },
-]
+const CARDS = [
+  { name: 'FogEngine.ai', tag: 'AI infrastructure', blurb: 'A short, memorable name for a cloud or edge AI platform.', theme: 'cream' },
+  { name: 'VectorSift.com', tag: 'AI / Data', blurb: 'Fits search, retrieval and vector database products.', theme: 'yellow' },
+  { name: 'Sunly.si', tag: 'Brand / Energy', blurb: 'Warm and simple, made for a consumer or energy brand.', theme: 'green' },
+] as const
+const THEMES = {
+  cream: { card: 'bg-[#f3ecd9] text-[#0c3b2a]', sub: 'text-[#0c3b2a]/70', pill: 'bg-[#0c3b2a] text-[#f3ecd9]', btn: 'bg-[#0c3b2a] text-[#f3ecd9]' },
+  yellow: { card: 'bg-[#ffd83a] text-[#0c3b2a]', sub: 'text-[#0c3b2a]/75', pill: 'bg-[#0c3b2a] text-[#ffd83a]', btn: 'bg-[#0c3b2a] text-[#ffd83a]' },
+  green: { card: 'bg-[#0a2a1d] text-[#f3ecd9] border-2 border-[#ffd83a]', sub: 'text-[#cfe3d6]', pill: 'bg-[#ffd83a] text-[#0c3b2a]', btn: 'bg-[#ffd83a] text-[#0c3b2a]' },
+} as const
 const NAMES = ['BaseOPolis.com', 'FogEngine.ai', 'KernEngine.com', 'VectorSift.com', 'DnaBite.com', 'MythosScale.com', 'FinTriva.com']
 
 export function EditorialHero({ onSearch, onBrowse }: { onSearch: (q: string) => void; onBrowse: () => void }) {
   const ref = useRef<HTMLElement>(null)
   const [q, setQ] = useState('')
-  const [ext, setExt] = useState(0)
+  const [idx, setIdx] = useState(0)
+  const dir = useRef(1)
+  const idxRef = useRef(0)
+  const lock = useRef(0)
+  const touchX = useRef<number | null>(null)
   const reduce = useReducedMotion()
+  const nav = useNavigation()
+  const go = (n: number, d: number) => {
+    dir.current = d
+    idxRef.current = n
+    setIdx(n)
+  }
   useEffect(() => {
-    if (reduce) return
-    const t = setInterval(() => setExt((e) => (e + 1) % TAGS.length), 2800)
-    return () => clearInterval(t)
-  }, [reduce])
+    // Wheel drives the cards while the hero is at the top. After the last card, scrolling continues down the page.
+    const onWheel = (e: WheelEvent) => {
+      if (document.querySelector('[role="dialog"]') || Math.abs(e.deltaY) < 4 || e.ctrlKey) return
+      const i = idxRef.current
+      const atTop = window.scrollY < 40
+      if (e.deltaY > 0 && atTop && i < CARDS.length - 1) {
+        e.preventDefault()
+        if (Date.now() - lock.current > 650) { lock.current = Date.now(); go(i + 1, 1) }
+      } else if (e.deltaY < 0 && atTop && i > 0) {
+        e.preventDefault()
+        if (Date.now() - lock.current > 650) { lock.current = Date.now(); go(i - 1, -1) }
+      }
+    }
+    window.addEventListener('wheel', onWheel, { passive: false })
+    return () => window.removeEventListener('wheel', onWheel)
+  }, [])
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const sp = useSpring(scrollYProgress, { stiffness: 80, damping: 22 })
-  const y = useTransform(sp, [0, 1], [0, 140])
   const tick = useTransform(sp, [0, 1], ['0%', '-35%'])
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -64,58 +88,63 @@ export function EditorialHero({ onSearch, onBrowse }: { onSearch: (q: string) =>
           </button>
         </div>
 
-        <motion.div
-          style={{ y }}
-          className="relative z-10 mx-6 sm:mx-12 mb-24 lg:mb-0 lg:absolute lg:right-12 lg:top-1/2 lg:-translate-y-1/2 lg:w-[480px] -mt-16 lg:mt-0"
+        <div
+          className="no-shine relative z-10 mx-6 sm:mx-12 mb-24 lg:mb-0 lg:absolute lg:right-12 lg:top-1/2 lg:-translate-y-1/2 lg:w-[460px] -mt-16 lg:mt-0"
+          style={{ perspective: 1400, touchAction: 'pan-y' }}
+          onTouchStart={(e) => { touchX.current = e.touches[0].clientX }}
+          onTouchEnd={(e) => {
+            if (touchX.current === null) return
+            const dx = e.changedTouches[0].clientX - touchX.current
+            touchX.current = null
+            if (dx < -40 && idx < CARDS.length - 1) go(idx + 1, 1)
+            else if (dx > 40 && idx > 0) go(idx - 1, -1)
+          }}
         >
-          <div className="rounded-3xl bg-[#f3ecd9] shadow-[0_30px_80px_rgba(0,0,0,0.45)] rotate-[-3deg] overflow-hidden">
-            <div className="flex items-center gap-2 px-5 py-3 border-b border-[#0c3b2a]/10">
-              <span className="size-3 rounded-full bg-[#0c3b2a]/20" />
-              <span className="size-3 rounded-full bg-[#0c3b2a]/20" />
-              <span className="size-3 rounded-full bg-[#ffd83a]" />
-              <span className="ml-3 text-[11px] font-mono-accent tracking-[0.2em] uppercase text-[#0c3b2a]/60">Your next domain</span>
-            </div>
-            <div className="px-6 sm:px-8 py-10 sm:py-14 font-display text-[#0c3b2a] flex items-baseline flex-wrap gap-y-2 min-h-[150px]">
-              <span className="relative inline-flex text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight" aria-hidden>
-                <AnimatePresence mode="wait">
-                  <motion.span key={TAGS[ext].n} className="inline-flex">
-                    {TAGS[ext].n.split('').map((c, i) => (
-                      <motion.span
-                        key={i}
-                        initial={{ y: '110%', opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: '-110%', opacity: 0 }}
-                        transition={{ duration: 0.3, delay: i * 0.025 }}
-                        className="inline-block"
-                      >
-                        {c}
-                      </motion.span>
-                    ))}
-                  </motion.span>
-                </AnimatePresence>
-              </span>
-              <span className="ml-1 inline-flex overflow-hidden rounded-xl bg-[#ffd83a] px-3 py-1 text-4xl sm:text-5xl lg:text-6xl font-bold italic" aria-hidden>
-                <AnimatePresence mode="popLayout" initial={false}>
-                  <motion.span
-                    key={ext}
-                    initial={{ y: '100%' }}
-                    animate={{ y: 0 }}
-                    exit={{ y: '-100%' }}
-                    transition={{ type: 'spring', stiffness: 260, damping: 22, delay: 0.25 }}
-                    className="inline-block"
-                  >
-                    {TAGS[ext].e}
-                  </motion.span>
-                </AnimatePresence>
-              </span>
-              <span className="sr-only">{TAGS[ext].n}{TAGS[ext].e}</span>
-            </div>
-            <div className="flex items-center justify-between px-6 sm:px-8 py-4 bg-[#0c3b2a] text-[#f3ecd9] text-xs font-mono-accent tracking-[0.2em] uppercase">
-              <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-[#ffd83a] animate-pulse" /> Curated listing</span>
-              <span className="text-[#ffd83a]">Make an offer &rarr;</span>
-            </div>
+          <AnimatePresence mode="wait" initial={false}>
+            {(() => {
+              const c = CARDS[idx]
+              const t = THEMES[c.theme]
+              const d = dir.current
+              return (
+                <motion.div
+                  key={c.name}
+                  initial={reduce ? { opacity: 0 } : { rotateX: -80 * d, opacity: 0, y: 40 * d }}
+                  animate={reduce ? { opacity: 1 } : { rotateX: 0, opacity: 1, y: 0 }}
+                  exit={reduce ? { opacity: 0 } : { rotateX: 80 * d, opacity: 0, y: -40 * d }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ transformOrigin: 'center center' }}
+                  className={`rounded-3xl p-7 sm:p-9 shadow-[0_30px_80px_rgba(0,0,0,0.45)] ${t.card}`}
+                >
+                  <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-mono-accent tracking-[0.2em] uppercase ${t.pill}`}>{c.tag}</span>
+                  <h2 className="mt-8 font-display font-bold tracking-tight leading-none text-[2.4rem] sm:text-5xl break-words">{c.name}</h2>
+                  <p className={`mt-4 text-sm sm:text-base max-w-[34ch] ${t.sub}`}>{c.blurb}</p>
+                  <div className="mt-8 flex items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={() => { nav.setOfferDomainName(c.name); nav.setShowOfferForm(true) }}
+                      className={`h-11 px-5 rounded-full font-bold inline-flex items-center gap-2 whitespace-nowrap ${t.btn}`}
+                    >
+                      Make an Offer <ArrowRight className="size-4" />
+                    </button>
+                    <span className={`text-[11px] whitespace-nowrap font-mono-accent tracking-[0.15em] ${t.sub}`}>{String(idx + 1).padStart(2, '0')} / {String(CARDS.length).padStart(2, '0')}</span>
+                  </div>
+                </motion.div>
+              )
+            })()}
+          </AnimatePresence>
+          <div className="mt-5 flex justify-center gap-2" role="group" aria-label="Featured domain cards">
+            {CARDS.map((c, i) => (
+              <button
+                key={c.name}
+                type="button"
+                aria-label={`Show ${c.name}`}
+                aria-current={i === idx}
+                onClick={() => go(i, i > idx ? 1 : -1)}
+                className={`h-2 rounded-full transition-all ${i === idx ? 'w-8 bg-[#ffd83a]' : 'w-2 bg-[#f3ecd9]/40'}`}
+              />
+            ))}
           </div>
-        </motion.div>
+        </div>
 
         <motion.div style={{ x: tick }} className="absolute left-6 bottom-6 z-10 whitespace-nowrap font-display italic text-2xl sm:text-3xl text-[#8fc0a6]">
           {[...NAMES, ...NAMES].map((n, i) => (

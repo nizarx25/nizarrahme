@@ -30,7 +30,7 @@ export function PartnerLogos() {
               whileTap={{ scale: 0.95 }}
               className="opacity-70 hover:opacity-100 transition-all duration-300 cursor-default"
             >
-              <span className="font-display text-sm sm:text-base font-bold bg-gradient-to-r from-teal to-teal-soft bg-clip-text text-transparent tracking-wide whitespace-nowrap">
+              <span className="font-display text-sm sm:text-base font-bold shine-word tracking-wide whitespace-nowrap">
                 {partner.name}
               </span>
             </motion.div>

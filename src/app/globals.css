@@ -583,3 +583,31 @@ body {
 /* Style B: yellow buttons need dark text */
 [class*="bg-coral"]:not([class*="bg-coral/"]), [class*="bg-teal"]:not([class*="bg-teal/"]):not([class*="bg-teal-"]) { color: #0a3022 !important; }
 [class*="bg-coral"]:not([class*="bg-coral/"]) * { color: inherit; }
+
+
+/* Shimmer sweep: a yellow-and-white band moves through text. Applied to headings and body text in
+   the page and footer. Elements inside .no-shine (light cards) keep their own colors. */
+@keyframes shineSweep { from { background-position: 100% 0; } to { background-position: 0% 0; } }
+:root { --sb-head: #f3ecd9; --sb-body: #b9d1c2; }
+.shine-word,
+:is(main, footer) :is(h1, h2, h3, h4, p, li, label):not(.sr-only):not(.no-shine *) {
+  --sb: var(--sb-body);
+  background-image: linear-gradient(100deg, var(--sb) 0%, var(--sb) 38%, #ffd83a 46%, #ffffff 52%, #ffd83a 58%, var(--sb) 66%, var(--sb) 100%);
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shineSweep 7s linear infinite;
+}
+:is(main, footer) :is(h1, h2, h3, h4):not(.no-shine *) { --sb: var(--sb-head); animation-duration: 6s; }
+.shine-word { --sb: #a9c4b4; animation-duration: 3.5s; }
+:is(main, footer) :is(p, li, label):not(.no-shine *):nth-of-type(2n) { animation-delay: -2.3s; }
+:is(main, footer) :is(p, li, label):not(.no-shine *):nth-of-type(3n) { animation-delay: -4.6s; }
+@media (prefers-reduced-motion: reduce) {
+  .shine-word,
+  :is(main, footer) :is(h1, h2, h3, h4, p, li, label):not(.no-shine *) {
+    animation: none; background-image: none; -webkit-text-fill-color: currentColor; color: var(--sb);
+  }
+}

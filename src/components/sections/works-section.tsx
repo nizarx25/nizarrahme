@@ -43,6 +43,14 @@ function ProjectRow({
   const reduce = useReducedMotion()
   const [circleHover, setSplit] = useState(false)
   const [focused, setFocused] = useState(false)
+  const [wide, setWide] = useState(true)
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    const f = () => setWide(mq.matches)
+    f()
+    mq.addEventListener('change', f)
+    return () => mq.removeEventListener('change', f)
+  }, [])
   const split = circleHover || focused
   const [a, b] = [project.images[0], project.images[1] ?? project.images[0]]
   const counter = `${String(index + 1).padStart(2, '0')} / ${String(PROJECTS.length).padStart(2, '0')}`
@@ -67,7 +75,7 @@ function ProjectRow({
       className="group relative grid cursor-pointer grid-cols-[88px_1fr] items-center gap-x-5 border-t border-surface-border py-6 !outline-none transition-opacity duration-300 last:border-b md:min-h-[176px] md:grid-cols-[112px_minmax(0,1fr)_minmax(0,420px)] md:gap-x-8"
       style={{ opacity: anyHovered && !hovered ? 0.6 : 1 }}
     >
-      <div className="grid place-items-center" onMouseEnter={() => setSplit(true)} onMouseLeave={() => setSplit(false)}>
+      <div className="grid place-items-center" onMouseEnter={() => setSplit(true)} onMouseLeave={() => setSplit(false)} onClick={(e) => { if (!wide) { e.stopPropagation(); setSplit((v) => !v) } }}>
         <motion.div
           layoutId={`proj-img-${project.slug}`}
           transition={reduce ? { duration: 0 } : { duration: 0.5, ease }}
@@ -92,7 +100,7 @@ function ProjectRow({
       <div className="relative min-w-0 md:h-[150px]">
         <div
           className="transition-opacity duration-300 md:absolute md:inset-0 md:flex md:flex-col md:justify-center"
-          style={{ opacity: hovered ? 0 : 1 }}
+          style={{ opacity: hovered || split ? 0 : 1 }}
         >
           <h3 dir="auto" className="text-left font-display text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl">
             {project.title}
@@ -101,18 +109,18 @@ function ProjectRow({
             {project.category}
           </p>
         </div>
-        <div className="pointer-events-none absolute inset-0 hidden md:block" aria-hidden>
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
           {[a, b].map((src, i) => (
             <motion.div
               key={i}
               initial={false}
               animate={
                 split
-                  ? { opacity: 1, x: i * 156, scale: 1, rotate: 0 }
-                  : { opacity: 0, x: -136, scale: 0.4, rotate: i ? 90 : -90 }
+                  ? { opacity: 1, x: wide ? i * 156 : i * 96, scale: 1, rotate: 0 }
+                  : { opacity: 0, x: wide ? -136 : -108, scale: 0.4, rotate: i ? 90 : -90 }
               }
               transition={{ ...spring, delay: split ? i * 0.06 : 0 }}
-              className="absolute left-0 top-[11px] size-[128px] overflow-hidden rounded-full border-2 border-[#ffd83a] bg-elevated shadow-[0_14px_34px_rgba(0,0,0,0.5)]"
+              className="absolute left-0 top-1/2 -mt-[44px] md:top-[11px] md:mt-0 size-[88px] md:size-[128px] overflow-hidden rounded-full border-2 border-[#ffd83a] bg-elevated shadow-[0_14px_34px_rgba(0,0,0,0.5)]"
               style={{ zIndex: 3 - i }}
             >
               <img src={src} alt="" loading="eager" decoding="async" className="h-full w-full object-cover object-top" />
