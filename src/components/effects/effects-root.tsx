@@ -36,6 +36,10 @@ function targetFor(t: HTMLElement | null): HTMLElement | null {
  * words for Arabic, so joined letters never get split.
  */
 function makeWave(h: HTMLElement) {
+  const hcs = getComputedStyle(h)
+  const shimmer = hcs.animationName === 'shineSweep'
+  const shImg = hcs.backgroundImage
+  const shDur = parseFloat(hcs.animationDuration) || 7
   const restores: (() => void)[] = []
   const units: Unit[] = []
   const tw = document.createTreeWalker(h, NodeFilter.SHOW_TEXT, {
@@ -120,6 +124,30 @@ function makeWave(h: HTMLElement) {
     st.backgroundClip = 'text'
     st.setProperty('-webkit-text-fill-color', 'transparent')
   })
+  if (shimmer && shImg !== 'none') {
+    // The block's own shimmer would vanish once its text is split into letters, so each letter
+    // carries the same sweep, delayed by its position so the band still travels along the line.
+    const hr = h.getBoundingClientRect()
+    units.forEach((u) => {
+      if (u.g) return
+      const r = u.el.getBoundingClientRect()
+      const f = Math.min(1, Math.max(0, (r.left - hr.left) / (hr.width || 1)))
+      const st = u.el.style
+      st.backgroundImage = shImg
+      st.backgroundSize = '300% 100%'
+      st.backgroundRepeat = 'no-repeat'
+      st.setProperty('-webkit-background-clip', 'text')
+      st.backgroundClip = 'text'
+      st.setProperty('-webkit-text-fill-color', 'transparent')
+      st.animation = `shineSweep ${shDur}s linear infinite`
+      st.animationDelay = `${-(shDur * (0.6 - f * 0.5)).toFixed(2)}s`
+    })
+    const oldH = h.style.backgroundImage
+    h.style.backgroundImage = 'none'
+    restores.push(() => {
+      h.style.backgroundImage = oldH
+    })
+  }
   gs.forEach((g) => {
     const old = g.style.backgroundImage
     g.style.backgroundImage = 'none'

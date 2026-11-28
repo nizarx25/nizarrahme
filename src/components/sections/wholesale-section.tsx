@@ -103,13 +103,13 @@ export function WholesaleSection() {
                   <Badge className="bg-coral/10 text-coral border-coral/20 text-xs font-mono-accent rounded-full px-2.5 mb-2">
                     {domain.extension}
                   </Badge>
-                  <h3 className="font-display text-lg font-bold text-white truncate group-hover:text-coral transition-colors">
+                  <h3 className="hover-name font-display text-lg font-bold text-white truncate group-hover:text-coral transition-colors">
                     {domain.name}
                   </h3>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-xs text-[#a9c4b4] line-through">${domain.originalPrice.toLocaleString()}</p>
-                  <p className="text-xl font-bold text-coral">${domain.wholesalePrice}</p>
+                  <p className="hover-price text-xs text-[#a9c4b4] line-through">${domain.originalPrice.toLocaleString()}</p>
+                  <p className="hover-price text-xl font-bold text-coral">${domain.wholesalePrice}</p>
                 </div>
               </div>
               <p className="text-sm text-[#a9c4b4] leading-relaxed line-clamp-2">

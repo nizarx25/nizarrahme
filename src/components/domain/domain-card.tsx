@@ -53,12 +53,12 @@ export function DomainCard({ domain }: Props) {
                   {domain.category}
                 </Badge>
               </div>
-              <h3 className="font-display text-lg sm:text-xl font-bold leading-tight bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent transition-all duration-300">
+              <h3 className="hover-name font-display text-lg sm:text-xl font-bold leading-tight bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent transition-all duration-300">
                 {domain.name}
               </h3>
             </div>
             {domain.showPrice && domain.price && (
-              <p className="font-display text-lg font-bold text-teal whitespace-nowrap">
+              <p className="hover-price font-display text-lg font-bold text-teal whitespace-nowrap">
                 ${domain.price.toLocaleString()}
               </p>
             )}

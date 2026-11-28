@@ -74,7 +74,7 @@ export function FeaturedCarousel({ domains }: Props) {
             Featured Domain
           </p>
 
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent teal-text-glow leading-tight">
+          <h2 className="hover-name font-display text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-teal via-teal-soft to-coral bg-clip-text text-transparent teal-text-glow leading-tight">
             {domain.name}
           </h2>
 
@@ -86,7 +86,7 @@ export function FeaturedCarousel({ domains }: Props) {
 
           <div className="mt-6 flex items-center gap-4">
             {domain.showPrice && domain.price && (
-              <p className="font-display text-2xl font-bold text-teal">
+              <p className="hover-price font-display text-2xl font-bold text-teal">
                 ${domain.price.toLocaleString()}
               </p>
             )}

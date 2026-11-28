@@ -86,12 +86,12 @@ export function DomainPermalinkView({ domain, siteUrl }: Props) {
             </Badge>
           </div>
 
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.05] tracking-tight">
+          <h1 className="hover-name font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.05] tracking-tight">
             {domain.name}
           </h1>
 
           {domain.showPrice && domain.price && (
-            <p className="mt-6 font-display text-3xl sm:text-4xl font-bold text-teal">
+            <p className="hover-price mt-6 font-display text-3xl sm:text-4xl font-bold text-teal">
               ${domain.price.toLocaleString()}
             </p>
           )}

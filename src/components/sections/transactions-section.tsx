@@ -35,7 +35,7 @@ export function TransactionsSection() {
                       {tx.status}
                     </Badge>
                   </div>
-                  <p className="font-display text-3xl font-bold text-teal">${tx.amount.toLocaleString()}</p>
+                  <p className="hover-price font-display text-3xl font-bold text-teal">${tx.amount.toLocaleString()}</p>
                 </div>
               </motion.div>
             ))}

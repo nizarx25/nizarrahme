@@ -105,7 +105,7 @@ export function DomainDetailModal() {
                   </Badge>
                 )}
               </div>
-              <DialogTitle className="font-display text-xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight pr-8">
+              <DialogTitle className="hover-name font-display text-xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight pr-8">
                 {data.domain.name}
               </DialogTitle>
               <DialogDescription className="sr-only">
@@ -115,7 +115,7 @@ export function DomainDetailModal() {
             <div className="mt-3 sm:mt-6 min-w-0 space-y-3 sm:space-y-5">
               <div className="flex items-center gap-3 sm:gap-4">
                 {data.domain.showPrice && data.domain.price && (
-                  <p className="font-display text-2xl sm:text-3xl font-bold text-teal">
+                  <p className="hover-price font-display text-2xl sm:text-3xl font-bold text-teal">
                     ${data.domain.price.toLocaleString()}
                   </p>
                 )}

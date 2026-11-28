@@ -116,7 +116,7 @@ export function EditorialHero({ onSearch, onBrowse }: { onSearch: (q: string) =>
                   className={`rounded-3xl p-7 sm:p-9 shadow-[0_30px_80px_rgba(0,0,0,0.45)] ${t.card}`}
                 >
                   <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-mono-accent tracking-[0.2em] uppercase ${t.pill}`}>{c.tag}</span>
-                  <h2 className="mt-8 font-display font-bold tracking-tight leading-none text-[2.4rem] sm:text-5xl break-words">{c.name}</h2>
+                  <h2 className="hover-name mt-8 font-display font-bold tracking-tight leading-none text-[2.4rem] sm:text-5xl break-words">{c.name}</h2>
                   <p className={`mt-4 text-sm sm:text-base max-w-[34ch] ${t.sub}`}>{c.blurb}</p>
                   <div className="mt-8 flex items-center justify-between gap-3">
                     <button

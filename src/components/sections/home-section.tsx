@@ -267,7 +267,7 @@ export function HomeSection() {
                       {tx.status}
                     </Badge>
                   </div>
-                  <p className="font-display text-3xl font-bold text-teal mt-4">
+                  <p className="hover-price font-display text-3xl font-bold text-teal mt-4">
                     ${tx.amount.toLocaleString()}
                   </p>
                 </motion.div>

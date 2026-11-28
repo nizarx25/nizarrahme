@@ -611,3 +611,11 @@ body {
     animation: none; background-image: none; -webkit-text-fill-color: currentColor; color: var(--sb);
   }
 }
+
+/* Hover growth for prices and domain names. The shimmer keeps running. */
+@media all {
+  .hover-price, .hover-name { width: fit-content; max-width: 100%; transition: transform .25s cubic-bezier(.22,1,.36,1); transform-origin: left center; }
+  .hover-price:hover { transform: scale(1.5); position: relative; z-index: 5; }
+  .hover-name:hover { transform: scale(1.14); position: relative; z-index: 5; }
+}
+@media (prefers-reduced-motion: reduce) { .hover-price:hover, .hover-name:hover { transform: none; } }
