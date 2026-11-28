@@ -77,7 +77,8 @@ function ProjectRow({
             boxShadow: hovered
               ? '0 0 0 6px rgba(255,216,58,0.14), 0 0 34px rgba(255,216,58,0.3)'
               : '0 0 0 4px rgba(255,216,58,0.08), 0 0 18px rgba(255,216,58,0.12)',
-            scale: hovered ? 1.1 : 1,
+            scale: hovered ? 0.9 : 1,
+            opacity: hovered ? 0.35 : 1,
             visibility: modalOpen ? 'hidden' : 'visible',
           }}
         >
@@ -101,13 +102,14 @@ function ProjectRow({
           {[a, b].map((src, i) => (
             <motion.div
               key={i}
+              initial={false}
               animate={
                 hovered
-                  ? { opacity: 1, x: i * 118, y: 0, rotate: i * 3, scale: 1 }
-                  : { opacity: 0, x: -30, y: 6, rotate: 0, scale: 0.7 }
+                  ? { opacity: 1, x: i * 156, scale: 1, rotate: 0 }
+                  : { opacity: 0, x: -136, scale: 0.4, rotate: i ? 90 : -90 }
               }
-              transition={{ ...spring, delay: hovered ? i * 0.05 : 0 }}
-              className="absolute left-0 top-0 h-[128px] w-[212px] overflow-hidden rounded-[14px] border border-[#276a4f] bg-elevated shadow-[0_14px_30px_rgba(0,0,0,0.5)]"
+              transition={{ ...spring, delay: hovered ? i * 0.06 : 0 }}
+              className="absolute left-0 top-[11px] size-[128px] overflow-hidden rounded-full border-2 border-[#ffd83a] bg-elevated shadow-[0_14px_34px_rgba(0,0,0,0.5)]"
               style={{ zIndex: 3 - i }}
             >
               <img src={src} alt="" loading="eager" decoding="async" className="h-full w-full object-cover object-top" />

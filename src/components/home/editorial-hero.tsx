@@ -1,14 +1,22 @@
 'use client'
 
-import { useRef, useState, type FormEvent } from 'react'
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform, useSpring } from 'framer-motion'
 import { ArrowRight, Search } from 'lucide-react'
 
+const EXTS = ['.com', '.ai', '.si', '.io', '.xyz', '.co', '.net', '.tr']
 const NAMES = ['BaseOPolis.com', 'FogEngine.ai', 'KernEngine.com', 'VectorSift.com', 'DnaBite.com', 'MythosScale.com', 'FinTriva.com']
 
 export function EditorialHero({ onSearch, onBrowse }: { onSearch: (q: string) => void; onBrowse: () => void }) {
   const ref = useRef<HTMLElement>(null)
   const [q, setQ] = useState('')
+  const [ext, setExt] = useState(0)
+  const reduce = useReducedMotion()
+  useEffect(() => {
+    if (reduce) return
+    const t = setInterval(() => setExt((e) => (e + 1) % EXTS.length), 1800)
+    return () => clearInterval(t)
+  }, [reduce])
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const sp = useSpring(scrollYProgress, { stiffness: 80, damping: 22 })
   const rot = useTransform(sp, [0, 1], [0, 300])
@@ -59,7 +67,18 @@ export function EditorialHero({ onSearch, onBrowse }: { onSearch: (q: string) =>
             style={{ rotate: innerRot }}
             className="size-[52%] rounded-full bg-[#f3ecd9] flex items-center justify-center text-[#0c3b2a] font-display italic text-5xl sm:text-6xl lg:text-7xl"
           >
-            .com
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={EXTS[ext]}
+                initial={{ opacity: 0, y: 30, rotateX: -70 }}
+                animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                exit={{ opacity: 0, y: -30, rotateX: 70 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+                className="inline-block"
+              >
+                {EXTS[ext]}
+              </motion.span>
+            </AnimatePresence>
           </motion.div>
         </motion.div>
 
